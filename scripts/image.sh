@@ -36,7 +36,11 @@ FILES=$(find "$(pwd)/docker" -maxdepth 1 -type f | grep Dockerfile)
 for tmp_file in $FILES;do
     echo "building image: ${tmp_file##*.}:${ver} ..."
     sed -e "s/image_placeholder/${image}/g" $tmp_file > "$(pwd)/Dockerfile"
-    # build image
-    docker build -t "${tmp_file##*.}:${ver}" .
+    # build image 
+    sudo docker build -t "${tmp_file##*.}:${ver}" .
+    sudo docker tag "${tmp_file##*.}:${ver}"  registry.cn-shenzhen.aliyuncs.com/dev-ops/"${tmp_file##*.}:${ver}"
+    sudo docker push registry.cn-shenzhen.aliyuncs.com/dev-ops/"${tmp_file##*.}:${ver}"
+    sudo docker tag "${tmp_file##*.}:${ver}"  registry.cn-shenzhen.aliyuncs.com/dev-ops/"${tmp_file##*.}:latest"
+    sudo docker push registry.cn-shenzhen.aliyuncs.com/dev-ops/"${tmp_file##*.}:latest"
     rm "$(pwd)/Dockerfile"
 done

@@ -1,0 +1,189 @@
+apiVersion: v1
+kind: ConfigMap
+metadata:
+  name: cmdb_adminserver-confmap
+  namespace: bk-cmdb 
+data:
+  webserver.conf: |-
+    [api]
+    version=v3
+    [session]
+    name=cc3
+    skip=1
+    host=cmdb-redis
+    port=6379
+    secret=bk-cmdb
+    multiple_owner=0
+    [site]
+    domain_url=http://127.0.0.1:8083
+    bk_login_url=http://127.0.0.1/login/?app_id=%s&c_url=%s
+    app_code=cc
+    check_url=http://127.0.0.1/login/accounts/get_user/?bk_token=
+    bk_account_url=http://127.0.0.1/login/accounts/get_all_user/?bk_token=%s
+    resources_path=/tmp/
+    html_root=/data/project/bk-cmdb/src/configcenter/src/bin/pub/cmdb/web
+    [errors]
+    res=conf/errors
+    [app]
+    agent_app_url=http://127.0.0.1/console/?app=bk_agent_setup
+  apiserver.conf: |-
+    [errors]
+    res=conf/errors
+  auditcontroller.conf: |-
+    [mongodb]
+    host = cmdb-mongodb
+    usr = bk-cmdb
+    pwd = bk-cmdb
+    database = cmdb
+    port = 27017
+    maxOpenConns = 3000
+    maxIdleConns = 1000
+    [errors]
+    res=conf/errors
+  datacollection.conf: |- 
+    [mongodb]
+    host = cmdb-mongodb
+    usr = bk-cmdb
+    pwd = bk-cmdb
+    database = cmdb
+    port = 27017
+    maxOpenConns = 3000
+    maxIdleConns = 1000
+
+    [snap-redis]
+    host = cmdb-redis:6379
+    usr = cc
+    pwd = bk-cmdb
+    database = 0
+    chan = 3_snapshot
+
+    [redis]
+    host = cmdb-redis:6379
+    usr = cc
+    pwd = bk-cmdb
+    database = 0
+  eventserver.conf: |-      
+    [mongodb]
+    host=cmdb-mongodb
+    usr=bk-cmdb
+    pwd=bk-cmdb
+    database=cmdb
+    port=27017
+    maxOpenConns=3000
+    maxIDleConns=1000
+    [redis]
+    host=cmdb-redis
+    usr=cc
+    pwd=bk-cmdb
+    database=0
+    port=6379
+    maxOpenConns=3000
+    maxIDleConns=1000
+    [errors]
+    res=conf/errors
+  host.conf: |-    
+    [gse]
+    addr=cmdb-zookeeper:2181
+    user=bkzk
+    pwd=L%blKas
+    [errors]
+    res=conf/errors
+  hostcontroller.conf: |-     
+    [mongodb]
+    host=cmdb-mongodb
+    usr=bk-cmdb
+    pwd=bk-cmdb
+    database=cmdb
+    port=27017
+    maxOpenConns=3000
+    maxIDleConns=1000
+    [redis]
+    host=cmdb-redis
+    usr=cc
+    pwd=bk-cmdb
+    database=0
+    port=6379
+    maxOpenConns=3000
+    maxIDleConns=1000
+    [errors]
+    res=conf/errors
+  migrate.conf: |-           
+    [errors]
+    res=conf/errors
+    [config-server]
+    addrs=cmdb-zookeeper:2181
+    usr=
+    pwd=
+    [register-server]
+    addrs=cmdb-zookeeper:2181
+    usr=
+    pwd=
+
+    [mongodb]
+    host =cmdb-mongodb
+    usr = bk-cmdb
+    pwd = bk-cmdb
+    database = cmdb
+    port = 27017
+    maxOpenConns = 3000
+    maxIDleConns = 1000
+
+    [confs]
+    dir = /cmdb_adminserver/configures/
+  objectcontroller.conf: |-   
+    [mongodb]
+    host=cmdb-mongodb
+    usr=bk-cmdb
+    pwd=bk-cmdb
+    database=cmdb
+    port=27017
+    maxOpenConns=3000
+    maxIDleConns=1000
+    [redis]
+    host=cmdb-redis
+    usr=cc
+    pwd=bk-cmdb
+    database=0
+    port=6379
+    maxOpenConns=3000
+    maxIDleConns=1000
+    [errors]
+    res=conf/errors
+  proc.conf: |-    
+    [errors]
+    res=conf/errors
+  proccontroller.conf: |-   
+    [mongodb]
+    host=cmdb-mongodb
+    usr=bk-cmdb
+    pwd=bk-cmdb
+    database=cmdb
+    port=27017
+    maxOpenConns=3000
+    maxIDleConns=1000
+    [redis]
+    host=cmdb-redis
+    usr=cc
+    pwd=bk-cmdb
+    database=0
+    port=6379
+    maxOpenConns=3000
+    maxIDleConns=1000
+    [errors]
+    res=conf/errors
+  topo.conf: |-  
+    [mongodb]
+    host=cmdb-mongodb
+    usr=bk-cmdb
+    pwd=bk-cmdb
+    database=cmdb
+    port=27017
+    maxOpenConns=3000
+    maxIDleConns=1000
+    [errors]
+    res=conf/errors
+    
+    
+    
+    
+    

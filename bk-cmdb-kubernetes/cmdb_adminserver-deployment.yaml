@@ -1,0 +1,90 @@
+apiVersion: apps/v1 
+kind: Deployment
+metadata:
+  name: cmdb_adminserver
+  namespace: bk-cmdb
+  labels:
+    #[需修改]命名空间名称
+    namespace: bk-cmdb
+     #label的部署名称
+    deployment: cmdb_adminserver
+  annotations:   
+    harbor-image-dir: bk-cmdb
+spec: 
+  replicas: 1
+  revisionHistoryLimit: 20
+  selector:
+    matchLabels:
+      deployment: cmdb_adminserver
+  strategy:
+    rollingUpdate:
+      maxSurge: 1
+      maxUnavailable: 1
+    type: RollingUpdate
+  template:
+    metadata:
+      creationTimestamp: null
+      labels:
+        deployment: api-gateway
+    spec: 
+      dnsPolicy: ClusterFirst
+      restartPolicy: Always
+      terminationGracePeriodSeconds: 30
+      imagePullSecrets:
+      - name: registry-secret 
+      containers:
+      - name: cmdb_adminserver
+        image: registry.cn-shenzhen.aliyuncs.com/bk-cmdb/cmdb_adminserver:latest
+        imagePullPolicy: Always
+        livenessProbe:
+          httpGet:
+            path: /
+            port: 60004
+            scheme: HTTP
+          initialDelaySeconds: 40
+          periodSeconds: 10
+          timeoutSeconds: 3
+         failureThreshold: 3
+        readinessProbe:
+         httpGet:
+           path: /
+            port: 60004
+            scheme: HTTP
+          initialDelaySeconds: 40
+          periodSeconds: 5
+          timeoutSeconds: 2
+          failureThreshold: 6
+        workingDir: /cmdb_adminserver
+        # 资源分配 超配800%
+        resources:
+          requests:
+            memory: "0.5Gi"
+            cpu: "0.5"
+          limits:
+            memory: "4Gi"
+            cpu: "4"        
+        # 容器内部权限控制
+        # https://kubernetes.io/docs/concepts/policy/container-capabilities/
+        securityContext:
+          privileged: true 
+        volumeMounts: 
+            # POD中的每个container可以设置自己的内部挂载点
+            # 每个挂载点通过下面volumes中的name来指定把哪个volume挂载到哪里
+          - name: localtime
+            mountPath: /etc/localtime
+            readOnly: true
+          - name: cgroup
+            mountPath: /sys/fs/cgroup
+            readOnly: true  
+          - name: config-volume
+            mountPath: /cmdb_adminserver/configures 
+      volumes: 
+      - name: localtime
+        hostPath: 
+          path: /etc/localtime
+      - name: cgroup
+        hostPath: 
+          path: /sys/fs/cgroup 
+      - name: config-volume
+        configMap:
+          name: cmdb_adminserver-confmap   

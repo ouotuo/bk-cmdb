@@ -1,0 +1,20 @@
+kind: Service
+apiVersion: v1
+metadata:
+  name: cmdb_adminserver
+  #[需修改]命名空间名称
+  namespace: bk-cmdb
+  labels:
+    #[需修改]label的命名空间名称
+    namespace: bk-cmdb
+    #label的服务名称
+    service: cmdb_adminserver
+spec:
+  selector:
+    deployment: cmdb_adminserver
+  ports:
+  - name: http-60004
+    protocol: TCP
+    port: 60004
+    targetPort: 60004  
+  type: ClusterIP 

@@ -36,6 +36,7 @@ def generate_config_file(rd_server_v,db_name_v,redis_ip_v,redis_port_v,redis_use
     port = $mongo_port
     maxOpenConns = 3000
     maxIdleConns = 1000
+    mechanism=SCRAM-SHA-1
     [errors]
     res=conf/errors
     '''
@@ -54,7 +55,7 @@ def generate_config_file(rd_server_v,db_name_v,redis_ip_v,redis_port_v,redis_use
     port = $mongo_port
     maxOpenConns = 3000
     maxIdleConns = 1000
-
+    mechanism=SCRAM-SHA-1
     [snap-redis]
     host = $redis_host
     usr = $redis_user
@@ -84,6 +85,7 @@ def generate_config_file(rd_server_v,db_name_v,redis_ip_v,redis_port_v,redis_use
     port=$mongo_port
     maxOpenConns=3000
     maxIDleConns=1000
+    mechanism=SCRAM-SHA-1
     [redis]
     host=$redis_host
     usr=$redis_user
@@ -125,6 +127,7 @@ def generate_config_file(rd_server_v,db_name_v,redis_ip_v,redis_port_v,redis_use
     port=$mongo_port
     maxOpenConns=3000
     maxIDleConns=1000
+    mechanism=SCRAM-SHA-1
     [redis]
     host=$redis_host
     usr=$redis_user
@@ -163,7 +166,7 @@ def generate_config_file(rd_server_v,db_name_v,redis_ip_v,redis_port_v,redis_use
     port = $mongo_port
     maxOpenConns = 3000
     maxIDleConns = 1000
-
+    mechanism=SCRAM-SHA-1
     [confs]
     dir = $configures_dir
     '''
@@ -183,6 +186,7 @@ def generate_config_file(rd_server_v,db_name_v,redis_ip_v,redis_port_v,redis_use
     port=$mongo_port
     maxOpenConns=3000
     maxIDleConns=1000
+    mechanism=SCRAM-SHA-1
     [redis]
     host=$redis_host
     usr=$redis_user
@@ -220,6 +224,7 @@ def generate_config_file(rd_server_v,db_name_v,redis_ip_v,redis_port_v,redis_use
     port=$mongo_port
     maxOpenConns=3000
     maxIDleConns=1000
+    mechanism=SCRAM-SHA-1
     [redis]
     host=$redis_host
     usr=$redis_user
@@ -247,6 +252,7 @@ def generate_config_file(rd_server_v,db_name_v,redis_ip_v,redis_port_v,redis_use
     port=$mongo_port
     maxOpenConns=3000
     maxIDleConns=1000
+    mechanism=SCRAM-SHA-1
     [errors]
     res=conf/errors
     '''

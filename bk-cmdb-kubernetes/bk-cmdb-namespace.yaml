@@ -1,0 +1,15 @@
+apiVersion: v1
+kind: Namespace
+metadata:
+  #[需修改]命名空间名称
+  name: bk-cmdb
+  labels:
+    #[需修改]label的命名空间名称
+    namespace: bk-cmdb
+  annotations:
+    net.beta.kubernetes.io/network-policy: |
+      {
+        "ingress": {
+          "isolation": "DefaultDeny"
+        }
+      }
