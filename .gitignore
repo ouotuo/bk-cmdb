@@ -1,0 +1,9 @@
+.idea/*
+pkg/* 
+bin/* 
+*tar.gz
+*.zip
+*.log
+*.pid
+src/ui/node_modules
+src/bin/*
