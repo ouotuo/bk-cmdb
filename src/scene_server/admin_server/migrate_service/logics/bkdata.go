@@ -28,22 +28,17 @@ import (
 	restful "github.com/emicklei/go-restful"
 )
 
-var prc2port = []string{"job_java:java:8008,8443", "cmdb_nginx:nginx:8029", "php-fpm:php-fpm:8009", "uwsgi:uwsgi:8000,8001,8003,8004",
-	"paas_agent:paas_agent:4245", "common_mysql:mysqld:3306", "common_redis:redis-server:6379", "redis_cluster:redis-server:16379,6379",
-	"zk_java:java:2181", "kafka_java:java:9092", "es_java:java:9300,10004", "beam.smp:beam.smp:15672,5672,25672",
-	"common_nginx:nginx:80", "beanstalkd:beanstalkd:6380", "influxdb:influxdb:5620,5621", "etcd:etcd:2379,2380", "dataapi_py:python:10011", "databus_java:java:10021", "monitor_py:python:10043",
-	"fta_py:python:13031,13021,13041", "gse_data:gse_data:58625", "gse_dba:gse_dba:58859",
-	"gse_api:gse_api:59313,50002", "gse_task:gse_task:48668,48669,48671,48329", "gse_transit:gse_transit:58625", "gse_proc:gse_proc:52023,52025",
-	"gse_btsvr:gse_btsvr:10020,58930,58925", "gse_ops:gse_ops:58725,58726", "gse_alarm:gse_alarm:53425", "gse_agent:gse_agent:60020,34334,36510",
-	"license_server:license_server:443", "consul:consul:8301,8300,8302,8500,53", "cc_service:cc_service:8019"}
+var prc2port = []string{"java:java:8008,8443", "nginx:nginx:80", "php-fpm:php-fpm:8009", "mysql:mysqld:3306", "mongodb:mongod:27017", "redis:redis-server:6379", "redis_cluster:redis-server:16379,6379",
+	"zookeeper:java:2181", "kafka:java:9092", "elasticsearch:java:9300,10004", "beanstalkd:beanstalkd:6380", "influxdb:influxdb:5620,5621", "etcd:etcd:2379,2380", "consul:consul:8301,8300,8302,8500,53",
+	"jumpserver:jumpserver:8080",
+	"cmdb_adminserver:cmdb_adminserver:60004", "cmdb_apiserver:cmdb_apiserver:8080", "cmdb_auditcontroller:cmdb_auditcontroller:50005", "cmdb_datacollection:cmdb_datacollection:60005", "cmdb_eventserver:cmdb_eventserver:60009", "cmdb_hostcontroller:cmdb_hostcontroller:50002", "cmdb_hostserver:cmdb_hostserver:60001", "cmdb_objectcontroller:cmdb_objectcontroller:50001", "cmdb_proccontroller:cmdb_proccontroller:50003", "cmdb_procserver:cmdb_procserver:60003", "cmdb_toposerver:cmdb_toposerver:60002", "cmdb_webserver:cmdb_webserver:8083",
+	"falcon-transfer:falcon-transfer:6060,8433", "falcon-hbs:falcon-hbs:6031", "falcon-judge:falcon-judge:6081,6080", "falcon-graph:falcon-graph:6071,6070", "falcon-nodata:falcon-nodata:6090", "falcon-aggregator:falcon-aggregator:6055", "falcon-api:falcon-api:8070", "falcon-alarm:falcon-alarm:9912", "falcon-task:falcon-task:8002"}
 
-var setModuleKv = map[string]map[string]string{"作业平台": {"job": "job_java"},
-	"配置平台":   {"cmdb": "cmdb_nginx,php-fpm", "cc_service": "cc_service"},
-	"管控平台":   {"gse_api": "gse_api", "gse_data": "gse_data", "gse_dba": "gse_dba", "gse_task": "gse_task", "gse_transit": "gse_transit", "gse_proc": "gse_proc", "gse_btsvr": "gse_btsvr", "gse_ops": "gse_ops", "gse_opts": "", "gse_alarm": "gse_alarm", "gse_agent": "gse_agent", "license": "license_server"},
-	"故障自愈":   {"fta": "fta_py"},
-	"数据服务模块": {"dataapi": "dataapi_py", "databus": "databus_java", "monitor": "monitor_py"},
-	"公共组件": {"mysql": "common_mysql", "redis": "common_redis", "redis_cluster": "redis_cluster", "zookeeper": "zk_java", "kafka": "kafka_java", "elasticsearch": "es_java",
-		"rabbitmq": "beam.smp", "nginx": "common_nginx", "beanstalk": "beanstalkd", "influxdb": "influxdb", "etcd": "etcd", "consul": "consul"}}
+var setModuleKv = map[string]map[string]string{"CMDB配置管理": {"cmdb": "cmdb_adminserver,cmdb_apiserver,cmdb_auditcontroller,cmdb_datacollection,cmdb_eventserver,cmdb_hostcontroller,cmdb_hostserver,cmdb_objectcontroller,cmdb_proccontroller,cmdb_procserver,cmdb_toposerver,cmdb_webserver", "mongodb": "mongodb", "redis": "redis", "zookeeper": "zookeeper"},
+	"监控告警平台": {"falcon+": "falcon-transfer,falcon-hbs,falcon-judge,falcon-graph,falcon-nodata,falcon-aggregator,falcon-api,falcon-alarm,falcon-task", "mysql": "mysql", "redis": "redis"},
+	"跳板机":    {"jumpserver": "jumpserver"},
+	"公共组件": {"mysql": "mysql", "redis": "redis", "redis_cluster": "redis_cluster", "zookeeper": "zookeeper", "kafka": "kafka", "elasticsearch": "elasticsearch",
+		"nginx": "nginx", "beanstalk": "beanstalkd", "influxdb": "influxdb", "etcd": "etcd", "consul": "consul"}}
 
 var appID int = 0
 var ownerID string = common.BKDefaultOwnerID
@@ -161,7 +156,7 @@ func addBKProcess(req *restful.Request) error {
 		procModelData[common.BKProcNameField] = procName
 		procModelData[common.BKFuncName] = funcName
 		procModelData[common.BKPort] = portStr
-		procModelData[common.BKWorkPath] = "/data/bkee"
+		//procModelData[common.BKWorkPath] = "/data/bkee"
 		byteParams, _ := json.Marshal(procModelData)
 		url := procAPI + "/process/v1/" + ownerID + "/" + appIDStr
 		blog.Info("migrate add process url :%s", url)

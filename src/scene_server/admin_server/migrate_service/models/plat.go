@@ -1,15 +1,15 @@
 /*
  * Tencent is pleased to support the open source community by making 蓝鲸 available.
  * Copyright (C) 2017-2018 THL A29 Limited, a Tencent company. All rights reserved.
- * Licensed under the MIT License (the "License"); you may not use this file except 
+ * Licensed under the MIT License (the "License"); you may not use this file except
  * in compliance with the License. You may obtain a copy of the License at
  * http://opensource.org/licenses/MIT
  * Unless required by applicable law or agreed to in writing, software distributed under
  * the License is distributed on an "AS IS" BASIS, WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND,
- * either express or implied. See the License for the specific language governing permissions and 
+ * either express or implied. See the License for the specific language governing permissions and
  * limitations under the License.
  */
- 
+
 package models
 
 import (
@@ -23,8 +23,50 @@ func AddPlatData(tableName string, insCli dbStorage.DI, metaCli dbStorage.DI) er
 	blog.Errorf("add data for  %s table ", tableName)
 	rows := []map[string]interface{}{
 		map[string]interface{}{
-			common.BKCloudNameField: "default area",
+			common.BKCloudNameField: "默认区域",
 			common.BKOwnerIDField:   "",
+			common.BKCloudIDField:   common.BKDefaultDirSubArea,
+			common.CreateTimeField:  time.Now(),
+			common.LastTimeField:    time.Now(),
+		},
+		map[string]interface{}{
+			common.BKCloudNameField: "办公区",
+			common.BKOwnerIDField:   "",
+			common.BKCloudIDField:   common.BKDefaultDirSubArea,
+			common.CreateTimeField:  time.Now(),
+			common.LastTimeField:    time.Now(),
+		},
+		map[string]interface{}{
+			common.BKCloudNameField: "IDC",
+			common.BKOwnerIDField:   "0",
+			common.BKCloudIDField:   common.BKDefaultDirSubArea,
+			common.CreateTimeField:  time.Now(),
+			common.LastTimeField:    time.Now(),
+		},
+		map[string]interface{}{
+			common.BKCloudNameField: "腾讯云",
+			common.BKOwnerIDField:   "0",
+			common.BKCloudIDField:   common.BKDefaultDirSubArea,
+			common.CreateTimeField:  time.Now(),
+			common.LastTimeField:    time.Now(),
+		},
+		map[string]interface{}{
+			common.BKCloudNameField: "阿里云",
+			common.BKOwnerIDField:   "0",
+			common.BKCloudIDField:   common.BKDefaultDirSubArea,
+			common.CreateTimeField:  time.Now(),
+			common.LastTimeField:    time.Now(),
+		},
+		map[string]interface{}{
+			common.BKCloudNameField: "Ucloud",
+			common.BKOwnerIDField:   "0",
+			common.BKCloudIDField:   common.BKDefaultDirSubArea,
+			common.CreateTimeField:  time.Now(),
+			common.LastTimeField:    time.Now(),
+		},
+		map[string]interface{}{
+			common.BKCloudNameField: "AWS",
+			common.BKOwnerIDField:   "0",
 			common.BKCloudIDField:   common.BKDefaultDirSubArea,
 			common.CreateTimeField:  time.Now(),
 			common.LastTimeField:    time.Now(),

@@ -47,10 +47,7 @@
                     </li>
                 </template>
             </ul>
-            <div class="copyright-contain">
-                <div class="copyright-line"></div>
-                <p class="copyright-text">Copyright © 2012-{{year}} Tencent  BlueKing. All Rights Reserved.<br>腾讯蓝鲸&nbsp;版权所有</p>
-            </div>
+          
         </div>
     </div>
 </template>

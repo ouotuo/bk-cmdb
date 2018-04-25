@@ -2,7 +2,7 @@
 <html>
   <head>
     <meta charset="utf-8">
-    <title>配置平台 | 蓝鲸智云企业版</title>
+    <title>CMDB配置平台</title>
     <link rel="shortcut icon" href="./favicon.ico" type="image/x-icon">
   </head>
   <body>

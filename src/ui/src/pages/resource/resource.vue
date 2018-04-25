@@ -59,15 +59,7 @@
                         <span slot="download-desc" style="display: inline-block;vertical-align: top;">说明：内网IP为必填列；</span>
                     </v-import>
                 </bk-tabpanel>
-                <bk-tabpanel name="agent" title="自动导入">
-                    <div class="automatic-import">
-                        <p>说明： 当主机安装了蓝鲸Agent后，会自动录入到“主机资源池”中</p>
-                        <div class="back-contain">
-                            <img src="../../common/images/icon/icon-back.png">
-                            <a href="javascript:void(0)" @click="openAgentApp">点此进入Agent安装APP</a>
-                        </div>
-                    </div>
-                </bk-tabpanel>
+             
             </bk-tab>
         </v-sideslider>
    </div>

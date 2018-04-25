@@ -1,5 +1,5 @@
 /*
- * Tencent is pleased to support the open source community by making 蓝鲸 available.
+ * Tencent is pleased to support the open source community by making 运维平台 available.
  * Copyright (C) 2017-2018 THL A29 Limited, a Tencent company. All rights reserved.
  * Licensed under the MIT License (the "License"); you may not use this file except
  * in compliance with the License. You may obtain a copy of the License at
@@ -377,7 +377,7 @@ const (
 const DefaultResSetName string = "空闲机池"
 
 // WhiteListAppName the white list app name
-const WhiteListAppName = "蓝鲸"
+const WhiteListAppName = "运维平台"
 
 // WhiteListSetName the white list set name
 const WhiteListSetName = "公共组件"
@@ -418,7 +418,7 @@ const DefaultAppFlag int = 1
 const DefaultAppName string = "资源池"
 
 // BKAppName the default app name
-const BKAppName string = "蓝鲸"
+const BKAppName string = "运维平台"
 
 const (
 

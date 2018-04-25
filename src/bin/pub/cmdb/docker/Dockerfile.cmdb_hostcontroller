@@ -1,0 +1,36 @@
+
+FROM  image_placeholder
+RUN mkdir -p /cmdb_hostcontroller/conf
+RUN mkdir -p /cmdb_hostcontroller/conf/certs
+RUN mkdir -p /cmdb_hostcontroller/conf/errors
+RUN mkdir -p /cmdb_hostcontroller/conf/errors/common
+RUN mkdir -p /cmdb_hostcontroller/conf/errors/english
+RUN mkdir -p /cmdb_hostcontroller/conf/errors/common/default
+RUN mkdir -p /cmdb_hostcontroller/conf/errors/english/en
+COPY /cmdb_hostcontroller/template.sh.start /cmdb_hostcontroller/template.sh.start
+COPY /cmdb_hostcontroller/init_db.sh /cmdb_hostcontroller/init_db.sh
+COPY /cmdb_hostcontroller/stop.sh /cmdb_hostcontroller/stop.sh
+COPY /cmdb_hostcontroller/ip.py /cmdb_hostcontroller/ip.py
+COPY /cmdb_hostcontroller/cmdb_hostcontroller /cmdb_hostcontroller/cmdb_hostcontroller
+COPY /cmdb_hostcontroller/start.sh /cmdb_hostcontroller/start.sh
+COPY /cmdb_hostcontroller/conf/errors/common/default/topo_server.json /cmdb_hostcontroller/conf/errors/common/defaulttopo_server.json
+COPY /cmdb_hostcontroller/conf/errors/common/default/object_controller.json /cmdb_hostcontroller/conf/errors/common/defaultobject_controller.json
+COPY /cmdb_hostcontroller/conf/errors/common/default/migrate.json /cmdb_hostcontroller/conf/errors/common/defaultmigrate.json
+COPY /cmdb_hostcontroller/conf/errors/common/default/proc_server.json /cmdb_hostcontroller/conf/errors/common/defaultproc_server.json
+COPY /cmdb_hostcontroller/conf/errors/common/default/host_server.json /cmdb_hostcontroller/conf/errors/common/defaulthost_server.json
+COPY /cmdb_hostcontroller/conf/errors/common/default/event_server.json /cmdb_hostcontroller/conf/errors/common/defaultevent_server.json
+COPY /cmdb_hostcontroller/conf/errors/common/default/common.json /cmdb_hostcontroller/conf/errors/common/defaultcommon.json
+COPY /cmdb_hostcontroller/conf/errors/common/default/apiserver_v2.json /cmdb_hostcontroller/conf/errors/common/defaultapiserver_v2.json
+COPY /cmdb_hostcontroller/conf/errors/common/default/proc_controller.json /cmdb_hostcontroller/conf/errors/common/defaultproc_controller.json
+COPY /cmdb_hostcontroller/conf/errors/common/default/host_controller.json /cmdb_hostcontroller/conf/errors/common/defaulthost_controller.json
+COPY /cmdb_hostcontroller/conf/errors/english/en/topo_server.json /cmdb_hostcontroller/conf/errors/english/entopo_server.json
+COPY /cmdb_hostcontroller/conf/errors/english/en/object_controller.json /cmdb_hostcontroller/conf/errors/english/enobject_controller.json
+COPY /cmdb_hostcontroller/conf/errors/english/en/migrate.json /cmdb_hostcontroller/conf/errors/english/enmigrate.json
+COPY /cmdb_hostcontroller/conf/errors/english/en/proc_server.json /cmdb_hostcontroller/conf/errors/english/enproc_server.json
+COPY /cmdb_hostcontroller/conf/errors/english/en/host_server.json /cmdb_hostcontroller/conf/errors/english/enhost_server.json
+COPY /cmdb_hostcontroller/conf/errors/english/en/event_server.json /cmdb_hostcontroller/conf/errors/english/enevent_server.json
+COPY /cmdb_hostcontroller/conf/errors/english/en/common.json /cmdb_hostcontroller/conf/errors/english/encommon.json
+COPY /cmdb_hostcontroller/conf/errors/english/en/apiserver_v2.json /cmdb_hostcontroller/conf/errors/english/enapiserver_v2.json
+COPY /cmdb_hostcontroller/conf/errors/english/en/proc_controller.json /cmdb_hostcontroller/conf/errors/english/enproc_controller.json
+COPY /cmdb_hostcontroller/conf/errors/english/en/host_controller.json /cmdb_hostcontroller/conf/errors/english/enhost_controller.json
+ENTRYPOINT /cmdb_hostcontroller/start.sh
