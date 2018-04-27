@@ -64,15 +64,7 @@
                         <span slot="download-desc" style="display: inline-block;vertical-align: top;">{{$t('HostResourcePool[\'说明：内网IP为必填列\']')}}</span>
                     </v-import>
                 </bk-tabpanel>
-                <bk-tabpanel name="agent" :title="$t('HostResourcePool[\'自动导入\']')">
-                    <div class="automatic-import">
-                        <p>{{$t("HostResourcePool['agent安装说明']")}}</p>
-                        <div class="back-contain">
-                            <i class="icon-cc-skip"></i>
-                            <a href="javascript:void(0)" @click="openAgentApp">{{$t("HostResourcePool['点此进入Agent安装APP']")}}</a>
-                        </div>
-                    </div>
-                </bk-tabpanel>
+                
             </bk-tab>
         </v-sideslider>
         <v-delete-history

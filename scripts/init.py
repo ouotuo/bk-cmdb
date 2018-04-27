@@ -8,7 +8,7 @@ from string import Template
 class FileTemplate(Template):
     delimiter='$'
 
-def generate_config_file(rd_server_v,db_name_v,redis_ip_v,redis_port_v,redis_user_v,redis_pass_v,mongo_ip_v,mongo_port_v,mongo_user_v,mongo_pass_v,cc_url_v,paas_url_v):
+def generate_config_file(rd_server_v,db_name_v,redis_ip_v,redis_port_v,redis_user_v,redis_pass_v,mongo_ip_v,mongo_port_v,mongo_user_v,mongo_pass_v,cc_url_v,paas_url_v,ldap_ip_v,ldap_port_v,ldap_baseDN_v,ldap_bindDN_v,ldap_bind_passwd_v,ldap_user_field_v):
     
     output = os.getcwd()+"/cmdb_adminserver/configures/"
  
@@ -273,10 +273,17 @@ def generate_config_file(rd_server_v,db_name_v,redis_ip_v,redis_port_v,redis_use
     html_root=$ui_root
     [app]
     agent_app_url=${agent_url}/console/?app=bk_agent_setup
+    [ldap]
+    ldap_ip=$ldap_ip
+    ldap_port=$ldap_port
+    ldap_baseDN=${ldap_baseDN}
+    ldap_bindDN=${ldap_bindDN}
+    ldap_bind_passwd=$ldap_bind_passwd
+    ldap_user_field=$ldap_user_field
     '''
     ui_root_v = os.getcwd()+"/web"
     template = FileTemplate(webserver_file_template_str)
-    result = template.substitute(dict(redis_host=redis_ip_v,redis_port=redis_port_v,redis_pass=redis_pass_v,cc_url=cc_url_v,paas_url=paas_url_v,ui_root=ui_root_v,agent_url=paas_url_v))
+    result = template.substitute(dict(redis_host=redis_ip_v,redis_port=redis_port_v,redis_pass=redis_pass_v,cc_url=cc_url_v,paas_url=paas_url_v,ui_root=ui_root_v,agent_url=paas_url_v,ldap_ip=ldap_ip_v,ldap_port=ldap_port_v,ldap_baseDN=ldap_baseDN_v,ldap_bindDN=ldap_bindDN_v,ldap_bind_passwd=ldap_bind_passwd_v,ldap_user_field=ldap_user_field_v))
     with open( output + "webserver.conf",'w') as tmp_file:
         tmp_file.write(result)
 
@@ -319,6 +326,12 @@ def main(argv):
     mongo_pass=''
     cc_url=''
     paas_url='http://127.0.0.1'
+    ldap_ip=''
+    ldap_port=''
+    ldap_baseDN=''
+    ldap_bindDN= ''
+    ldap_bind_passwd =''
+    ldap_user_field=''
 
     server_ports={"cmdb_adminserver":60004,"cmdb_apiserver":8080,\
     "cmdb_auditcontroller":50005,"cmdb_datacollection":60005,\
@@ -330,7 +343,7 @@ def main(argv):
         opts, _ = getopt.getopt(argv,"hd:D:r:p:x:s:m:P:X:S:u:U:a:l:"\
         ,["help","discovery=","database=","redis_ip=","redis_port="\
         ,"redis_user=","redis_pass=","mongo_ip=","mongo_port="\
-        ,"mongo_user=","mongo_pass=","blueking_cmdb_url=","blueking_paas_url=","listen_port="])
+        ,"mongo_user=","mongo_pass=","blueking_cmdb_url=","blueking_paas_url=","listen_port=","ldap_ip=","ldap_port=","ldap_baseDN=","ldap_bindDN=","ldap_bind_passwd=","ldap_user_field="])
 
     except getopt.GetoptError as e:
         print "\n \t",e.msg
@@ -346,7 +359,13 @@ def main(argv):
         ,"\n\t--mongo_pass         <mongo_pass>           the mongo password"\
         ,"\n\t--blueking_cmdb_url  <blueking_cmdb_url>    the cmdb site url, eg: http://127.0.0.1:8088 or http://bk.tencent.com"\
         ,"\n\t--blueking_paas_url  <blueking_paas_url>    the blueking pass url, eg: http://127.0.0.1:8088 or http://bk.tencent.com"\
-        ,"\n\t--listen_port        <listen_port>          the cmdb_webserver listen port, should be the port as same as -c <blueking_cmdb_url> specified, default:8083"
+        ,"\n\t--listen_port        <listen_port>          the cmdb_webserver listen port, should be the port as same as -c <blueking_cmdb_url> specified, default:8083"\
+        ,"\n\t--ldap_ip            <ldap_ip>              ldap_ip"\
+        ,"\n\t--ldap_port          <ldap_port>            ldap_port"\
+        ,"\n\t--ldap_baseDN        <ldap_baseDN>          ldap_baseDN"\
+        ,"\n\t--ldap_bindDN        <ldap_bindDN>          ldap_bindDN"\
+        ,"\n\t--ldap_bind_passwd   <ldap_bind_passwd>     ldap_bind_passwd"\
+        ,"\n\t--ldap_user_field    <ldap_user_field>      ldap_user_field"
        
         sys.exit(2)
     if len(opts) == 0:
@@ -362,13 +381,18 @@ def main(argv):
         ,"\n\t--mongo_pass         <mongo_pass>           the mongo password"\
         ,"\n\t--blueking_cmdb_url  <blueking_cmdb_url>    the cmdb site url, eg: http://127.0.0.1:8088 or http://bk.tencent.com"\
         ,"\n\t--blueking_paas_url  <blueking_paas_url>    the blueking paas url, eg: http://127.0.0.1:8088 or http://bk.tencent.com"\
-        ,"\n\t--listen_port        <listen_port>          the cmdb_webserver listen port, should be the port as same as -c <blueking_cmdb_url> specified, default:8083"
-       
+        ,"\n\t--listen_port        <listen_port>          the cmdb_webserver listen port, should be the port as same as -c <blueking_cmdb_url> specified, default:8083"\
+        ,"\n\t--ldap_ip            <ldap_ip>              ldap_ip"\
+        ,"\n\t--ldap_port          <ldap_port>            ldap_port"\
+        ,"\n\t--ldap_baseDN        <ldap_baseDN>          ldap_baseDN"\
+        ,"\n\t--ldap_bindDN        <ldap_bindDN>          ldap_bindDN"\
+        ,"\n\t--ldap_bind_passwd   <ldap_bind_passwd>     ldap_bind_passwd"\
+        ,"\n\t--ldap_user_field    <ldap_user_field>      ldap_user_field"
         sys.exit(2)
     #print opts
     for opt, arg in opts:
         if opt in ('-h','--help'):
-            print 'init.py --discovery <discovery> --database <database>  --redis_ip <redis_ip> --redis_port <redis_port> --redis_pass <redis_pass> --mongo_ip <mongo_ip> --mongo_port <mongo_port> --mongo_user <mongo_user> --mongo_pass <mongo_pass> --blueking_cmdb_url <blueking_cmdb_url> --blueking_paas_url <blueking_paas_url> --listen_port <listen_port>'
+            print 'init.py --discovery <discovery> --database <database>  --redis_ip <redis_ip> --redis_port <redis_port> --redis_pass <redis_pass> --mongo_ip <mongo_ip> --mongo_port <mongo_port> --mongo_user <mongo_user> --mongo_pass <mongo_pass> --blueking_cmdb_url <blueking_cmdb_url> --blueking_paas_url <blueking_paas_url> --listen_port <listen_port> --ldap_ip <ldap_ip> --ldap_port <ldap_port> --ldap_baseDN <ldap_baseDN> --ldap_bindDN <ldap_bindDN> --ldap_bind_passwd <ldap_bind_passwd> --ldap_user_field <ldap_user_field>' 
             sys.exit()
         elif opt in ("-d", "--discovery"):
             rd_server=arg
@@ -406,6 +430,24 @@ def main(argv):
         elif opt in("-l","--listen_port"):
             server_ports["cmdb_webserver"]=arg
             print "listen_port:",server_ports["cmdb_webserver"]
+        elif opt in("--ldap_ip"):
+            ldap_ip=arg
+            print "ldap_ip:",ldap_ip
+        elif opt in("--ldap_port"):
+            ldap_port=arg
+            print "ldap_port:",ldap_port
+        elif opt in("--ldap_baseDN"):
+            ldap_baseDN=arg
+            print "ldap_baseDN:",ldap_baseDN
+        elif opt in("--ldap_bindDN"):
+            ldap_bindDN=arg
+            print "ldap_bindDN:",ldap_bindDN
+        elif opt in("--ldap_bind_passwd"):
+            ldap_bind_passwd=arg
+            print "ldap_bind_passwd:",ldap_bind_passwd
+        elif opt in("--ldap_user_field"):
+            ldap_user_field=arg
+            print "ldap_user_field:",ldap_user_field
     
     if 0 == len(rd_server):
         print 'please input the ZooKeeper address, eg:127.0.0.1:2181'
@@ -444,7 +486,7 @@ def main(argv):
         print 'blueking cmdb url not start with http://'
         sys.exit()
 
-    generate_config_file(rd_server,db_name,redis_ip,redis_port,redis_user,redis_pass,mongo_ip,mongo_port,mongo_user,mongo_pass,cc_url,paas_url)
+    generate_config_file(rd_server,db_name,redis_ip,redis_port,redis_user,redis_pass,mongo_ip,mongo_port,mongo_user,mongo_pass,cc_url,paas_url,ldap_ip,ldap_port,ldap_baseDN,ldap_bindDN,ldap_bind_passwd,ldap_user_field)
     update_start_script(rd_server, server_ports)
     print 'initial configurations success, configs could be found at cmdb_adminserver/configures'
 if __name__=="__main__":
