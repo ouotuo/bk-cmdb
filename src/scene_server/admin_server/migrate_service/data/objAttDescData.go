@@ -165,6 +165,8 @@ func HostRow() []*metadata.ObjectAttDes {
 		&metadata.ObjectAttDes{ObjectID: objID, PropertyID: "import_from", PropertyName: "录入方式", IsRequired: false, IsOnly: false, Editable: false, PropertyGroup: groupBaseInfo, PropertyType: common.FiledTypeEnum, Option: []validator.EnumVal{{ID: "1", Name: "excel", Type: "text"}, {ID: "2", Name: "agent", Type: "text"}, {ID: "3", Name: "api", Type: "text"}}},
 		&metadata.ObjectAttDes{ObjectID: objID, PropertyID: "bk_agent_version", PropertyName: "Agent版本", IsRequired: false, IsOnly: false, PropertyGroup: groupAgent, PropertyType: common.FiledTypeSingleChar, Option: ""},
 		&metadata.ObjectAttDes{ObjectID: objID, PropertyID: "bk_agent_status", PropertyName: "Agent状态", IsRequired: false, IsOnly: false, PropertyGroup: groupAgent, PropertyType: common.FiledTypeEnum, Option: []validator.EnumVal{{ID: "1", Name: "正常", Type: "text"}, {ID: "2", Name: "异常", Type: "text"}, {ID: "3", Name: "未安装", Type: "text"}}},
+		&metadata.ObjectAttDes{ObjectID: objID, PropertyID: "bk_agent_update_time", PropertyName: "Agent更新时间", IsRequired: false, IsOnly: false, Editable: false, PropertyGroup: groupAgent, PropertyType: common.FiledTypeTime, Option: ""},
+		
 	}
 
 	return dataRows
