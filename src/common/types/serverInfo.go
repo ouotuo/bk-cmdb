@@ -34,6 +34,7 @@ const (
 	CC_MODULE_APISERVER        = "apiserver"
 	CC_MODULE_WEBSERVER        = "webserver"
 	CC_MODULE_EVENTSERVER      = "eventserver"
+	CC_MODULE_IDC              = "idc"
 )
 
 // AllModule all cc module
@@ -50,6 +51,7 @@ var AllModule = map[string]bool{
 	CC_MODULE_APISERVER:        true,
 	CC_MODULE_WEBSERVER:        true,
 	CC_MODULE_EVENTSERVER:      true,
+	CC_MODULE_IDC:              true,
 }
 
 // cc functionality define
@@ -134,5 +136,10 @@ type TopoServInfo struct {
 
 // EventServInfo topo server information
 type EventServInfo struct {
+	ServerInfo
+}
+
+// IdcServInfo idc server information
+type IdcServInfo struct {
 	ServerInfo
 }

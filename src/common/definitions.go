@@ -88,6 +88,15 @@ const (
 
 	// BKInnerObjIDPlat the inner object
 	BKInnerObjIDPlat = "plat"
+
+	// BKInnerObjIDIdc the inner object
+	BKInnerObjIDIdc = "idc"
+
+	// BKInnerObjIDRack the inner object
+	BKInnerObjIDRack = "rack"
+
+	// BKInnerObjIDPos the inner object
+	BKInnerObjIDPos = "pos"
 )
 
 // Revision

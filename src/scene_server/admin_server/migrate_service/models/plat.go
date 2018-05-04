@@ -24,50 +24,50 @@ func AddPlatData(tableName string, insCli dbStorage.DI, metaCli dbStorage.DI) er
 	rows := []map[string]interface{}{
 		map[string]interface{}{
 			common.BKCloudNameField: "默认区域",
-			common.BKOwnerIDField:   "",
+			common.BKOwnerIDField:   "0",
 			common.BKCloudIDField:   common.BKDefaultDirSubArea,
 			common.CreateTimeField:  time.Now(),
 			common.LastTimeField:    time.Now(),
 		},
 		map[string]interface{}{
 			common.BKCloudNameField: "办公区",
-			common.BKOwnerIDField:   "",
-			common.BKCloudIDField:   common.BKDefaultDirSubArea,
+			common.BKOwnerIDField:   "0",
+			common.BKCloudIDField:   1,
 			common.CreateTimeField:  time.Now(),
 			common.LastTimeField:    time.Now(),
 		},
 		map[string]interface{}{
 			common.BKCloudNameField: "IDC",
 			common.BKOwnerIDField:   "0",
-			common.BKCloudIDField:   common.BKDefaultDirSubArea,
+			common.BKCloudIDField:   2,
 			common.CreateTimeField:  time.Now(),
 			common.LastTimeField:    time.Now(),
 		},
 		map[string]interface{}{
 			common.BKCloudNameField: "腾讯云",
 			common.BKOwnerIDField:   "0",
-			common.BKCloudIDField:   common.BKDefaultDirSubArea,
+			common.BKCloudIDField:   3,
 			common.CreateTimeField:  time.Now(),
 			common.LastTimeField:    time.Now(),
 		},
 		map[string]interface{}{
 			common.BKCloudNameField: "阿里云",
 			common.BKOwnerIDField:   "0",
-			common.BKCloudIDField:   common.BKDefaultDirSubArea,
+			common.BKCloudIDField:   4,
 			common.CreateTimeField:  time.Now(),
 			common.LastTimeField:    time.Now(),
 		},
 		map[string]interface{}{
 			common.BKCloudNameField: "Ucloud",
 			common.BKOwnerIDField:   "0",
-			common.BKCloudIDField:   common.BKDefaultDirSubArea,
+			common.BKCloudIDField:   5,
 			common.CreateTimeField:  time.Now(),
 			common.LastTimeField:    time.Now(),
 		},
 		map[string]interface{}{
 			common.BKCloudNameField: "AWS",
 			common.BKOwnerIDField:   "0",
-			common.BKCloudIDField:   common.BKDefaultDirSubArea,
+			common.BKCloudIDField:   6,
 			common.CreateTimeField:  time.Now(),
 			common.LastTimeField:    time.Now(),
 		},
@@ -84,24 +84,25 @@ func AddPlatData(tableName string, insCli dbStorage.DI, metaCli dbStorage.DI) er
 			return err
 		}
 		if isExist > 0 {
-			return nil
+			//return nil
+			continue
 		}
 
-		// ensure id plug > 1, 1Reserved
-		platID, _ := getIncID(tableName, metaCli)
-		// Direct connecting area id = 1
-		if common.BKDefaultDirSubArea == row[common.BKCloudIDField].(int) {
-			platID = common.BKDefaultDirSubArea
-		}
+		// // ensure id plug > 1, 1Reserved
+		// platID, _ := getIncID(tableName, metaCli)
+		// // Direct connecting area id = 1
+		// if common.BKDefaultDirSubArea == row[common.BKCloudIDField].(int) {
+		// 	platID = common.BKDefaultDirSubArea
+		// }
 
-		row[common.BKCloudIDField] = platID
+		// row[common.BKCloudIDField] = platID
 		_, err = insCli.Insert(tableName, row)
 		if nil != err {
 			blog.Errorf("add data for  %s table error  %s", tableName, err)
 			return err
 		}
 
-		return nil
+		//return nil
 
 	}
 

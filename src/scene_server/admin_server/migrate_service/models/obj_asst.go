@@ -1,15 +1,15 @@
 /*
  * Tencent is pleased to support the open source community by making 蓝鲸 available.
  * Copyright (C) 2017-2018 THL A29 Limited, a Tencent company. All rights reserved.
- * Licensed under the MIT License (the "License"); you may not use this file except 
+ * Licensed under the MIT License (the "License"); you may not use this file except
  * in compliance with the License. You may obtain a copy of the License at
  * http://opensource.org/licenses/MIT
  * Unless required by applicable law or agreed to in writing, software distributed under
  * the License is distributed on an "AS IS" BASIS, WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND,
- * either express or implied. See the License for the specific language governing permissions and 
+ * either express or implied. See the License for the specific language governing permissions and
  * limitations under the License.
  */
- 
+
 package models
 
 import (
@@ -24,9 +24,9 @@ func AddAsstData(tableName, ownerID string, metaCli dbStorage.DI) error {
 	rows := getAddAsstData(ownerID)
 	for _, row := range rows {
 		selector := map[string]interface{}{
-			common.BKObjIDField:     row.ObjectID,
+			common.BKObjIDField:    row.ObjectID,
 			common.BKObjAttIDField: row.ObjectAttID,
-			common.BKOwnerIDField:   row.OwnerID,
+			common.BKOwnerIDField:  row.OwnerID,
 		}
 		isExist, err := metaCli.GetCntByCondition(tableName, selector)
 		if nil != err {
@@ -60,6 +60,10 @@ func getAddAsstData(ownerID string) []*metadata.ObjectAsst {
 		&metadata.ObjectAsst{ObjectID: common.BKInnerObjIDModule, ObjectAttID: common.BKChildStr, AsstObjID: common.BKInnerObjIDSet},
 		&metadata.ObjectAsst{ObjectID: common.BKInnerObjIDHost, ObjectAttID: common.BKChildStr, AsstObjID: common.BKInnerObjIDModule},
 		&metadata.ObjectAsst{ObjectID: common.BKInnerObjIDHost, ObjectAttID: common.BKCloudIDField, AsstObjID: common.BKInnerObjIDPlat},
+
+		&metadata.ObjectAsst{ObjectID: common.BKInnerObjIDRack, ObjectAttID: "bk_idc_id", AsstObjID: common.BKInnerObjIDIdc},
+		&metadata.ObjectAsst{ObjectID: common.BKInnerObjIDPos, ObjectAttID: "bk_rack_id", AsstObjID: common.BKInnerObjIDRack},
+		&metadata.ObjectAsst{ObjectID: common.BKInnerObjIDHost, ObjectAttID: "bk_pos_id", AsstObjID: common.BKInnerObjIDPos},
 	}
 	for _, r := range dataRows {
 		r.OwnerID = ownerID

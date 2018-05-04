@@ -33,6 +33,9 @@ func upgradeGlobalization(db dbStorage.DI) error {
 	presetRows = append(presetRows, data.PlatRow()...)
 	presetRows = append(presetRows, data.ProcRow()...)
 	presetRows = append(presetRows, data.SetRow()...)
+	presetRows = append(presetRows, data.IdcRow()...)
+	presetRows = append(presetRows, data.RackRow()...)
+	presetRows = append(presetRows, data.PosRow()...)
 	presetRowsMap := map[string]*metadata.ObjectAttDes{}
 	for _, row := range presetRows {
 		presetRowsMap[row.ObjectID+"::"+row.PropertyID] = row

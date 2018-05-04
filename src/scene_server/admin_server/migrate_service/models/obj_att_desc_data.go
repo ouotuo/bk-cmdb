@@ -63,6 +63,9 @@ func getObjAttDescData(ownerID string) []*metadata.ObjectAttDes {
 	dataRows = append(dataRows, data.HostRow()...)
 	dataRows = append(dataRows, data.ProcRow()...)
 	dataRows = append(dataRows, data.PlatRow()...)
+	dataRows = append(dataRows, data.IdcRow()...)
+	dataRows = append(dataRows, data.RackRow()...)
+	dataRows = append(dataRows, data.PosRow()...)
 	t := new(time.Time)
 	*t = time.Now()
 	for _, r := range dataRows {

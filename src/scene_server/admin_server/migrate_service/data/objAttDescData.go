@@ -116,56 +116,56 @@ func HostRow() []*metadata.ObjectAttDes {
 	groupAgent := mCommon.HostAutoFields
 	dataRows := []*metadata.ObjectAttDes{
 		//基本信息分组
-		&metadata.ObjectAttDes{ObjectID: objID, PropertyID: common.BKHostInnerIPField, PropertyName: "内网IP", IsRequired: true, IsOnly: true, Editable: false, PropertyGroup: groupBaseInfo, PropertyType: common.FiledTypeSingleChar, Option: common.PatternMultipleIP},
-		&metadata.ObjectAttDes{ObjectID: objID, PropertyID: common.BKHostOuterIPField, PropertyName: "外网IP", IsRequired: false, IsOnly: false, Editable: true, PropertyGroup: groupBaseInfo, PropertyType: common.FiledTypeSingleChar, Option: common.PatternMultipleIP},
-		&metadata.ObjectAttDes{ObjectID: objID, PropertyID: "operator", PropertyName: "主要维护人", IsRequired: false, IsOnly: false, Editable: true, PropertyGroup: groupBaseInfo, PropertyType: common.FiledTypeUser, Option: ""},
-		&metadata.ObjectAttDes{ObjectID: objID, PropertyID: "bk_bak_operator", PropertyName: "备份维护人", IsRequired: false, IsOnly: false, Editable: true, PropertyGroup: groupBaseInfo, PropertyType: common.FiledTypeUser, Option: ""},
-		&metadata.ObjectAttDes{ObjectID: objID, PropertyID: "bk_asset_id", PropertyName: "固资编号", IsRequired: false, IsOnly: true, Editable: true, PropertyGroup: groupBaseInfo, PropertyType: common.FiledTypeSingleChar, Option: ""},
-		&metadata.ObjectAttDes{ObjectID: objID, PropertyID: "bk_sn", PropertyName: "设备SN", IsRequired: false, IsOnly: true, Editable: false, PropertyGroup: groupBaseInfo, PropertyType: common.FiledTypeSingleChar, Option: ""},
-		&metadata.ObjectAttDes{ObjectID: objID, PropertyID: "bk_comment", PropertyName: "备注", IsRequired: false, IsOnly: false, Editable: true, PropertyGroup: groupBaseInfo, PropertyType: common.FiledTypeLongChar, Option: ""},
-		&metadata.ObjectAttDes{ObjectID: objID, PropertyID: "bk_uuid", PropertyName: "UUID", IsRequired: false, IsOnly: true, Editable: false, PropertyGroup: groupAgent, PropertyType: common.FiledTypeSingleChar, Option: ""},
-		&metadata.ObjectAttDes{ObjectID: objID, PropertyID: "bk_host_type", PropertyName: "主机类型", IsRequired: false, IsOnly: false, Editable: true, PropertyGroup: groupBaseInfo, PropertyType: common.FiledTypeEnum, Option: []validator.EnumVal{{ID: "1", Name: "物理机", Type: "text"}, {ID: "2", Name: "虚拟机", Type: "text"}, {ID: "3", Name: "Docker", Type: "text"}, {ID: "4", Name: "路由器", Type: "text"}, {ID: "5", Name: "交换机", Type: "text"}}},
-		&metadata.ObjectAttDes{ObjectID: objID, PropertyID: "bk_level", PropertyName: "重要级别", IsRequired: false, IsOnly: false, Editable: true, PropertyGroup: groupBaseInfo, PropertyType: common.FiledTypeEnum, Option: []validator.EnumVal{{ID: "1", Name: "重要", Type: "text"}, {ID: "2", Name: "一般", Type: "text"}, {ID: "3", Name: "非常重要", Type: "text"}, {ID: "4", Name: "不重要", Type: "text"}}},
-		&metadata.ObjectAttDes{ObjectID: objID, PropertyID: "bk_status", PropertyName: "运行状态", IsRequired: false, IsOnly: false, Editable: true, PropertyGroup: groupBaseInfo, PropertyType: common.FiledTypeEnum, Option: []validator.EnumVal{{ID: "1", Name: "在线", Type: "text"}, {ID: "2", Name: "离线", Type: "text"}}},
-		&metadata.ObjectAttDes{ObjectID: objID, PropertyID: "bk_current_status", PropertyName: "当前状态", IsRequired: false, IsOnly: false, Editable: true, PropertyGroup: groupBaseInfo, PropertyType: common.FiledTypeEnum, Option: []validator.EnumVal{{ID: "1", Name: "运营中", Type: "text"}, {ID: "2", Name: "待运营", Type: "text"}, {ID: "3", Name: "故障中", Type: "text"}, {ID: "4", Name: "重装中", Type: "text"}}},
-		&metadata.ObjectAttDes{ObjectID: objID, PropertyID: "bk_sla", PropertyName: "SLA级别", IsRequired: false, IsOnly: false, Editable: true, PropertyGroup: groupBaseInfo, PropertyType: common.FiledTypeEnum, Option: []validator.EnumVal{{ID: "1", Name: "L1", Type: "text"}, {ID: "2", Name: "L2", Type: "text"}, {ID: "3", Name: "L3", Type: "text"}}},
-		&metadata.ObjectAttDes{ObjectID: objID, PropertyID: common.BKCloudIDField, PropertyName: "云区域", IsRequired: false, IsOnly: true, Editable: true, PropertyGroup: groupBaseInfo, PropertyType: common.FiledTypeSingleAsst, Option: common.KvMap{"value": "plat", "label": "云区域"}}, //common.FiledTypeInt, Option: "{}"},
-		&metadata.ObjectAttDes{ObjectID: objID, PropertyID: "bk_service_term", PropertyName: "质保年限", IsRequired: false, IsOnly: false, Editable: true, PropertyGroup: groupBaseInfo, PropertyType: common.FiledTypeInt, Option: common.KvMap{"min": "1", "max": "10"}},
-		&metadata.ObjectAttDes{ObjectID: objID, PropertyID: "buytime", PropertyName: "采购时间", IsRequired: false, IsOnly: false, Editable: true, PropertyGroup: groupBaseInfo, PropertyType: common.FiledTypeTime, Option: ""},
-		&metadata.ObjectAttDes{ObjectID: objID, PropertyID: "expiretime", PropertyName: "过保时间", IsRequired: false, IsOnly: false, Editable: true, PropertyGroup: groupBaseInfo, PropertyType: common.FiledTypeTime, Option: ""},
-		&metadata.ObjectAttDes{ObjectID: objID, PropertyID: "inputtime", PropertyName: "上架时间", IsRequired: false, IsOnly: false, Editable: true, PropertyGroup: groupBaseInfo, PropertyType: common.FiledTypeTime, Option: ""},
-		&metadata.ObjectAttDes{ObjectID: objID, PropertyID: "outputtime", PropertyName: "下架时间", IsRequired: false, IsOnly: false, Editable: true, PropertyGroup: groupBaseInfo, PropertyType: common.FiledTypeTime, Option: ""},
-		&metadata.ObjectAttDes{ObjectID: objID, PropertyID: "firstusetime", PropertyName: "首次使用时间", IsRequired: false, IsOnly: false, Editable: true, PropertyGroup: groupBaseInfo, PropertyType: common.FiledTypeTime, Option: ""},
+		&metadata.ObjectAttDes{ObjectID: objID, PropertyID: common.BKHostInnerIPField, PropertyName: "内网IP", IsRequired: true, IsOnly: true, Editable: false, PropertyGroup: groupBaseInfo, PropertyType: common.FieldTypeSingleChar, Option: common.PatternMultipleIP},
+		&metadata.ObjectAttDes{ObjectID: objID, PropertyID: common.BKHostOuterIPField, PropertyName: "外网IP", IsRequired: false, IsOnly: false, Editable: true, PropertyGroup: groupBaseInfo, PropertyType: common.FieldTypeSingleChar, Option: common.PatternMultipleIP},
+		&metadata.ObjectAttDes{ObjectID: objID, PropertyID: "operator", PropertyName: "主要维护人", IsRequired: false, IsOnly: false, Editable: true, PropertyGroup: groupBaseInfo, PropertyType: common.FieldTypeUser, Option: ""},
+		&metadata.ObjectAttDes{ObjectID: objID, PropertyID: "bk_bak_operator", PropertyName: "备份维护人", IsRequired: false, IsOnly: false, Editable: true, PropertyGroup: groupBaseInfo, PropertyType: common.FieldTypeUser, Option: ""},
+		&metadata.ObjectAttDes{ObjectID: objID, PropertyID: "bk_asset_id", PropertyName: "固资编号", IsRequired: false, IsOnly: true, Editable: true, PropertyGroup: groupBaseInfo, PropertyType: common.FieldTypeSingleChar, Option: ""},
+		&metadata.ObjectAttDes{ObjectID: objID, PropertyID: "bk_sn", PropertyName: "设备SN", IsRequired: false, IsOnly: true, Editable: false, PropertyGroup: groupBaseInfo, PropertyType: common.FieldTypeSingleChar, Option: ""},
+		&metadata.ObjectAttDes{ObjectID: objID, PropertyID: "bk_comment", PropertyName: "备注", IsRequired: false, IsOnly: false, Editable: true, PropertyGroup: groupBaseInfo, PropertyType: common.FieldTypeSingleChar, Option: ""},
+		&metadata.ObjectAttDes{ObjectID: objID, PropertyID: "bk_uuid", PropertyName: "UUID", IsRequired: false, IsOnly: true, Editable: false, PropertyGroup: groupAgent, PropertyType: common.FieldTypeSingleChar, Option: ""},
+		&metadata.ObjectAttDes{ObjectID: objID, PropertyID: "bk_host_type", PropertyName: "主机类型", IsRequired: false, IsOnly: false, Editable: true, PropertyGroup: groupBaseInfo, PropertyType: common.FieldTypeEnum, Option: []validator.EnumVal{{ID: "1", Name: "物理机", Type: "text"}, {ID: "2", Name: "虚拟机", Type: "text"}, {ID: "3", Name: "Docker", Type: "text"}, {ID: "4", Name: "路由器", Type: "text"}, {ID: "5", Name: "交换机", Type: "text"}}},
+		&metadata.ObjectAttDes{ObjectID: objID, PropertyID: "bk_level", PropertyName: "重要级别", IsRequired: false, IsOnly: false, Editable: true, PropertyGroup: groupBaseInfo, PropertyType: common.FieldTypeEnum, Option: []validator.EnumVal{{ID: "1", Name: "重要", Type: "text"}, {ID: "2", Name: "一般", Type: "text"}, {ID: "3", Name: "非常重要", Type: "text"}, {ID: "4", Name: "不重要", Type: "text"}}},
+		&metadata.ObjectAttDes{ObjectID: objID, PropertyID: "bk_status", PropertyName: "运行状态", IsRequired: false, IsOnly: false, Editable: true, PropertyGroup: groupBaseInfo, PropertyType: common.FieldTypeEnum, Option: []validator.EnumVal{{ID: "1", Name: "在线", Type: "text"}, {ID: "2", Name: "离线", Type: "text"}}},
+		&metadata.ObjectAttDes{ObjectID: objID, PropertyID: "bk_current_status", PropertyName: "当前状态", IsRequired: false, IsOnly: false, Editable: true, PropertyGroup: groupBaseInfo, PropertyType: common.FieldTypeEnum, Option: []validator.EnumVal{{ID: "1", Name: "运营中", Type: "text"}, {ID: "2", Name: "待运营", Type: "text"}, {ID: "3", Name: "故障中", Type: "text"}, {ID: "4", Name: "重装中", Type: "text"}}},
+		&metadata.ObjectAttDes{ObjectID: objID, PropertyID: "bk_sla", PropertyName: "SLA级别", IsRequired: false, IsOnly: false, Editable: true, PropertyGroup: groupBaseInfo, PropertyType: common.FieldTypeEnum, Option: []validator.EnumVal{{ID: "1", Name: "L1", Type: "text"}, {ID: "2", Name: "L2", Type: "text"}, {ID: "3", Name: "L3", Type: "text"}}},
+		&metadata.ObjectAttDes{ObjectID: objID, PropertyID: common.BKCloudIDField, PropertyName: "云区域", IsRequired: false, IsOnly: true, Editable: false, PropertyGroup: groupBaseInfo, PropertyType: common.FieldTypeSingleAsst, Option: common.KvMap{"value": "plat", "label": "云区域"}}, //common.FieldTypeInt, Option: "{}"},
+		&metadata.ObjectAttDes{ObjectID: objID, PropertyID: "bk_service_term", PropertyName: "质保年限", IsRequired: false, IsOnly: false, Editable: true, PropertyGroup: groupBaseInfo, PropertyType: common.FieldTypeInt, Option: common.KvMap{"min": "1", "max": "10"}},
+		&metadata.ObjectAttDes{ObjectID: objID, PropertyID: "buytime", PropertyName: "采购时间", IsRequired: false, IsOnly: false, Editable: true, PropertyGroup: groupBaseInfo, PropertyType: common.FieldTypeTime, Option: ""},
+		&metadata.ObjectAttDes{ObjectID: objID, PropertyID: "expiretime", PropertyName: "过保时间", IsRequired: false, IsOnly: false, Editable: true, PropertyGroup: groupBaseInfo, PropertyType: common.FieldTypeTime, Option: ""},
+		&metadata.ObjectAttDes{ObjectID: objID, PropertyID: "inputtime", PropertyName: "上架时间", IsRequired: false, IsOnly: false, Editable: true, PropertyGroup: groupBaseInfo, PropertyType: common.FieldTypeTime, Option: ""},
+		&metadata.ObjectAttDes{ObjectID: objID, PropertyID: "outputtime", PropertyName: "下架时间", IsRequired: false, IsOnly: false, Editable: true, PropertyGroup: groupBaseInfo, PropertyType: common.FieldTypeTime, Option: ""},
+		&metadata.ObjectAttDes{ObjectID: objID, PropertyID: "firstusetime", PropertyName: "首次使用时间", IsRequired: false, IsOnly: false, Editable: true, PropertyGroup: groupBaseInfo, PropertyType: common.FieldTypeTime, Option: ""},
 
 		//自动发现分组
-		&metadata.ObjectAttDes{ObjectID: objID, PropertyID: "bk_host_name", PropertyName: "主机名称", IsRequired: false, IsOnly: false, PropertyGroup: groupAgent, PropertyType: common.FiledTypeSingleChar, Option: ""},
-		&metadata.ObjectAttDes{ObjectID: objID, PropertyID: common.BKOSTypeField, PropertyName: "操作系统类型", IsRequired: false, IsOnly: false, PropertyGroup: groupAgent, PropertyType: common.FiledTypeEnum, Option: []validator.EnumVal{{ID: "1", Name: "Linux", Type: "text"}, {ID: "2", Name: "Windows", Type: "text"}}},
-		&metadata.ObjectAttDes{ObjectID: objID, PropertyID: common.BKOSNameField, PropertyName: "操作系统名称", IsRequired: false, IsOnly: false, PropertyGroup: groupAgent, PropertyType: common.FiledTypeSingleChar, Option: ""},
-		&metadata.ObjectAttDes{ObjectID: objID, PropertyID: "bk_os_version", PropertyName: "操作系统版本", IsRequired: false, IsOnly: false, PropertyGroup: groupAgent, PropertyType: common.FiledTypeSingleChar, Option: ""},
-		&metadata.ObjectAttDes{ObjectID: objID, PropertyID: "bk_os_bit", PropertyName: "操作系统位数", IsRequired: false, IsOnly: false, PropertyGroup: groupAgent, PropertyType: common.FiledTypeSingleChar, Option: ""},
-		&metadata.ObjectAttDes{ObjectID: objID, PropertyID: "bk_cpu", PropertyName: "CPU逻辑核心数", IsRequired: false, IsOnly: false, PropertyGroup: groupAgent, PropertyType: common.FiledTypeInt, Option: common.KvMap{"min": "1", "max": "1000000"}},
-		&metadata.ObjectAttDes{ObjectID: objID, PropertyID: "bk_cpu_mhz", PropertyName: "CPU频率", IsRequired: false, IsOnly: false, PropertyGroup: groupAgent, PropertyType: common.FiledTypeInt, Unit: "Hz", Option: common.KvMap{"min": "1", "max": "100000000"}},
-		&metadata.ObjectAttDes{ObjectID: objID, PropertyID: "bk_cpu_module", PropertyName: "CPU型号", IsRequired: false, IsOnly: false, PropertyGroup: groupAgent, PropertyType: common.FiledTypeSingleChar, Option: ""},
-		&metadata.ObjectAttDes{ObjectID: objID, PropertyID: "bk_mem", PropertyName: "内存容量", IsRequired: false, IsOnly: false, PropertyGroup: groupAgent, PropertyType: common.FiledTypeInt, Unit: "MB", Option: common.KvMap{"min": "1", "max": "100000000"}},
-		&metadata.ObjectAttDes{ObjectID: objID, PropertyID: "bk_disk", PropertyName: "磁盘容量", IsRequired: false, IsOnly: false, PropertyGroup: groupAgent, PropertyType: common.FiledTypeInt, Unit: "GB", Option: common.KvMap{"min": "1", "max": "100000000"}},
-		&metadata.ObjectAttDes{ObjectID: objID, PropertyID: "bk_mac", PropertyName: "内网MAC", IsRequired: false, IsOnly: false, PropertyGroup: groupAgent, PropertyType: common.FiledTypeSingleChar, Option: ""},
-		&metadata.ObjectAttDes{ObjectID: objID, PropertyID: "bk_lan_mask", PropertyName: "内网掩码", IsRequired: false, IsOnly: false, PropertyGroup: groupAgent, PropertyType: common.FiledTypeSingleChar, Option: ""},
-		&metadata.ObjectAttDes{ObjectID: objID, PropertyID: "bk_lan_gateway", PropertyName: "内网网关", IsRequired: false, IsOnly: false, PropertyGroup: groupAgent, PropertyType: common.FiledTypeSingleChar, Option: common.PatternIP},
-		&metadata.ObjectAttDes{ObjectID: objID, PropertyID: "bk_outer_mac", PropertyName: "外网MAC", IsRequired: false, IsOnly: false, PropertyGroup: groupAgent, PropertyType: common.FiledTypeSingleChar, Option: ""},
-		&metadata.ObjectAttDes{ObjectID: objID, PropertyID: "bk_outer_mask", PropertyName: "外网掩码", IsRequired: false, IsOnly: false, PropertyGroup: groupAgent, PropertyType: common.FiledTypeSingleChar, Option: ""},
-		&metadata.ObjectAttDes{ObjectID: objID, PropertyID: "bk_outer_gateway", PropertyName: "外网网关", IsRequired: false, IsOnly: false, PropertyGroup: groupAgent, PropertyType: common.FiledTypeSingleChar, Option: common.PatternIP},
-		&metadata.ObjectAttDes{ObjectID: objID, PropertyID: "bk_host_manageip", PropertyName: "带外IP", IsRequired: false, IsOnly: false, PropertyGroup: groupAgent, PropertyType: common.FiledTypeSingleChar, Option: common.PatternIP},
-		&metadata.ObjectAttDes{ObjectID: objID, PropertyID: "bk_manage_mask", PropertyName: "带外掩码", IsRequired: false, IsOnly: false, PropertyGroup: groupAgent, PropertyType: common.FiledTypeSingleChar, Option: ""},
-		&metadata.ObjectAttDes{ObjectID: objID, PropertyID: "bk_manage_gateway", PropertyName: "带外网关", IsRequired: false, IsOnly: false, PropertyGroup: groupAgent, PropertyType: common.FiledTypeSingleChar, Option: ""},
-		&metadata.ObjectAttDes{ObjectID: objID, PropertyID: "bk_manufacturer", PropertyName: "厂商", IsRequired: false, IsOnly: false, PropertyGroup: groupAgent, PropertyType: common.FiledTypeSingleChar, Option: ""},
-		&metadata.ObjectAttDes{ObjectID: objID, PropertyID: "bk_productName", PropertyName: "型号", IsRequired: false, IsOnly: false, PropertyGroup: groupAgent, PropertyType: common.FiledTypeSingleChar, Option: ""},
+		&metadata.ObjectAttDes{ObjectID: objID, PropertyID: "bk_host_name", PropertyName: "主机名称", IsRequired: false, IsOnly: false, PropertyGroup: groupAgent, PropertyType: common.FieldTypeSingleChar, Option: ""},
+		&metadata.ObjectAttDes{ObjectID: objID, PropertyID: common.BKOSTypeField, PropertyName: "操作系统类型", IsRequired: false, IsOnly: false, PropertyGroup: groupAgent, PropertyType: common.FieldTypeEnum, Option: []validator.EnumVal{{ID: "1", Name: "Linux", Type: "text"}, {ID: "2", Name: "Windows", Type: "text"}}},
+		&metadata.ObjectAttDes{ObjectID: objID, PropertyID: common.BKOSNameField, PropertyName: "操作系统名称", IsRequired: false, IsOnly: false, PropertyGroup: groupAgent, PropertyType: common.FieldTypeSingleChar, Option: ""},
+		&metadata.ObjectAttDes{ObjectID: objID, PropertyID: "bk_os_version", PropertyName: "操作系统版本", IsRequired: false, IsOnly: false, PropertyGroup: groupAgent, PropertyType: common.FieldTypeSingleChar, Option: ""},
+		&metadata.ObjectAttDes{ObjectID: objID, PropertyID: "bk_os_bit", PropertyName: "操作系统位数", IsRequired: false, IsOnly: false, PropertyGroup: groupAgent, PropertyType: common.FieldTypeSingleChar, Option: ""},
+		&metadata.ObjectAttDes{ObjectID: objID, PropertyID: "bk_cpu", PropertyName: "CPU逻辑核心数", IsRequired: false, IsOnly: false, PropertyGroup: groupAgent, PropertyType: common.FieldTypeInt, Option: common.KvMap{"min": "1", "max": "1000000"}},
+		&metadata.ObjectAttDes{ObjectID: objID, PropertyID: "bk_cpu_mhz", PropertyName: "CPU频率", IsRequired: false, IsOnly: false, PropertyGroup: groupAgent, PropertyType: common.FieldTypeInt, Unit: "Hz", Option: common.KvMap{"min": "1", "max": "100000000"}},
+		&metadata.ObjectAttDes{ObjectID: objID, PropertyID: "bk_cpu_module", PropertyName: "CPU型号", IsRequired: false, IsOnly: false, PropertyGroup: groupAgent, PropertyType: common.FieldTypeSingleChar, Option: ""},
+		&metadata.ObjectAttDes{ObjectID: objID, PropertyID: "bk_mem", PropertyName: "内存容量", IsRequired: false, IsOnly: false, PropertyGroup: groupAgent, PropertyType: common.FieldTypeInt, Unit: "MB", Option: common.KvMap{"min": "1", "max": "100000000"}},
+		&metadata.ObjectAttDes{ObjectID: objID, PropertyID: "bk_disk", PropertyName: "磁盘容量", IsRequired: false, IsOnly: false, PropertyGroup: groupAgent, PropertyType: common.FieldTypeInt, Unit: "GB", Option: common.KvMap{"min": "1", "max": "100000000"}},
+		&metadata.ObjectAttDes{ObjectID: objID, PropertyID: "bk_mac", PropertyName: "内网MAC", IsRequired: false, IsOnly: false, PropertyGroup: groupAgent, PropertyType: common.FieldTypeSingleChar, Option: ""},
+		&metadata.ObjectAttDes{ObjectID: objID, PropertyID: "bk_lan_mask", PropertyName: "内网掩码", IsRequired: false, IsOnly: false, PropertyGroup: groupAgent, PropertyType: common.FieldTypeSingleChar, Option: ""},
+		&metadata.ObjectAttDes{ObjectID: objID, PropertyID: "bk_lan_gateway", PropertyName: "内网网关", IsRequired: false, IsOnly: false, PropertyGroup: groupAgent, PropertyType: common.FieldTypeSingleChar, Option: common.PatternIP},
+		&metadata.ObjectAttDes{ObjectID: objID, PropertyID: "bk_outer_mac", PropertyName: "外网MAC", IsRequired: false, IsOnly: false, PropertyGroup: groupAgent, PropertyType: common.FieldTypeSingleChar, Option: ""},
+		&metadata.ObjectAttDes{ObjectID: objID, PropertyID: "bk_outer_mask", PropertyName: "外网掩码", IsRequired: false, IsOnly: false, PropertyGroup: groupAgent, PropertyType: common.FieldTypeSingleChar, Option: ""},
+		&metadata.ObjectAttDes{ObjectID: objID, PropertyID: "bk_outer_gateway", PropertyName: "外网网关", IsRequired: false, IsOnly: false, PropertyGroup: groupAgent, PropertyType: common.FieldTypeSingleChar, Option: common.PatternIP},
+		&metadata.ObjectAttDes{ObjectID: objID, PropertyID: "bk_host_manageip", PropertyName: "带外IP", IsRequired: false, IsOnly: false, PropertyGroup: groupAgent, PropertyType: common.FieldTypeSingleChar, Option: common.PatternIP},
+		&metadata.ObjectAttDes{ObjectID: objID, PropertyID: "bk_manage_mask", PropertyName: "带外掩码", IsRequired: false, IsOnly: false, PropertyGroup: groupAgent, PropertyType: common.FieldTypeSingleChar, Option: ""},
+		&metadata.ObjectAttDes{ObjectID: objID, PropertyID: "bk_manage_gateway", PropertyName: "带外网关", IsRequired: false, IsOnly: false, PropertyGroup: groupAgent, PropertyType: common.FieldTypeSingleChar, Option: ""},
+		&metadata.ObjectAttDes{ObjectID: objID, PropertyID: "bk_manufacturer", PropertyName: "厂商", IsRequired: false, IsOnly: false, PropertyGroup: groupAgent, PropertyType: common.FieldTypeSingleChar, Option: ""},
+		&metadata.ObjectAttDes{ObjectID: objID, PropertyID: "bk_productName", PropertyName: "型号", IsRequired: false, IsOnly: false, PropertyGroup: groupAgent, PropertyType: common.FieldTypeSingleChar, Option: ""},
 
 		//agent 没有分组
-		&metadata.ObjectAttDes{ObjectID: objID, PropertyID: common.CreateTimeField, PropertyName: "录入时间", IsRequired: false, IsOnly: false, Editable: false, PropertyGroup: groupBaseInfo, PropertyType: common.FiledTypeTime, Option: ""},
-		&metadata.ObjectAttDes{ObjectID: objID, PropertyID: "import_from", PropertyName: "录入方式", IsRequired: false, IsOnly: false, Editable: false, PropertyGroup: groupBaseInfo, PropertyType: common.FiledTypeEnum, Option: []validator.EnumVal{{ID: "1", Name: "excel", Type: "text"}, {ID: "2", Name: "agent", Type: "text"}, {ID: "3", Name: "api", Type: "text"}}},
-		&metadata.ObjectAttDes{ObjectID: objID, PropertyID: "bk_agent_version", PropertyName: "Agent版本", IsRequired: false, IsOnly: false, PropertyGroup: groupAgent, PropertyType: common.FiledTypeSingleChar, Option: ""},
-		&metadata.ObjectAttDes{ObjectID: objID, PropertyID: "bk_agent_status", PropertyName: "Agent状态", IsRequired: false, IsOnly: false, PropertyGroup: groupAgent, PropertyType: common.FiledTypeEnum, Option: []validator.EnumVal{{ID: "1", Name: "正常", Type: "text"}, {ID: "2", Name: "异常", Type: "text"}, {ID: "3", Name: "未安装", Type: "text"}}},
-		&metadata.ObjectAttDes{ObjectID: objID, PropertyID: "bk_agent_update_time", PropertyName: "Agent更新时间", IsRequired: false, IsOnly: false, Editable: false, PropertyGroup: groupAgent, PropertyType: common.FiledTypeTime, Option: ""},
+		&metadata.ObjectAttDes{ObjectID: objID, PropertyID: common.CreateTimeField, PropertyName: "录入时间", IsRequired: false, IsOnly: false, Editable: false, PropertyGroup: groupBaseInfo, PropertyType: common.FieldTypeTime, Option: ""},
+		&metadata.ObjectAttDes{ObjectID: objID, PropertyID: "import_from", PropertyName: "录入方式", IsRequired: false, IsOnly: false, Editable: false, PropertyGroup: groupBaseInfo, PropertyType: common.FieldTypeEnum, Option: []validator.EnumVal{{ID: "1", Name: "excel", Type: "text"}, {ID: "2", Name: "agent", Type: "text"}, {ID: "3", Name: "api", Type: "text"}}},
+		&metadata.ObjectAttDes{ObjectID: objID, PropertyID: "bk_agent_version", PropertyName: "Agent版本", IsRequired: false, IsOnly: false, PropertyGroup: groupAgent, PropertyType: common.FieldTypeSingleChar, Option: ""},
+		&metadata.ObjectAttDes{ObjectID: objID, PropertyID: "bk_agent_status", PropertyName: "Agent状态", IsRequired: false, IsOnly: false, PropertyGroup: groupAgent, PropertyType: common.FieldTypeEnum, Option: []validator.EnumVal{{ID: "1", Name: "正常", Type: "text"}, {ID: "2", Name: "异常", Type: "text"}, {ID: "3", Name: "未安装", Type: "text"}}},
+		&metadata.ObjectAttDes{ObjectID: objID, PropertyID: "bk_agent_update_time", PropertyName: "Agent更新时间", IsRequired: false, IsOnly: false, Editable: false, PropertyGroup: groupAgent, PropertyType: common.FieldTypeTime, Option: ""},
 	}
 
 	return dataRows
@@ -207,6 +207,68 @@ func ProcRow() []*metadata.ObjectAttDes {
 		&metadata.ObjectAttDes{ObjectID: objID, PropertyID: "pid_file", PropertyName: "PID文件路径", IsRequired: false, IsOnly: false, Editable: true, PropertyGroup: mCommon.GroupNone, PropertyType: common.FieldTypeLongChar, Option: ""},
 		&metadata.ObjectAttDes{ObjectID: objID, PropertyID: "auto_start", PropertyName: "是否自动拉起", IsRequired: false, IsOnly: false, Editable: true, PropertyGroup: mCommon.GroupNone, PropertyType: common.FieldTypeBool, Option: ""},
 		&metadata.ObjectAttDes{ObjectID: objID, PropertyID: "auto_time_gap", PropertyName: "拉起间隔", IsRequired: false, IsOnly: false, Editable: true, PropertyGroup: mCommon.GroupNone, PropertyType: common.FieldTypeInt, Option: common.KvMap{"min": "1", "max": "1000000"}},
+	}
+	return dataRows
+}
+
+// IdcRow app structure
+func IdcRow() []*metadata.ObjectAttDes {
+	objID := common.BKInnerObjIDIdc
+	dataRows := []*metadata.ObjectAttDes{
+		&metadata.ObjectAttDes{ObjectID: objID, PropertyID: "bk_idc_name", PropertyName: "机房", IsRequired: true, IsOnly: true, Editable: true, PropertyGroup: groupBaseInfo, PropertyType: common.FieldTypeSingleChar, Option: ""},
+		&metadata.ObjectAttDes{ObjectID: objID, PropertyID: "bk_idc_city_name", PropertyName: "城市", IsRequired: false, IsOnly: false, Editable: true, PropertyGroup: groupBaseInfo, PropertyType: common.FieldTypeSingleChar, Option: ""},
+		&metadata.ObjectAttDes{ObjectID: objID, PropertyID: "bk_idc_short_name", PropertyName: "机房简称", IsRequired: false, IsOnly: false, Editable: true, PropertyGroup: groupBaseInfo, PropertyType: common.FieldTypeSingleChar, Option: ""},
+		&metadata.ObjectAttDes{ObjectID: objID, PropertyID: "bk_idc_code", PropertyName: "机房代码", IsRequired: false, IsOnly: false, Editable: true, PropertyGroup: groupBaseInfo, PropertyType: common.FieldTypeSingleChar, Option: ""},
+		&metadata.ObjectAttDes{ObjectID: objID, PropertyID: "bk_iop_name", PropertyName: "运营商", IsRequired: false, IsOnly: false, Editable: true, PropertyGroup: groupBaseInfo, PropertyType: common.FieldTypeSingleChar, Option: ""},
+		&metadata.ObjectAttDes{ObjectID: objID, PropertyID: "bk_idc_operator", PropertyName: "负责人", IsRequired: true, IsOnly: false, Editable: true, PropertyGroup: groupBaseInfo, PropertyType: common.FieldTypeUser, Option: ""},
+		&metadata.ObjectAttDes{ObjectID: objID, PropertyID: "bk_idc_operator_tel", PropertyName: "负责人电话", IsRequired: false, IsOnly: false, Editable: true, PropertyGroup: groupBaseInfo, PropertyType: common.FieldTypeSingleChar, Option: ""},
+		&metadata.ObjectAttDes{ObjectID: objID, PropertyID: "bk_idc_memo", PropertyName: "备注", IsRequired: false, IsOnly: false, Editable: true, PropertyGroup: groupBaseInfo, PropertyType: common.FieldTypeSingleChar, Option: ""},
+	}
+	return dataRows
+
+}
+
+// RackRow set structure
+func RackRow() []*metadata.ObjectAttDes {
+	objID := common.BKInnerObjIDRack
+
+	dataRows := []*metadata.ObjectAttDes{
+		&metadata.ObjectAttDes{ObjectID: objID, PropertyID: "bk_idc_id", PropertyName: "机房ID", IsAPI: true, IsRequired: false, IsOnly: true, PropertyGroup: groupBaseInfo, PropertyType: common.FieldTypeInt, Option: common.KvMap{}},
+		&metadata.ObjectAttDes{ObjectID: objID, PropertyID: "bk_rack_name", PropertyName: "机架", IsRequired: true, IsOnly: false, Editable: true, PropertyGroup: groupBaseInfo, PropertyType: common.FieldTypeSingleChar, Option: ""},
+		&metadata.ObjectAttDes{ObjectID: objID, PropertyID: "bk_tor_name", PropertyName: "TOR分组", IsRequired: false, IsOnly: false, Editable: true, PropertyGroup: groupBaseInfo, PropertyType: common.FieldTypeSingleChar, Option: ""},
+		&metadata.ObjectAttDes{ObjectID: objID, PropertyID: "bk_rack_high", PropertyName: "机架高度", IsRequired: false, IsOnly: false, Editable: true, PropertyGroup: groupBaseInfo, PropertyType: common.FieldTypeSingleChar, Option: ""},
+		&metadata.ObjectAttDes{ObjectID: objID, PropertyID: "bk_rack_sn", PropertyName: "SP编号", IsRequired: false, IsOnly: false, Editable: true, PropertyGroup: groupBaseInfo, PropertyType: common.FieldTypeSingleChar, Option: ""},
+		&metadata.ObjectAttDes{ObjectID: objID, PropertyID: "bk_rack_power_type", PropertyName: "电路类型", IsRequired: false, IsOnly: false, Editable: true, PropertyGroup: groupBaseInfo, PropertyType: common.FieldTypeSingleChar, Option: ""},
+		&metadata.ObjectAttDes{ObjectID: objID, PropertyID: "bk_rack_electricity_type", PropertyName: "电流类型", IsRequired: false, IsOnly: false, Editable: true, PropertyGroup: groupBaseInfo, PropertyType: common.FieldTypeSingleChar, Option: ""},
+		&metadata.ObjectAttDes{ObjectID: objID, PropertyID: "bk_rack_rated_power", PropertyName: "可用功率", IsRequired: false, IsOnly: false, Editable: true, PropertyGroup: groupBaseInfo, PropertyType: common.FieldTypeSingleChar, Option: ""},
+		&metadata.ObjectAttDes{ObjectID: objID, PropertyID: "bk_rack_city_power", PropertyName: "市电", IsRequired: false, IsOnly: false, Editable: true, PropertyGroup: groupBaseInfo, PropertyType: common.FieldTypeSingleChar, Option: ""},
+		&metadata.ObjectAttDes{ObjectID: objID, PropertyID: "bk_rack_ratedi", PropertyName: "额定电流", IsRequired: false, IsOnly: false, Editable: true, PropertyGroup: groupBaseInfo, PropertyType: common.FieldTypeSingleChar, Option: ""},
+		&metadata.ObjectAttDes{ObjectID: objID, PropertyID: "bk_rack_maxi", PropertyName: "峰值电流", IsRequired: false, IsOnly: false, Editable: true, PropertyGroup: groupBaseInfo, PropertyType: common.FieldTypeSingleChar, Option: ""},
+		&metadata.ObjectAttDes{ObjectID: objID, PropertyID: "bk_rack_max_power", PropertyName: "峰值功率", IsRequired: false, IsOnly: false, Editable: true, PropertyGroup: groupBaseInfo, PropertyType: common.FieldTypeSingleChar, Option: ""},
+		&metadata.ObjectAttDes{ObjectID: objID, PropertyID: "bk_rack_usedi", PropertyName: "已用电流", IsRequired: false, IsOnly: false, Editable: true, PropertyGroup: groupBaseInfo, PropertyType: common.FieldTypeSingleChar, Option: ""},
+		&metadata.ObjectAttDes{ObjectID: objID, PropertyID: "bk_rack_used", PropertyName: "是否启用", IsRequired: false, IsOnly: false, Editable: true, PropertyGroup: groupBaseInfo, PropertyType: common.FieldTypeEnum, Option: []validator.EnumVal{{ID: "0", Name: "否", Type: "text"}, {ID: "1", Name: "是", Type: "text"}}},
+		&metadata.ObjectAttDes{ObjectID: objID, PropertyID: "bk_rack_power_open", PropertyName: "是否开电", IsRequired: false, IsOnly: false, Editable: true, PropertyGroup: groupBaseInfo, PropertyType: common.FieldTypeEnum, Option: []validator.EnumVal{{ID: "0", Name: "否", Type: "text"}, {ID: "1", Name: "是", Type: "text"}}},
+		&metadata.ObjectAttDes{ObjectID: objID, PropertyID: "bk_rack_use_time", PropertyName: "启用时间", IsRequired: false, IsOnly: false, Editable: true, PropertyGroup: groupBaseInfo, PropertyType: common.FieldTypeTime, Option: ""},
+		&metadata.ObjectAttDes{ObjectID: objID, PropertyID: "bk_rack_open_time", PropertyName: "开电时间", IsRequired: false, IsOnly: false, Editable: true, PropertyGroup: groupBaseInfo, PropertyType: common.FieldTypeTime, Option: ""},
+		&metadata.ObjectAttDes{ObjectID: objID, PropertyID: "bk_rack_memo", PropertyName: "备注", IsRequired: false, IsOnly: false, Editable: true, PropertyGroup: groupBaseInfo, PropertyType: common.FieldTypeSingleChar, Option: ""},
+	}
+	return dataRows
+}
+
+// PosRow module structure
+func PosRow() []*metadata.ObjectAttDes {
+	objID := common.BKInnerObjIDPos
+
+	dataRows := []*metadata.ObjectAttDes{
+		&metadata.ObjectAttDes{ObjectID: objID, PropertyID: "bk_idc_id", PropertyName: "机房ID", IsAPI: true, IsRequired: false, IsOnly: true, PropertyGroup: groupBaseInfo, PropertyType: common.FieldTypeInt, Option: common.KvMap{}},
+		&metadata.ObjectAttDes{ObjectID: objID, PropertyID: "bk_rack_id", PropertyName: "机架ID", IsAPI: true, IsRequired: false, IsOnly: true, PropertyGroup: groupBaseInfo, PropertyType: common.FieldTypeInt, Option: common.KvMap{}},
+		&metadata.ObjectAttDes{ObjectID: objID, PropertyID: "bk_pos_name", PropertyName: "机位", IsRequired: true, IsOnly: true, Editable: true, PropertyGroup: groupBaseInfo, PropertyType: common.FieldTypeSingleChar, Option: ""},
+		&metadata.ObjectAttDes{ObjectID: objID, PropertyID: "bk_pos_high", PropertyName: "机位高度", IsRequired: false, IsOnly: false, Editable: true, PropertyGroup: groupBaseInfo, PropertyType: common.FieldTypeSingleChar, Option: ""},
+		&metadata.ObjectAttDes{ObjectID: objID, PropertyID: "bk_pos_used", PropertyName: "是否启用", IsRequired: false, IsOnly: false, Editable: true, PropertyGroup: groupBaseInfo, PropertyType: common.FieldTypeEnum, Option: []validator.EnumVal{{ID: "0", Name: "否", Type: "text"}, {ID: "1", Name: "是", Type: "text"}}},
+		&metadata.ObjectAttDes{ObjectID: objID, PropertyID: "bk_pos_power_open", PropertyName: "是否开电", IsRequired: false, IsOnly: false, Editable: true, PropertyGroup: groupBaseInfo, PropertyType: common.FieldTypeEnum, Option: []validator.EnumVal{{ID: "0", Name: "否", Type: "text"}, {ID: "1", Name: "是", Type: "text"}}},
+		&metadata.ObjectAttDes{ObjectID: objID, PropertyID: "bk_pos_use_time", PropertyName: "启用时间", IsRequired: false, IsOnly: false, Editable: true, PropertyGroup: groupBaseInfo, PropertyType: common.FieldTypeTime, Option: ""},
+		&metadata.ObjectAttDes{ObjectID: objID, PropertyID: "bk_pos_open_time", PropertyName: "开电时间", IsRequired: false, IsOnly: false, Editable: true, PropertyGroup: groupBaseInfo, PropertyType: common.FieldTypeTime, Option: ""},
+		&metadata.ObjectAttDes{ObjectID: objID, PropertyID: "bk_pos_memo", PropertyName: "备注", IsRequired: false, IsOnly: false, Editable: true, PropertyGroup: groupBaseInfo, PropertyType: common.FieldTypeSingleChar, Option: ""},
 	}
 	return dataRows
 }
