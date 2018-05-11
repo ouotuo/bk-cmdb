@@ -259,7 +259,7 @@
         top:0;
         left:0;
         bottom:0;
-        z-index:1200;
+        z-index:1201;
         .slide-switch{
             transition: all .5s;
             padding:0 10px;
@@ -455,7 +455,9 @@
                 }
                 &:hover{
                     .nav-name{
+                        position: absolute;
                         background:#2f3c5d;
+                        width: 150px;
                     }
                 }
             }

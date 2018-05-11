@@ -32,11 +32,27 @@ var prc2port = []string{"java:java:8008,8443", "nginx:nginx:80", "php-fpm:php-fp
 	"zookeeper:java:2181", "kafka:java:9092", "elasticsearch:java:9300,10004", "beanstalkd:beanstalkd:6380", "influxdb:influxdb:5620,5621", "etcd:etcd:2379,2380", "consul:consul:8301,8300,8302,8500,53",
 	"jumpserver:jumpserver:8080",
 	"cmdb_adminserver:cmdb_adminserver:60004", "cmdb_apiserver:cmdb_apiserver:8080", "cmdb_auditcontroller:cmdb_auditcontroller:50005", "cmdb_datacollection:cmdb_datacollection:60005", "cmdb_eventserver:cmdb_eventserver:60009", "cmdb_hostcontroller:cmdb_hostcontroller:50002", "cmdb_hostserver:cmdb_hostserver:60001", "cmdb_objectcontroller:cmdb_objectcontroller:50001", "cmdb_proccontroller:cmdb_proccontroller:50003", "cmdb_procserver:cmdb_procserver:60003", "cmdb_toposerver:cmdb_toposerver:60002", "cmdb_webserver:cmdb_webserver:8083",
-	"falcon-transfer:falcon-transfer:6060,8433", "falcon-hbs:falcon-hbs:6031", "falcon-judge:falcon-judge:6081,6080", "falcon-graph:falcon-graph:6071,6070", "falcon-nodata:falcon-nodata:6090", "falcon-aggregator:falcon-aggregator:6055", "falcon-api:falcon-api:8070", "falcon-alarm:falcon-alarm:9912", "falcon-task:falcon-task:8002"}
+	"falcon-transfer:falcon-transfer:6060,8433", "falcon-hbs:falcon-hbs:6031", "falcon-judge:falcon-judge:6081,6080", "falcon-graph:falcon-graph:6071,6070", "falcon-nodata:falcon-nodata:6090", "falcon-aggregator:falcon-aggregator:6055", "falcon-api:falcon-api:8070", "falcon-alarm:falcon-alarm:9912", "falcon-task:falcon-task:8002",
+	"dockerd:dockerd:2375", "kube-apiserver:kube-apiserver:6443", "kube-controller-manager:kube-controller-manager:10252", "kube-scheduler:kube-scheduler:10251", "kubelet:kubelet:10250,10255,4194,10248", "kube-proxy:kube-proxy:10249", "etcd:etcd:2379,2380"}
 
-var setModuleKv = map[string]map[string]string{"CMDB配置管理": {"cmdb": "cmdb_adminserver,cmdb_apiserver,cmdb_auditcontroller,cmdb_datacollection,cmdb_eventserver,cmdb_hostcontroller,cmdb_hostserver,cmdb_objectcontroller,cmdb_proccontroller,cmdb_procserver,cmdb_toposerver,cmdb_webserver", "mongodb": "mongodb", "redis": "redis", "zookeeper": "zookeeper"},
-	"监控告警平台": {"falcon+": "falcon-transfer,falcon-hbs,falcon-judge,falcon-graph,falcon-nodata,falcon-aggregator,falcon-api,falcon-alarm,falcon-task", "mysql": "mysql", "redis": "redis"},
-	"跳板机":    {"jumpserver": "jumpserver"},
+var setModuleKv = map[string]map[string]string{"CMDB配置管理": {"cmdb_migrate": "cmdb_adminserver",
+	"cmdb_apiserver":        "cmdb_apiserver",
+	"cmdb_auditcontroller":  "cmdb_auditcontroller",
+	"cmdb_datacollection":   "cmdb_datacollection",
+	"cmdb_eventserver":      "cmdb_eventserver",
+	"cmdb_hostcontroller":   "cmdb_hostcontroller",
+	"cmdb_host":             "cmdb_hostserver",
+	"cmdb_objectcontroller": "cmdb_objectcontroller",
+	"cmdb_proccontroller":   "cmdb_proccontroller",
+	"cmdb_proc":             "cmdb_procserver",
+	"cmdb_topo":             "cmdb_toposerver",
+	"cmdb_webserver":        "cmdb_webserver",
+	"mongodb":               "mongodb",
+	"redis":                 "redis",
+	"zookeeper":             "zookeeper"},
+	"Falcon监控告警":   {"falcon+": "falcon-transfer,falcon-hbs,falcon-judge,falcon-graph,falcon-nodata,falcon-aggregator,falcon-api,falcon-alarm,falcon-task", "mysql": "mysql", "redis": "redis"},
+	"跳板机":          {"jumpserver": "jumpserver", "mysql": "mysql", "redis": "redis"},
+	"Kubernetes集群": {"kube-master": "kube-apiserver,kube-controller-manager,kube-scheduler", "kube-node": "kubelet,kube-proxy", "etcd": "etcd"},
 	"公共组件": {"mysql": "mysql", "redis": "redis", "redis_cluster": "redis_cluster", "zookeeper": "zookeeper", "kafka": "kafka", "elasticsearch": "elasticsearch",
 		"nginx": "nginx", "beanstalk": "beanstalkd", "influxdb": "influxdb", "etcd": "etcd", "consul": "consul"}}
 

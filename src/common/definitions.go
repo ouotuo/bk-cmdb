@@ -88,6 +88,15 @@ const (
 
 	// BKInnerObjIDPlat the inner object
 	BKInnerObjIDPlat = "plat"
+
+	// BKInnerObjIDIdc the inner object
+	BKInnerObjIDIdc = "idc"
+
+	// BKInnerObjIDRack the inner object
+	BKInnerObjIDRack = "rack"
+
+	// BKInnerObjIDPos the inner object
+	BKInnerObjIDPos = "pos"
 )
 
 // Revision
@@ -317,6 +326,9 @@ const (
 	// BKIsPre the ispre field
 	BKIsPre = "ispre"
 
+	// bkIsOnly the isonly field, is primary key
+	BKIsOnly = "isonly"
+
 	// BKIsIncrementField the isincrement field
 	BKIsIncrementField = "is_increment"
 
@@ -379,6 +391,9 @@ const (
 
 	// BKDescriptionField the description field
 	BKDescriptionField = "description"
+
+	// BKIsOnlyField the isonly name field
+	BKIsOnlyField = "isonly"
 )
 
 // DefaultResSetName the inner module set
@@ -506,6 +521,9 @@ const (
 	ExcelHeaderOtherRowFontColor = "000000"
 	// ExcelCellDefaultBorderColor black color
 	ExcelCellDefaultBorderColor = "D4D4D4"
+
+	// ExcelAsstPrimaryKeySplitChar split char
+	ExcelAsstPrimaryKeySplitChar = "##"
 )
 
 // table names

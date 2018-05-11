@@ -107,6 +107,12 @@ func getPropertyGroupData(ownerID string) []*metadata.PropertyGroup {
 
 		//plat
 		&metadata.PropertyGroup{ObjectID: common.BKInnerObjIDPlat, GroupID: mCommon.BaseInfo, GroupName: mCommon.BaseInfoName, GroupIndex: 1, OwnerID: ownerID, IsDefault: true},
+		//idc
+		&metadata.PropertyGroup{ObjectID: common.BKInnerObjIDIdc, GroupID: mCommon.BaseInfo, GroupName: mCommon.BaseInfoName, GroupIndex: 1, OwnerID: ownerID, IsDefault: true},
+		//rack
+		&metadata.PropertyGroup{ObjectID: common.BKInnerObjIDRack, GroupID: mCommon.BaseInfo, GroupName: mCommon.BaseInfoName, GroupIndex: 1, OwnerID: ownerID, IsDefault: true},
+		//pos
+		&metadata.PropertyGroup{ObjectID: common.BKInnerObjIDPos, GroupID: mCommon.BaseInfo, GroupName: mCommon.BaseInfoName, GroupIndex: 1, OwnerID: ownerID, IsDefault: true},
 	}
 	for objID, kv := range objectIDs {
 		//dataRows = append(dataRows, &metadata.PropertyGroup{ObjectID: objID, GroupID: "default", GroupName: "Default", GroupIndex: -1, OwnerID: ownerID, IsDefault: true})

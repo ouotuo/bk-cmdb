@@ -257,6 +257,7 @@ func (cc *ConfCenter) WriteConfs2Center(confRootPath string) error {
 	modules = append(modules, types.CC_MODULE_TOPO)
 	modules = append(modules, types.CC_MODULE_WEBSERVER)
 	modules = append(modules, types.CC_MODULE_EVENTSERVER)
+	modules = append(modules, types.CC_MODULE_IDC)
 
 	for _, moduleName := range modules {
 		filePath := confRootPath + "/" + moduleName + ".conf"

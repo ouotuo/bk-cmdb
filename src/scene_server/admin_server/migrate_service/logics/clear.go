@@ -43,6 +43,10 @@ var (
 		"cc_ObjDes",
 		"cc_PropertyGroup",
 		"cc_InstAsst",
+		"cc_IdcBase",
+		"cc_RackBase",
+		"cc_PosBase",
+		"cc_IdcHostConfig",
 	}
 )
 
