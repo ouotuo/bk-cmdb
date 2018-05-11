@@ -25,6 +25,7 @@ import (
 	"encoding/json"
 	"errors"
 	"fmt"
+
 	restful "github.com/emicklei/go-restful"
 
 	"time"
@@ -80,6 +81,7 @@ func AddHost(req *restful.Request, ownerID string, appID int, hostInfos map[int]
 	var logConents []auditoplog.AuditLogExt
 	hostLogFields, _ := GetHostLogFields(req, ownerID, ObjAddr)
 	for index, host := range hostInfos {
+		var subArea = iSubArea
 		if nil == host {
 			continue
 		}
@@ -89,6 +91,15 @@ func AddHost(req *restful.Request, ownerID string, appID int, hostInfos map[int]
 			errMsg = append(errMsg, langHandle.Languagef("host_import_innerip_empty", index))
 			continue
 		}
+
+		_, ok = host[common.BKCloudIDField]
+		if ok {
+			subArea, err = util.GetIntByInterface(host[common.BKCloudIDField])
+			if nil != err {
+				subArea = iSubArea
+			}
+		}
+
 		notExistFields := []string{} //没有赋值的key，不需要校验
 		for key, value := range defaultFields {
 			_, ok := host[key]
@@ -108,11 +119,11 @@ func AddHost(req *restful.Request, ownerID string, appID int, hostInfos map[int]
 
 		valid := validator.NewValidMapWithKeyFields(common.BKDefaultOwnerID, common.BKInnerObjIDHost, ObjAddr, notExistFields, forward, errHandle)
 
-		key := fmt.Sprintf("%s-%v", innerIP, iSubArea)
+		key := fmt.Sprintf("%s-%v", innerIP, subArea)
 		iHost, ok := hostMap[key]
 		//生产日志
 		if ok {
-			delete(host, common.BKCloudIDField)
+			//delete(host, common.BKCloudIDField)
 			delete(host, "import_from")
 			delete(host, common.CreateTimeField)
 			hostInfo := iHost.(map[string]interface{})
@@ -120,6 +131,7 @@ func AddHost(req *restful.Request, ownerID string, appID int, hostInfos map[int]
 			hostID, _ := util.GetIntByInterface(hostInfo[common.BKHostIDField])
 			_, err = valid.ValidMap(host, common.ValidUpdate, hostID)
 			if nil != err {
+				blog.Error("host valid error %v %v", index, err)
 				updateErrMsg = append(updateErrMsg, fmt.Sprintf("%d行%v", index, err))
 				continue
 			}
@@ -133,6 +145,7 @@ func AddHost(req *restful.Request, ownerID string, appID int, hostInfos map[int]
 			isSuccess, message, _ := GetHttpResult(req, uHostURL, common.HTTPUpdate, input)
 			innerIP := host[common.BKHostInnerIPField].(string)
 			if !isSuccess {
+				blog.Error("host update error %v %v", index, message)
 				updateErrMsg = append(updateErrMsg, langHandle.Languagef("host_import_update_fail", index, innerIP, message))
 				continue
 			}
@@ -140,7 +153,11 @@ func AddHost(req *restful.Request, ownerID string, appID int, hostInfos map[int]
 			logConents = append(logConents, auditoplog.AuditLogExt{ID: hostID, Content: logContent, ExtKey: innerIP})
 
 		} else {
-			host[common.BKCloudIDField] = iSubArea
+			_, ok := host[common.BKCloudIDField]
+			if false == ok {
+				host[common.BKCloudIDField] = iSubArea
+			}
+
 			host[common.CreateTimeField] = ts
 			//补充未填写字段的默认值
 			for key, val := range defaultFields {
