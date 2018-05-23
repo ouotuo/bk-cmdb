@@ -192,6 +192,47 @@ func GetHostLogFields(req *restful.Request, ownerID, objCtrl string) ([]metadata
 	return reResult, common.CCSuccess
 }
 
+
+//GetSwitchLogFields  get host fields
+func GetSwitchLogFields(req *restful.Request, ownerID, objCtrl string) ([]metadata.Header, int) {
+	gHostAttrURL := objCtrl + "/object/v1/meta/objectatts"
+	searchBody := make(map[string]interface{})
+	searchBody[common.BKObjIDField] = common.BKInnerObjIDSwitch
+	searchBody[common.BKOwnerIDField] = ownerID
+	searchJson, _ := json.Marshal(searchBody)
+	gHostAttrRe, err := httpcli.ReqHttp(req, gHostAttrURL, common.HTTPSelectPost, []byte(searchJson))
+	if nil != err {
+		blog.Error("GetHostDetailByID  attr error :%v", err)
+		return nil, common.CCErrCommHTTPDoRequestFailed
+	}
+
+	js, err := simplejson.NewJson([]byte(gHostAttrRe))
+	gHostAttr, _ := js.Map()
+	gAttrResult := gHostAttr["result"].(bool)
+	if false == gAttrResult {
+		blog.Error("GetHostDetailByID  attr error :%v", err)
+		//cli.ResponseFailed(common.CC_Err_Comm_Host_Get_FAIL, common.CC_Err_Comm_Host_Get_FAIL_STR, resp)
+		return nil, common.CCErrCommHTTPReadBodyFailed
+	}
+	hostAttrArr := gHostAttr["data"].([]interface{})
+	reResult := make([]metadata.Header, 0)
+	for _, i := range hostAttrArr {
+		attr := i.(map[string]interface{})
+		data := metadata.Header{}
+		propertyID := attr[common.BKPropertyIDField].(string)
+		if propertyID == common.BKChildStr {
+			continue
+		}
+		data.PropertyID = propertyID
+		data.PropertyName = attr[common.BKPropertyNameField].(string)
+
+		reResult = append(reResult, data)
+	}
+	return reResult, common.CCSuccess
+}
+
+
+
 func NewHostModuleConfigLog(req *restful.Request, instID []int, hostCtl, objCtrl, auditCtrl string) (*HostModuleConfigLog, error) {
 	h := &HostModuleConfigLog{
 		req:       req,

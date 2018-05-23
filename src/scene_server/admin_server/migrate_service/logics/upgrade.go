@@ -32,6 +32,7 @@ func upgradeGlobalization(db storage.DI) error {
 	presetRows = append(presetRows, data.ModuleRow()...)
 	presetRows = append(presetRows, data.PlatRow()...)
 	presetRows = append(presetRows, data.ProcRow()...)
+	presetRows = append(presetRows, data.SwitchRow()...)
 	presetRows = append(presetRows, data.SetRow()...)
 	presetRows = append(presetRows, data.IdcRow()...)
 	presetRows = append(presetRows, data.RackRow()...)

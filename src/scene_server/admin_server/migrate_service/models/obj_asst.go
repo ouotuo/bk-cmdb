@@ -60,6 +60,8 @@ func getAddAsstData(ownerID string) []*metadata.ObjectAsst {
 		&metadata.ObjectAsst{ObjectID: common.BKInnerObjIDModule, ObjectAttID: common.BKChildStr, AsstObjID: common.BKInnerObjIDSet},
 		&metadata.ObjectAsst{ObjectID: common.BKInnerObjIDHost, ObjectAttID: common.BKChildStr, AsstObjID: common.BKInnerObjIDModule},
 		&metadata.ObjectAsst{ObjectID: common.BKInnerObjIDHost, ObjectAttID: common.BKCloudIDField, AsstObjID: common.BKInnerObjIDPlat},
+		&metadata.ObjectAsst{ObjectID: common.BKInnerObjIDHost, ObjectAttID: common.BKHostManageIpField, AsstObjID: common.BKInnerObjIDSwitchHost},
+
 
 		&metadata.ObjectAsst{ObjectID: common.BKInnerObjIDRack, ObjectAttID: "bk_idc_id", AsstObjID: common.BKInnerObjIDIdc},
 		&metadata.ObjectAsst{ObjectID: common.BKInnerObjIDPos, ObjectAttID: "bk_rack_id", AsstObjID: common.BKInnerObjIDRack},

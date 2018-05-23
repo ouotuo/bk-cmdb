@@ -94,3 +94,4 @@ func (cli *hostAction) HostSearchWithAsstDetail(req *restful.Request, resp *rest
 		return http.StatusOK, reply, nil
 	}, resp)
 }
+

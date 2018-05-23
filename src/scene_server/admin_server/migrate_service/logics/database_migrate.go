@@ -27,6 +27,8 @@ import (
 	_ "configcenter/src/scene_server/admin_server/migrate_service/logics/topo"
 
 	_ "configcenter/src/scene_server/admin_server/migrate_service/logics/idc"
+	_ "configcenter/src/scene_server/admin_server/migrate_service/logics/switch"
+
 )
 
 func DBMigrate(ownerid string) error {

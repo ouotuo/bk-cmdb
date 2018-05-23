@@ -377,3 +377,100 @@ func EnterIP(req *restful.Request, ownerID string, appID, moduleID int, ip strin
 	return nil
 
 }
+
+//AddSwitch, return error info
+func AddSwitch(req *restful.Request, ownerID string, appID int, switchInfos map[int]map[string]interface{}, moduleID int, cc *api.APIResource) (error, []string, []string, []string) {
+	user := scenecommon.GetUserFromHeader(req)
+	hostAddr := cc.HostCtrl()
+	auditAddr := cc.AuditCtrl()
+	addSwitchURL := hostAddr + "/host/v1/switch/add"
+	updateSwitchURL := hostAddr + "/host/v1/switch/update"
+
+	language := util.GetActionLanguage(req)
+	langHandle := cc.Lang.CreateDefaultCCLanguageIf(language)
+
+	//获取已录入switch信息
+	allSwitchList, err := GetSwitchInfoByConds(req, hostAddr, nil, langHandle)
+	if nil != err {
+		return errors.New(langHandle.Language("switch_search_fail")), nil, nil, nil
+	}
+
+	//将所有switch信息 turns to map[stirng]interface{}形
+	switchMap := convertSwitchInfo(allSwitchList)
+	input := make(map[string]interface{}, 2)     //更新交换机数据
+	var errMsg, succMsg, updateErrMsg []string   //新加错误， 成功，  更新失败
+
+	//获取交换机mongo字段
+	//operator log
+	var logConents []auditoplog.AuditLogExt
+	//遍历上传的交换机信息
+	for index, host := range switchInfos {
+		if nil == host {
+			continue
+		}
+
+		ManageIp, ok := host[common.BKHostManageIpField].(string)
+		if ok == false || "" == ManageIp {
+			errMsg = append(errMsg, langHandle.Languagef("bk_host_manageip is empty", index))
+			continue
+		}
+
+		bindIP, ok := host[common.BKBindIpField].(string)
+		if ok == false || "" == bindIP {
+			errMsg = append(errMsg, langHandle.Languagef("bk_bind_ip is empty", index))
+			continue
+		}
+
+		key := fmt.Sprintf("%s-%v", ManageIp, bindIP)
+		//校验上传的交换机信息是否已存在
+		iHost, ok := switchMap[key]
+		//生产日志
+		if ok {   //更新
+			hostInfo := iHost.(map[string]interface{})
+			binpIP, _ := util.GetIntByInterface(hostInfo[common.BKBindIpField])
+			condition := map[string]interface{}{common.BKBindIpField: hostInfo[common.BKBindIpField]}
+			input["condition"] = condition
+			input["data"] = host
+			//update 交换机信息
+			isSuccess, message, _ := GetHttpResult(req, updateSwitchURL, common.HTTPCreate, input)
+			manageIP := host[common.BKHostManageIpField].(string)
+			if !isSuccess {
+				blog.Error("host update error %v %v", index, message)
+				updateErrMsg = append(updateErrMsg, langHandle.Languagef("host_import_update_fail", index, manageIP, message))
+				continue
+			}
+			logContent := "update manageIP :" +manageIP +"- bindIp :" + hostInfo[common.BKBindIpField].(string) + "Success"
+			logConents = append(logConents, auditoplog.AuditLogExt{ID: binpIP, Content: logContent, ExtKey: manageIP})
+		} else {  //重写create方法
+			isSuccess, message, retData := GetHttpResult(req, addSwitchURL, common.HTTPCreate, host)
+			if !isSuccess {
+				ip, _ := host["bk_bind_ip"].(string)
+				errMsg = append(errMsg, langHandle.Languagef("host_import_add_fail", index, ip, message))
+				continue
+			}
+			fmt.Println("retData is ",retData)
+			retHost := retData.(map[string]interface{})
+			bindID, _ := util.GetIntByInterface(retHost[common.BKBindIpField])
+
+			manageIP := host[common.BKHostManageIpField].(string)
+			logContent := "create manageIP :" +manageIP +"- bindIp :" + host["bk_bind_ip"].(string) + "Success"
+			logConents = append(logConents, auditoplog.AuditLogExt{ID: bindID, Content: logContent, ExtKey: manageIP})
+		}
+
+		succMsg = append(succMsg, fmt.Sprintf("%d", index))
+	}
+	if 0 < len(logConents) {
+		logAPIClient := sourceAuditAPI.NewClient(auditAddr)
+		_, err := logAPIClient.AuditHostsLog(logConents, "import switch", ownerID, fmt.Sprintf("%d", appID), user, auditoplog.AuditOpTypeAdd)
+		//addAuditLogs(req, logAdd, "新加主机", ownerID, appID, user, auditAddr)
+		if nil != err {
+			blog.Errorf("add audit log error %s", err.Error())
+		}
+	}
+
+	if 0 < len(errMsg) || 0 < len(updateErrMsg) {
+		return errors.New(langHandle.Language("host_import_err")), succMsg, updateErrMsg, errMsg
+	}
+
+	return nil, succMsg, updateErrMsg, errMsg
+}
