@@ -77,17 +77,6 @@
                                         </label>
                                     </span>
                                     <span class="model-authority-checkbox fl">
-                                        <label class="bk-form-checkbox bk-checkbox-small"
-                                            :for="'model-create-'+model['bk_obj_id']" 
-                                            :class="{'disabled': model.selectedAuthorities.indexOf('search') === -1}"
-                                            @click="updateGroupAuthorities">
-                                            <input type="checkbox" value='create' 
-                                                :id="'model-create-'+model['bk_obj_id']"
-                                                :disabled="model.selectedAuthorities.indexOf('search') === -1"
-                                                v-model="model.selectedAuthorities">{{$t('Common["新增"]')}}
-                                        </label>
-                                    </span>
-                                    <span class="model-authority-checkbox fl">
                                         <label class="bk-form-checkbox bk-checkbox-small" 
                                             :for="'model-update-'+model['bk_obj_id']" 
                                             :class="{'disabled': model.selectedAuthorities.indexOf('search') === -1}"
@@ -119,7 +108,10 @@
         <template v-else>
             <div class="user-none">
                 <img src="../../../common/images/user-none.png" :alt="$t('Permission[\'没有创建角色\']')">
-                <p>{{$t('Permission["没有创建角色"]')}}</p>
+                <p>
+                    {{$t('Permission["没有创建角色"]')}}
+                    <span class="btn" @click="changeTab">{{$t('Permission["点击新增"]')}}</span>
+                </p>
             </div>
         </template>
     </div>
@@ -128,6 +120,7 @@
 <script>
     import { mapGetters } from 'vuex'
     import Throttle from 'lodash.throttle'
+    import bus from '@/eventbus/bus'
     export default {
         props: {
             roles: {
@@ -177,9 +170,9 @@
         },
         computed: {
             ...mapGetters([
-                'allClassify',
                 'bkSupplierAccount'
             ]),
+            ...mapGetters('navigation', ['activeClassifications']),
             updateParams () {
                 let updateParams = {}
                 for (let config in this.sysConfig) {
@@ -227,7 +220,7 @@
                     this.localRoles.selected = ''
                 }
             },
-            allClassify () {
+            activeClassifications () {
                 // 查询分组权限接口先返回数据
                 // 获取到模型后要做一次初始化
                 if (this.groupAuthorities) {
@@ -241,6 +234,10 @@
             }
         },
         methods: {
+            changeTab () {
+                this.$emit('update:activeTabName', 'role')
+                bus.$emit('changePermissionTab')
+            },
             getGroupAuthorities (groupID) {
                 this.$axios.get(`topo/privilege/group/detail/${this.bkSupplierAccount}/${groupID}`).then((res) => {
                     if (res.result) {
@@ -283,29 +280,26 @@
             initClassifications () {
                 let classifications = []
                 let authorities = this.groupAuthorities
-                // debugger
-                this.allClassify.forEach((classify) => {
-                    if (classify['bk_objects']) {
-                        let models = []
-                        let classifyId = classify['bk_classification_id']
-                        if (this.hideClassify.indexOf(classifyId) === -1) {
-                            classify['bk_objects'].forEach((model) => {
-                                let selectedAuthorities = []
-                                if (authorities.hasOwnProperty('model_config') &&
-                                    authorities['model_config'].hasOwnProperty(classifyId) &&
-                                    authorities['model_config'][classifyId].hasOwnProperty(model['bk_obj_id'])
-                                ) {
-                                    selectedAuthorities = authorities['model_config'][classifyId][model['bk_obj_id']]
-                                }
-                                models.push(Object.assign({}, model, {selectedAuthorities}))
-                            })
-                            classifications.push({
-                                id: classify['bk_classification_id'],
-                                name: classify['bk_classification_name'],
-                                open: true,
-                                models: models
-                            })
-                        }
+                this.activeClassifications.forEach((classify) => {
+                    let models = []
+                    let classifyId = classify['bk_classification_id']
+                    if (this.hideClassify.indexOf(classifyId) === -1) {
+                        classify['bk_objects'].forEach((model) => {
+                            let selectedAuthorities = []
+                            if (authorities.hasOwnProperty('model_config') &&
+                                authorities['model_config'].hasOwnProperty(classifyId) &&
+                                authorities['model_config'][classifyId].hasOwnProperty(model['bk_obj_id'])
+                            ) {
+                                selectedAuthorities = authorities['model_config'][classifyId][model['bk_obj_id']]
+                            }
+                            models.push(Object.assign({}, model, {selectedAuthorities}))
+                        })
+                        classifications.push({
+                            id: classify['bk_classification_id'],
+                            name: classify['bk_classification_name'],
+                            open: true,
+                            models: models
+                        })
                     }
                 })
                 this.classifications = classifications
@@ -314,7 +308,7 @@
             checkAllModelAuthorities (classifyIndex, modelIndex, event) {
                 let model = this.classifications[classifyIndex]['models'][modelIndex]
                 if (event.target.checked) {
-                    model.selectedAuthorities = ['search', 'create', 'update', 'delete']
+                    model.selectedAuthorities = ['search', 'update', 'delete']
                 } else {
                     model.selectedAuthorities = []
                 }
@@ -490,11 +484,14 @@
         left: 50%;
         transform: translate(-50%, -50%);
         color: $primaryColor;
-        width: 180px;
         margin: 0 auto;
         text-align: center;
         img{
             width: 180px;
+        }
+        span{
+            color: #3c96ff;
+            cursor: pointer;
         }
     }
 </style>

@@ -11,6 +11,7 @@
 <template>
     <div class="attribute-wrapper">
         <template v-if="displayType === 'list'">
+            <slot name="list"></slot>
             <template v-for="propertyGroup in groupOrder" v-if="bkPropertyGroups.hasOwnProperty(propertyGroup)">
                 <div class="attribute-group" v-show="!(propertyGroup === 'none' && isNoneGroupHide)">
                     <h3 class="title">{{propertyGroup === 'none' ? $t("Common['更多属性']") : bkPropertyGroups[propertyGroup]['bkPropertyGroupName']}}</h3>
@@ -18,11 +19,11 @@
                         <template v-for="(property, propertyIndex) in bkPropertyGroups[propertyGroup]['properties']">
                             <li class="attribute-item fl" v-if="!property['bk_isapi']" :key="propertyIndex">
                                 <template v-if="property['bk_property_type'] !== 'bool'">
-                                    <span class="attribute-item-label">{{property['bk_property_name']}} :</span>
+                                    <span class="attribute-item-label has-colon" :title="property['bk_property_name']">{{property['bk_property_name']}}</span>
                                     <span class="attribute-item-value" :title="getFieldValue(property)">{{getFieldValue(property)}}</span>
                                 </template>
                                 <template v-else>
-                                    <span class="attribute-item-label">{{property['bk_property_name']}}</span>
+                                    <span class="attribute-item-label" :title="property['bk_property_name']">{{property['bk_property_name']}}</span>
                                     <span class="attribute-item-value bk-form-checkbox">
                                         <input type="checkbox" :checked="getFieldValue(property)" disabled>
                                     </span>
@@ -102,7 +103,7 @@
                                                     </input>
                                                 </span>
                                                 <input type="text" class="bk-form-input" v-else-if="property['bk_property_type'] === 'int'"
-                                                    :disabled="checkIsFieldDisabled(property)"
+                                                    :disabled="checkIsFieldDisabled(property)" maxlength="11" 
                                                     v-model.trim.number="localValues[property['bk_property_id']]">
                                                 <input v-else
                                                     type="text" class="bk-form-input"
@@ -136,7 +137,7 @@
                 <button v-if="type==='update' && showDelete && !isMultipleUpdate" class="bk-button del-btn" @click.prevent="deleteObject" :disabled="unauthorized.delete">{{$t("Common['删除']")}}</button>
             </div>
             <div class="attribute-btn-group" v-else-if="!isMultipleUpdate || isMultipleUpdate && hasEditableProperties">
-                <bk-button type="primary" v-if="type==='create'" class="main-btn" @click.prevent="submit" :disabled="errors.any() || !Object.keys(formData).length || unauthorized.create">{{$t("Common['保存']")}}</bk-button>
+                <bk-button type="primary" v-if="type==='create'" class="main-btn" @click.prevent="submit" :disabled="errors.any() || !Object.keys(formData).length || unauthorized.update">{{$t("Common['保存']")}}</bk-button>
                 <bk-button type="primary" v-if="type==='update'" class="main-btn" @click.prevent="submit" :disabled="errors.any() || !Object.keys(formData).length || unauthorized.update">{{$t("Common['保存']")}}</bk-button>
                 <bk-button type="default" v-if="type==='update'" class="vice-btn" @click.prevent="changeDisplayType('list')">{{$t("Common['取消']")}}</bk-button>
             </div>
@@ -302,6 +303,7 @@
                         }
                     }
                 }
+                
                 return formData
             }
         },
@@ -361,6 +363,54 @@
             }
         },
         methods: {
+            isCloseConfirmShow () {
+                let isConfirmShow = false
+                if (this.displayType === 'list') {
+                    return false
+                }
+                if (this.type === 'create') {
+                    for (let key in this.formData) {
+                        let property = this.formFields.find(({bk_property_type: bkPropertyType, bk_property_id: bkPropertyId}) => {
+                            return bkPropertyId === key
+                        })
+                        if (property['bk_property_type'] === 'enum') {
+                            let isDefault = property.option.find(({id}) => {
+                                return id === this.formData[key]
+                            })['is_default']
+                            if (!isDefault) {
+                                isConfirmShow = true
+                                break
+                            }
+                        } else {
+                            if (this.formData[key].length) {
+                                isConfirmShow = true
+                                break
+                            }
+                        }
+                    }
+                } else {
+                    for (let key in this.formData) {
+                        let property = this.formFields.find(({bk_property_type: bkPropertyType, bk_property_id: bkPropertyId}) => {
+                            return bkPropertyId === key
+                        })
+                        let value = this.formValues[key]
+                        if (property['bk_property_type'] === 'singleasst' || property['bk_property_type'] === 'multiasst') {
+                            value = []
+                            if (this.formValues.hasOwnProperty(key)) {
+                                this.formValues[key].map(formValue => {
+                                    value.push(formValue['bk_inst_id'])
+                                })
+                            }
+                            value = value.join(',')
+                        }
+                        if (value !== this.formData[key] && !(this.formData[key] === '' && !this.formValues.hasOwnProperty(key))) {
+                            isConfirmShow = true
+                            break
+                        }
+                    }
+                }
+                return isConfirmShow
+            },
             confirmHost (hostInfo) {
                 this.hideSelectHost()
             },
@@ -459,7 +509,9 @@
                     bk_property_type: bkPropertyType,
                     editable
                 } = property
-                if (this.isMultipleUpdate && bkPropertyType !== 'bool') {
+                if (bkPropertyId === 'bk_biz_name' && this.formValues[bkPropertyId] === '蓝鲸') {
+                    return true
+                } else if (this.isMultipleUpdate && bkPropertyType !== 'bool') {
                     return !this.multipleEditableFields[bkPropertyId]
                 } else if (this.type === 'create') {
                     return false
@@ -583,21 +635,30 @@
             margin: 12px 0 0 0;
             white-space: nowrap;
             .attribute-item-label{
-                width: 100px;
-                // color: #737987;
-                color: #6b7baa;
+                width: 116px;
+                color: #737987;
+                // color: #6b7baa;
                 text-align: right;
                 display: inline-block;
                 overflow: hidden;
                 text-overflow: ellipsis;
                 margin-right: 10px;
+                padding-right: 6px;
+                position: relative;
+                &.has-colon:after{
+                    content: ":";
+                    position: absolute;
+                    right: 0;
+                    top: 0;
+                    line-height: 14px;
+                }
             }
             .attribute-item-value{
-                max-width: 230px;
+                max-width: 250px;
                 display: inline-block;
                 overflow: hidden;
                 text-overflow: ellipsis;
-                color: #4d597d;
+                color: #333948;
             }
             .attribute-item-value.bk-form-checkbox{
                 padding: 0;
@@ -646,6 +707,7 @@
                 width: 310px;
                 white-space: normal;
                 position: relative;
+                color: #333948;
                 .bk-date{
                     width: 100%;
                 }

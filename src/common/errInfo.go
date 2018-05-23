@@ -124,6 +124,12 @@ const (
 	// CCErrCommParams should be string
 	CCErrCommParamsShouldBeString = 1199032
 
+	// CCErrCommSearchPropertyFailed get object property fields error
+	CCErrCommSearchPropertyFailed = 1199033
+
+	// CCErrCommParamsShouldBeEnum set enum
+	CCErrCommParamsShouldBeEnum = 1199034
+
 	// apiserver 1100XXX
 
 	// toposerver 1101XXX
@@ -241,6 +247,9 @@ const (
 	CCErrTopoUserPrivilegeSelectFailed             = 1001047
 	CCErrTopoRolePrivilegeCreateFailed             = 1001048
 	CCErrTopoDeleteMainLineObjectAndInstNameRepeat = 1001049
+	CCErrHostNotAllowedToMutiBiz                   = 1001050
+	CCErrTopoGraphicsSearchFailed                  = 1001051
+	CCErrTopoGraphicsUpdateFailed                  = 1001052
 
 	CCErrTopoMulueIDNotfoundFailed = 1101080
 	CCErrTopoBkAppNotAllowedDelete = 1101081

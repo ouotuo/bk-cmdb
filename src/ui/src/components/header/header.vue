@@ -10,9 +10,10 @@
 
 <template lang="html">
     <div class="header-wrapper clearfix">
+        <i class="bk-icon icon-dedent" :class="{'close': fold}" @click="closeNav"></i>
         <div class="header-right-contain fr">
             <!-- 导航快速搜索 -->
-            <div class="fl clearfix" v-click-outside="resetSearch">
+            <div class="fl clearfix" v-click-outside="resetSearch" hidden>
                 <transition name="quick-search" @afterEnter="quickSearchTextFocus">
                     <div class="quick-search-contain fl"  v-show="isShowQuickSearch">
                         <div class="dropdown-content-ip fl" 
@@ -50,15 +51,9 @@
             <div class="user-detail-contain fr pr">
                 <div class="dropdown-content-user fl">
                     <div class="select-trigger">
-                        <span class="f14">{{userName}}</span>
+                        <span class="f14">{{isAdmin == 1 ? userName + '（' + $t("Common['管理员']") + '）' : userName}}</span>
                         <i class="bk-icon icon-angle-down"></i>
                         <ul class="select-content">
-                            <li v-if="isAdmin == 1">
-                                <i class="icon-cc-user"></i>{{$t("Common['管理员']")}}
-                            </li>
-                            <li v-else>
-                                <i class="icon-cc-user"></i>{{$t("Common['普通用户']")}}
-                            </li>
                             <li @click="logOut">
                                 <i class="icon-cc-logout"></i>{{$t("Common['注销']")}}
                             </li>
@@ -91,7 +86,7 @@
             }
         },
         computed: {
-            ...mapGetters(['quickSearchParams'])
+            ...mapGetters('navigation', ['fold'])
         },
         watch: {
             searchText (searchText) {
@@ -127,7 +122,7 @@
             quickSearch () {
                 if (this.searchText.length) {
                     bus.$emit('quickSearch')
-                    this.$router.push('/')
+                    this.$router.push('/hosts')
                 }
             },
             showQuickSearch () {
@@ -151,6 +146,9 @@
                     this.languageLable = 'EN'
                     this.setLang('en')
                 }
+            },
+            closeNav () {
+                this.$store.commit('navigation/setFold', !this.fold)
             }
         },
         updated () {
@@ -187,11 +185,11 @@
         border-bottom: 1px solid $borderColor;
         padding:7px 20px 0 11px;
         font-size: 14px;
-        position: fixed;
-        width: 100%;
+        position: absolute;
+        left: 0;
         top: 0;
+        width: 100%;
         z-index: 1200;
-        min-width: 1024px;
         .header-right-contain{
             .select-trigger-box{
                 top: 0;
@@ -406,5 +404,15 @@
     .quick-search-enter,
     .quick-search-leave-to{
         transform: scaleX(0);
+    }
+    .icon-dedent{
+        display: inline-block;
+        font-size: 16px;
+        color: $textColor;
+        margin: 9px 0 0 0;
+        cursor: pointer;
+        &.close{
+            transform: rotate(180deg);
+        }
     }
 </style>

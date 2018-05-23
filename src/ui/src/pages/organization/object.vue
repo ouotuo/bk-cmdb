@@ -20,18 +20,18 @@
                             <span>{{$t("ModelManagement['导出']")}}</span>
                         </button>
                     </form>
-                    <button class="bk-button" @click="importSlider.isShow = true" :disabled="unauthorized.create && unauthorized.update">
+                    <button class="bk-button" @click="importSlider.isShow = true" :disabled="unauthorized.update">
                         <i class="icon-cc-import"></i>
                         <span>{{$t("ModelManagement['导入']")}}</span>
                     </button>
                 </template>
-                <button class="bk-button bk-primary bk-button-componey create-btn" @click="openObjectSlider('create')" :disabled="unauthorized.create">{{$t("Inst['立即创建']")}}</button>
+                <button class="bk-button bk-primary bk-button-componey create-btn" @click="openObjectSlider('create')" :disabled="unauthorized.update">{{$t("Inst['立即创建']")}}</button>
             </div>
             <div class="fr btn-group">
-                <button class="bk-button setting" @click="filing.isShow = true" :title="$t('Common[\'查看删除历史\']')">
+                <button class="bk-button setting" @click="filing.isShow = true" v-tooltip="$t('Common[\'查看删除历史\']')">
                     <i class="icon-cc-history"></i>
                 </button>
-                <button class="bk-button setting" @click="settingSlider.isShow = true">
+                <button class="bk-button setting" @click="settingSlider.isShow = true" v-tooltip="$t('BusinessTopology[\'列表显示属性配置\']')">
                     <i class="icon-cc-setting"></i>
                 </button>
             </div>
@@ -47,7 +47,7 @@
                     </bk-select>
                 </div>
                 <template v-if="filter.type === 'enum'">
-                    <bk-select class="search-options fl" :selected.sync="filter.value" @on-selected="doFilter">
+                    <bk-select class="search-options fl" :selected.sync="filter.value" @on-selected="doFilter" :showClear="true">
                         <bk-select-option v-for="option in getEnumOptions()"
                             :key="option.id"
                             :value="option.id"
@@ -56,7 +56,7 @@
                     </bk-select>
                 </template>
                 <template v-else>
-                    <input v-if="filter.type === 'int'" type="text" class="bk-form-input search-text int" 
+                    <input v-if="filter.type === 'int'" type="text" maxlength="11" class="bk-form-input search-text int" 
                     :placeholder="$t('Common[\'快速查询\']')" v-model.number="filter.value" @keyup.enter="doFilter">
                     <input v-else type="text" class="bk-form-input search-text" :placeholder="$t('Common[\'快速查询\']')" v-model.trim="filter.value" @keyup.enter="doFilter">
                     <i class="bk-icon icon-search" @click="doFilter"></i>
@@ -65,33 +65,43 @@
         </div>
         <div class="table-contain">
             <v-object-table
-                :tableHeader="table.header" 
-                :tableList="table.list" 
+                :header="table.header" 
+                :list="table.list" 
                 :pagination="table.pagination"
                 :defaultSort="table.defaultSort"
-                :chooseId.sync="table.chooseId"
+                :checked.sync="table.chooseId"
+                :wrapperMinusHeight="150"
+                :loading="table.loading"
                 @handleRowClick="editObject"
-                @handleTableSortClick="setTableSort"
-                @handlePageTurning="setTablePage"
-                @handlePageSizeChange="setTableSize"
-                @handleTableAllCheck="getAllObjectId">
-                    <template v-for="({property,id,name}, index) in table.header" :slot="id" slot-scope="{ item }" 
-                    v-if="(property.hasOwnProperty('bk_asst_obj_id') && property['bk_asst_obj_id'] !== '') || property['bk_property_type'] === 'enum'">
-                        <td v-if="property['bk_property_type'] === 'enum'">{{getEnumCell(item[id], property)}}</td>
-                        <td v-else>{{getAssociateCell(item[id])}}</td>
+                @handleSortChange="setTableSort"
+                @handlePageChange="setTablePage"
+                @handleSizeChange="setTableSize"
+                @handleCheckAll="getAllObjectId">
+                <template v-for="({property, id}, index) in table.header.filter(head => head.type !== 'checkbox')" :slot="id" slot-scope="{item}">
+                    <template v-if="!!property['bk_asst_obj_id']">
+                        {{getAssociateCell(item[id])}}
                     </template>
+                    <template v-else-if="property['bk_property_type'] === 'enum'">
+                        {{getEnumCell(item[id], property)}}
+                    </template>
+                    <template v-else>{{item[id]}}</template>
+                </template>
             </v-object-table>
             <v-sideslider
                 :isShow.sync="slider.isShow"
                 :hasQuickClose="true"
+                :hasCloseConfirm="true"
+                :isCloseConfirmShow="slider.isCloseConfirmShow"
                 :title="slider.title"
-                @closeSlider="closeObjectSlider">
+                @closeSlider="closeObjectSliderConfirm">
                 <div class="slide-content" slot="content">
                     <bk-tab :active-name="tab.activeName" style="border: none;" @tab-changed="tabChanged">
                         <bk-tabpanel name="attr" :title="$t('Common[\'属性\']')">
                             <v-object-attr 
+                                ref="attribute"
                                 :formFields="attr.formFields" 
-                                :formValues="attr.formValues" 
+                                :formValues="attr.formValues"
+                                :showDelete="isShowDelete"
                                 :type="attr.type"
                                 :active="slider.isShow && tab.activeName === 'attr'"
                                 :objId="objId"
@@ -156,7 +166,7 @@
     import vImport from '@/components/import/import'
     import vSideslider from '@/components/slider/sideslider'
     import vConfigField from './children/configField'
-    import vDeleteHistory from '@/components/deleteHistory/deleteHistory'
+    import vDeleteHistory from '@/components/history/delete'
     export default {
         mixins: [Authority],
         data () {
@@ -172,6 +182,7 @@
                 filterList: [],
                 // 表格数据
                 table: {
+                    loading: false,
                     header: [],
                     list: [],
                     chooseId: [],
@@ -180,7 +191,7 @@
                         size: 10,
                         current: 1
                     },
-                    defaultSort: '-bk_biz_id',
+                    defaultSort: '-bk_inst_id',
                     sort: ''
                 },
                 filing: {
@@ -189,6 +200,7 @@
                 // 侧滑状态
                 slider: {
                     isShow: false,
+                    isCloseConfirmShow: false,
                     title: {
                         icon: '',
                         text: ''
@@ -217,10 +229,10 @@
         },
         computed: {
             ...mapGetters([
-                'allClassify',
                 'bkSupplierAccount',
                 'usercustom'
             ]),
+            ...mapGetters('navigation', ['activeClassifications']),
             // 当前路由对应的模型ID
             objId () {
                 return this.$route.params.objId
@@ -228,16 +240,17 @@
             // 当前路由对应的模型名称
             objName () {
                 let objName = ''
-                this.allClassify.map(classify => {
-                    if (classify['bk_objects'] && classify['bk_objects'].length) {
-                        classify['bk_objects'].map(model => {
-                            if (model['bk_obj_id'] === this.objId) {
-                                objName = model['bk_obj_name']
-                            }
-                        })
-                    }
+                this.activeClassifications.map(classify => {
+                    classify['bk_objects'].map(model => {
+                        if (model['bk_obj_id'] === this.objId) {
+                            objName = model['bk_obj_name']
+                        }
+                    })
                 })
                 return objName
+            },
+            isShowDelete () {
+                return !(this.objId === 'biz' && this.attr.formValues['bk_biz_name'] === '蓝鲸')
             },
             // 表格查询需要的参数
             axiosConfig () {
@@ -249,20 +262,39 @@
                             limit: this.table.pagination.size,
                             sort: this.table.sort ? this.table.sort : this.table.defaultSort
                         },
-                        fields: [],
+                        fields: this.objId === 'biz' ? [] : {},
                         condition: {}
                     }
                 }
                 if (this.objId === 'biz') {
                     config.url = `biz/search/${this.bkSupplierAccount}`
                 } else {
-                    config.url = `inst/search/${this.bkSupplierAccount}/${this.objId}`
+                    config.url = `inst/association/search/owner/${this.bkSupplierAccount}/object/${this.objId}`
                 }
                 if (this.filter.selected && this.filter.value !== '') {
                     if (this.filter.type === 'bool' && ['true', 'false'].includes(this.filter.value)) {
                         config.params.condition[this.filter.selected] = this.filter.value === 'true'
                     } else {
-                        config.params.condition[this.filter.selected] = this.filter.value
+                        if (this.filter.type === 'singleasst' || this.filter.type === 'multiasst') {
+                            let bkAsstObjId = this.getProperty(this.filter.selected)['bk_asst_obj_id']
+                            config.params.condition[bkAsstObjId] = [{
+                                field: 'bk_inst_name',
+                                operator: '$regex',
+                                value: this.filter.value
+                            }]
+                        } else if (this.filter.type === 'bool') {
+                            config.params.condition[this.objId] = [{
+                                field: this.filter.selected,
+                                operator: '$eq',
+                                value: ['true', 'false'].includes(this.filter.value) ? this.filter.value === 'true' : this.filter.value
+                            }]
+                        } else {
+                            config.params.condition[this.objId] = [{
+                                field: this.filter.selected,
+                                operator: this.filter.type === 'enum' ? '$eq' : '$regex',
+                                value: this.filter.value
+                            }]
+                        }
                     }
                 }
                 return config
@@ -280,7 +312,11 @@
                 return this.filterList.filter(({id}) => {
                     let property = this.getProperty(id)
                     if (property) {
-                        return property['bk_property_type'] !== 'singleasst' && property['bk_property_type'] !== 'multiasst'
+                        if (this.objId === 'biz') {
+                            return property['bk_property_type'] !== 'singleasst' && property['bk_property_type'] !== 'multiasst'
+                        } else {
+                            return property['bk_asst_obj_id'] !== 'biz'
+                        }
                     }
                     return false
                 })
@@ -317,11 +353,19 @@
                     })
                 }
             },
+            'slider.isShow' (isShow) {
+                if (!isShow) {
+                    this.closeObjectSlider()
+                }
+            },
             'filter.selected' () {
                 this.filter.value = ''
             }
         },
         methods: {
+            closeObjectSliderConfirm () {
+                this.slider.isCloseConfirmShow = this.$refs.attribute.isCloseConfirmShow()
+            },
             getProperty (id) {
                 return this.attr.formFields.find(({bk_property_id: bkPropertyId}) => bkPropertyId === id)
             },
@@ -459,6 +503,7 @@
                             headerLead.unshift({
                                 id: 'bk_inst_id',
                                 name: 'ID',
+                                width: 50,
                                 type: 'checkbox',
                                 property: {}
                             })
@@ -482,13 +527,14 @@
             },
             // 获取表格列表
             getTableList () {
+                this.table.loading = true
                 return this.$axios.post(this.axiosConfig.url, this.axiosConfig.params).then(res => {
                     let data = {
                         count: 0,
                         info: []
                     }
                     if (res.result) {
-                        data.count = res.data.count
+                        data.count = res.data.count || 0
                         data.info = res.data.info || []
                     } else {
                         this.$alertMsg(res['bk_error_msg'])
@@ -500,12 +546,17 @@
                     if (e.response && e.response.status === 403) {
                         this.$alertMsg(this.$t("Inst['您没有当前模型的权限']"))
                     }
+                }).finally(() => {
+                    this.table.loading = false
                 })
             },
             getAllObjectId (isAllCheck) {
                 if (isAllCheck) {
+                    this.table.loading = true
                     let idKey = this.objId === 'biz' ? 'bk_biz_id' : 'bk_inst_id'
-                    this.$axios.post(this.axiosConfig.url, {fields: [idKey]}).then(res => {
+                    const params = this.objId === 'biz' ? {fields: [idKey]} : {fields: {}}
+                    this.objId === 'biz' ? void 0 : params.fields[this.objId] = [idKey]
+                    this.$axios.post(this.axiosConfig.url, params).then(res => {
                         if (res.result) {
                             let chooseId = []
                             res.data.info.map(attr => {
@@ -515,6 +566,8 @@
                         } else {
                             this.$alertMsg(res['bk_error_msg'])
                         }
+                    }).finally(() => {
+                        this.table.loading = false
                     })
                 } else {
                     this.table.chooseId = []
@@ -588,6 +641,7 @@
                     if (res.result) {
                         this.setTablePage(1)
                         this.closeObjectSlider()
+                        this.table.chooseId = this.table.chooseId.filter(id => id !== (this.objId === 'biz' ? bizId : instId))
                     } else {
                         this.$alertMsg(res['bk_error_msg'])
                     }

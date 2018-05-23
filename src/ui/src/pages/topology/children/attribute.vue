@@ -9,7 +9,7 @@
                         </label>
                         <div class="attribute-item-field fl" :style="{zIndex: attribute[bkObjId].length - index}">
                             <input v-if="property['bk_property_type'] === 'int'" 
-                                type="text" class="bk-form-input"
+                                type="text" maxlength="11" class="bk-form-input"
                                 :disabled="!property['editable']"
                                 v-model.number="localValues[property['bk_property_id']]">
                             <v-member-selector v-else-if="property['bk_property_type'] === 'objuser'"
@@ -80,7 +80,7 @@
         </ul>
         <div class="attribute-btn">
             <bk-button type="primary" class="bk-button main-btn" @click="doSubmit" :disabled="errors.any()" v-if="displayType === 'form'">{{$t('Common[\'保存\']')}}</bk-button>
-            <bk-button type="primary" class="bk-button main-btn" @click="toggleDisplayType('form')" v-if="displayType === 'list'">{{$t('Common[\'编辑\']')}}</bk-button>
+            <bk-button type="primary" class="bk-button main-btn" @click="toggleDisplayType('form')" v-if="editable && displayType === 'list'">{{$t('Common[\'编辑\']')}}</bk-button>
             <bk-button type="default" class="bk-button vice-btn cancel-btn" @click="toggleDisplayType('list')" v-if="type === 'update' && displayType === 'form'">{{$t('Common[\'取消\']')}}</bk-button>
             <bk-button type="default" class="bk-button vice-btn cancel-btn" @click="cancelCreate" v-if="type === 'create'">{{$t('Common[\'取消\']')}}</bk-button>
             <button class="del-btn" @click="doDelete" v-if="type === 'update' && displayType === 'form'">{{$t('Common[\'删除\']')}}</button>
@@ -100,6 +100,10 @@
             bkBizId: Number,
             activeNode: Object,
             activeParentNode: Object,
+            editable: {
+                type: Boolean,
+                default: true
+            },
             type: {
                 type: String,
                 default: 'create'
@@ -184,6 +188,38 @@
             }
         },
         methods: {
+            isCloseConfirmShow () {
+                let isConfirmShow = false
+                if (this.displayType === 'list') {
+                    return false
+                }
+                if (this.type === 'create') {
+                    isConfirmShow = Object.values(this.localValues).some(val => {
+                        return val.length
+                    })
+                } else {
+                    for (let key in this.localValues) {
+                        let property = this.attribute[this.bkObjId].find(({bk_property_type: bkPropertyType, bk_property_id: bkPropertyId}) => {
+                            return bkPropertyId === key
+                        })
+                        let value = this.formValues[key]
+                        if (property['bk_property_type'] === 'singleasst' || property['bk_property_type'] === 'multiasst') {
+                            value = []
+                            if (this.formValues.hasOwnProperty(key)) {
+                                this.formValues[key].map(formValue => {
+                                    value.push(formValue['bk_inst_id'])
+                                })
+                            }
+                            value = value.join(',')
+                        }
+                        if (value !== this.localValues[key] && !(this.localValues[key] === '' && !this.formValues.hasOwnProperty(key))) {
+                            isConfirmShow = true
+                            break
+                        }
+                    }
+                }
+                return isConfirmShow
+            },
             toggleDisplayType (displayType) {
                 this.displayType = displayType
             },
@@ -385,7 +421,6 @@
             }
             .attribute-item-field{
                 width: 460px;
-                height: 36px;
                 line-height: 36px;
                 position: relative;
                 &.list{

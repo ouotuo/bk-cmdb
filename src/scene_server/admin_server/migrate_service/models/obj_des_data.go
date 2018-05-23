@@ -86,6 +86,7 @@ func AlterObjDesTable(tableName string, metaCli dbStorage.DI) error {
 func getObjectDesData(ownerID string) []*metadata.ObjectDes {
 
 	dataRows := []*metadata.ObjectDes{
+
 		&metadata.ObjectDes{ObjCls: "bk_host_manage", ObjectID: common.BKInnerObjIDHost, ObjectName: "主机", ObjIcon: "icon-cc-host"},
 		&metadata.ObjectDes{ObjCls: "bk_biz_topo", ObjectID: common.BKInnerObjIDModule, ObjectName: "模块", ObjIcon: "icon-cc-module"},
 		&metadata.ObjectDes{ObjCls: "bk_biz_topo", ObjectID: common.BKInnerObjIDSet, ObjectName: "集群", ObjIcon: "icon-cc-set"},
@@ -95,6 +96,21 @@ func getObjectDesData(ownerID string) []*metadata.ObjectDes {
 		&metadata.ObjectDes{ObjCls: "bk_idc", ObjectID: common.BKInnerObjIDIdc, ObjectName: "机房", ObjIcon: "icon-cc-idc"},
 		&metadata.ObjectDes{ObjCls: "bk_idc", ObjectID: common.BKInnerObjIDRack, ObjectName: "机架", ObjIcon: "icon-cc-engine-room"},
 		&metadata.ObjectDes{ObjCls: "bk_idc", ObjectID: common.BKInnerObjIDPos, ObjectName: "机位", ObjIcon: "icon-cc-equipment"},
+
+		&metadata.ObjectDes{ObjCls: "bk_host_manage", ObjectID: common.BKInnerObjIDHost, ObjectName: "主机", IsPre: true, ObjIcon: "icon-cc-host", Position: `{"bk_host_manage":{"x":-600,"y":-650}}`},
+		&metadata.ObjectDes{ObjCls: "bk_biz_topo", ObjectID: common.BKInnerObjIDModule, ObjectName: "模块", IsPre: true, ObjIcon: "icon-cc-module", Position: ``},
+		&metadata.ObjectDes{ObjCls: "bk_biz_topo", ObjectID: common.BKInnerObjIDSet, ObjectName: "集群", IsPre: true, ObjIcon: "icon-cc-set", Position: ``},
+		&metadata.ObjectDes{ObjCls: "bk_organization", ObjectID: common.BKInnerObjIDApp, ObjectName: "业务", IsPre: true, ObjIcon: "icon-cc-business", Position: `{"bk_organization":{"x":-100,"y":-100}}`},
+		&metadata.ObjectDes{ObjCls: "bk_host_manage", ObjectID: common.BKInnerObjIDProc, ObjectName: "进程", IsPre: true, ObjIcon: "icon-cc-process", Position: `{"bk_host_manage":{"x":-450,"y":-650}}`},
+		&metadata.ObjectDes{ObjCls: "bk_host_manage", ObjectID: common.BKInnerObjIDPlat, ObjectName: "子网区域", IsPre: true, ObjIcon: "icon-cc-subnet", Position: `{"bk_host_manage":{"x":-600,"y":-500}}`},
+		&metadata.ObjectDes{ObjCls: "bk_network", ObjectID: common.BKInnerObjIDSwitch, ObjectName: "交换机", ObjIcon: "icon-cc-switch2", Position: `{"bk_network":{"x":-200,"y":-50}}`},
+		&metadata.ObjectDes{ObjCls: "bk_network", ObjectID: common.BKInnerObjIDRouter, ObjectName: "路由器", ObjIcon: "icon-cc-router", Position: `{"bk_network":{"x":-350,"y":-50}}`},
+		&metadata.ObjectDes{ObjCls: "bk_network", ObjectID: common.BKInnerObjIDBlance, ObjectName: "防火墙", ObjIcon: "icon-cc-balance", Position: `{"bk_network":{"x":-500,"y":-50}}`},
+		&metadata.ObjectDes{ObjCls: "bk_network", ObjectID: common.BKInnerObjIDFirewall, ObjectName: "负载均衡", ObjIcon: "icon-cc-firewall", Position: `{"bk_network":{"x":-650,"y":-50}}`},
+
+		&metadata.ObjectDes{ObjCls: "bk_middleware", ObjectID: common.BKInnerObjIDWeblogic, ObjectName: "weblogic", ObjIcon: "icon-cc-weblogic", Position: `{"bk_middleware":{"x":-200,"y":-50}}`},
+		&metadata.ObjectDes{ObjCls: "bk_middleware", ObjectID: common.BKInnerObjIDApache, ObjectName: "apache", ObjIcon: "icon-cc-tomcat", Position: `{"bk_middleware":{"x":-500,"y":-50}}`},
+		&metadata.ObjectDes{ObjCls: "bk_middleware", ObjectID: common.BKInnerObjIDTomcat, ObjectName: "tomcat", ObjIcon: "icon-cc-apache", Position: `{"bk_middleware":{"x":-350,"y":-50}}`},
 	}
 	t := new(time.Time)
 	*t = time.Now()
@@ -102,7 +118,6 @@ func getObjectDesData(ownerID string) []*metadata.ObjectDes {
 		r.CreateTime = t
 		r.LastTime = t
 		r.IsPaused = false
-		r.IsPre = true
 		r.Creator = common.CCSystemOperatorUserName
 		r.OwnerID = ownerID
 		r.Description = ""

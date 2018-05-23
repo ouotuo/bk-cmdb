@@ -97,6 +97,21 @@ const (
 
 	// BKInnerObjIDPos the inner object
 	BKInnerObjIDPos = "pos"
+
+	// BKInnerObjIDSwitch the inner object
+	BKInnerObjIDSwitch = "bk_switch"
+	// BKInnerObjIDRouter the inner object
+	BKInnerObjIDRouter = "bk_router"
+	// BKInnerObjIDBlance the inner object
+	BKInnerObjIDBlance = "bk_load_balance"
+	// BKInnerObjIDFirewall the inner object
+	BKInnerObjIDFirewall = "bk_firewall"
+	// BKInnerObjIDWeblogic the inner object
+	BKInnerObjIDWeblogic = "bk_weblogic"
+	// BKInnerObjIDTomcat the inner object
+	BKInnerObjIDTomcat = "bk_tomcat"
+	// BKInnerObjIDApache the inner object
+	BKInnerObjIDApache = "bk_apache"
 )
 
 // Revision
@@ -122,6 +137,20 @@ const (
 	// BKDBNE the db operator
 	BKDBNE = "$ne"
 
+	// BKDBNIN the db oeprator
+	BKDBNIN = "$nin"
+
+	// BKDBLT the db operator
+	BKDBLT = "$lt"
+
+	// BKDBLTE the db operator
+	BKDBLTE = "$lte"
+
+	// BKDBGT the db operator
+	BKDBGT = "$gt"
+
+	// BKDBGTE the db opeartor
+	BKDBGTE = "$gte"
 	// BKDBSortFieldSep the db sort field split char
 	BKDBSortFieldSep = ","
 )
@@ -509,21 +538,41 @@ const (
 	// HostAddMethodExcelIndexOffset the height of the table header
 	HostAddMethodExcelIndexOffset = 3
 
+	/*EXCEL color AARRGGBB :
+	AA means Alpha
+	RRGGBB means Red, in hex.
+	GG means Red, in hex.
+	BB means Red, in hex.
+	*/
+
 	// ExcelHeaderFirstRowColor cell bg color
-	ExcelHeaderFirstRowColor = "92D050"
+	ExcelHeaderFirstRowColor = "FF92D050"
 	// ExcelHeaderFirstRowFontColor  font color
-	ExcelHeaderFirstRowFontColor = "000000"
+	ExcelHeaderFirstRowFontColor = "00000000"
 	// ExcelHeaderFirstRowRequireFontColor require font color
-	ExcelHeaderFirstRowRequireFontColor = "FF0000"
+	ExcelHeaderFirstRowRequireFontColor = "FFFF0000"
 	// ExcelHeaderOtherRowColor cell bg color
-	ExcelHeaderOtherRowColor = "C6EFCE"
+	ExcelHeaderOtherRowColor = "FFC6EFCE"
 	// ExcelHeaderOtherRowFontColor font color
-	ExcelHeaderOtherRowFontColor = "000000"
+	ExcelHeaderOtherRowFontColor = "FF000000"
 	// ExcelCellDefaultBorderColor black color
-	ExcelCellDefaultBorderColor = "D4D4D4"
+	ExcelCellDefaultBorderColor = "FFD4D4D4"
 
 	// ExcelAsstPrimaryKeySplitChar split char
 	ExcelAsstPrimaryKeySplitChar = "##"
+	// ExcelAsstPrimaryKeyRowChar split char
+	ExcelAsstPrimaryKeyRowChar = "\n"
+
+	// ExcelDelAsstObjectRelation delete asst object relation
+	ExcelDelAsstObjectRelation = "/"
+
+	// ExcelDataValidationListLen excel dropdown list item count
+	ExcelDataValidationListLen = 50
+)
+
+const (
+	// InputTypeExcel  data from excel
+	InputTypeExcel = "excel"
 )
 
 // table names
@@ -627,6 +676,11 @@ const (
 	HostOSTypeEnumWindows = "2"
 )
 
+const (
+	// InstAsstIDSplit instance associated fields, separators between mulitple ids of associated objects
+	InstAsstIDSplit = ","
+)
+
 // integer const
 const (
 	MaxUint64 = ^uint64(0)
@@ -638,3 +692,8 @@ const (
 	MaxInt    = int(MaxUint >> 1)
 	MinInt    = -MaxInt - 1
 )
+
+//flag
+const HostCrossBizField = "hostcrossbiz"
+const HostCrossBizValue = "e76fd4d1683d163e4e7e79cef45a74c1"
+const SystemTableName = "cc_System"

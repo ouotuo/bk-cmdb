@@ -117,10 +117,14 @@ func getIndex() map[string][]storage.Index {
 	}
 	index["cc_Subscription"] = []storage.Index{
 		storage.Index{Name: "", Columns: []string{"subscription_id"}, Type: storage.INDEX_TYPE_BACKGROUP},
-	}
+	} 
 	index["cc_IdcBase"] = []storage.Index{
 		storage.Index{Name: "", Columns: []string{"bk_idc_id"}, Type: storage.INDEX_TYPE_BACKGROUP},
 		storage.Index{Name: "", Columns: []string{"bk_idc_name"}, Type: storage.INDEX_TYPE_BACKGROUP},
+ 
+	index["cc_TopoGraphics"] = []storage.Index{
+		storage.Index{Name: "", Columns: []string{"scope_type", "scope_id", "node_type", "bk_obj_id", "bk_inst_id"}, Type: storage.INDEX_TYPE_BACKGROUP_UNIQUE},
+ 
 	}
 
 	index["cc_RackBase"] = []storage.Index{

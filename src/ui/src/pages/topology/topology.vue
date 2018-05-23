@@ -2,7 +2,7 @@
     <div class="topo-wrapper clearfix">
         <div class="topo-tree-ctn fl">
             <div class="biz-selector-ctn">
-                <v-application-selector :selected.sync="tree.bkBizId"></v-application-selector>
+                <v-application-selector :selected.sync="tree.bkBizId" @on-selected="handleBizSelected"></v-application-selector>
             </div>
             <div class="topo-options-ctn" hidden>
                 <i class="topo-option-del icon-cc-del fr" v-if="isShowOptionDel && Object.keys(tree.treeData).length" @click="deleteNode"></i>
@@ -21,9 +21,14 @@
         <div class="topo-view-ctn">
             <bk-tab :active-name="view.tab.active" @tab-changed="tabChanged" class="topo-view-tab">
                 <bk-tabpanel name="host" :title="$t('BusinessTopology[\'主机调配\']')">
-                    <v-index ref="index" :outerParams="searchParams" :isShowRefresh="true" :outerLoading="tree.loading">
+                    <v-hosts ref="hosts"
+                        :outerParams="searchParams"
+                        :isShowRefresh="true"
+                        :outerLoading="tree.loading"
+                        :isShowCrossImport="authority['is_host_cross_biz'] && attributeBkObjId === 'module'"
+                        @handleCrossImport="handleCrossImport">
                         <div slot="filter"></div>
-                    </v-index>
+                    </v-hosts>
                 </bk-tabpanel>
                 <bk-tabpanel name="attribute" :title="$t('BusinessTopology[\'节点属性\']')" :show="isShowAttribute">
                     <v-attribute ref="topoAttribute"
@@ -35,25 +40,36 @@
                         :type="view.attribute.type"
                         :active="view.tab.active === 'attribute'"
                         :isLoading="view.attribute.isLoading"
+                        :editable="tree.bkBizName !== '蓝鲸'"
                         @submit="submitNode"
                         @delete="deleteNode"
                         @cancel="cancelCreate"></v-attribute>
                 </bk-tabpanel>
             </bk-tab>
         </div>
+        <bk-dialog :is-show.sync="view.crossImport.isShow" :quick-close="false" :has-header="false" :has-footer="false" :width="700" :padding="0">
+            <v-cross-import  slot="content"
+                :is-show.sync="view.crossImport.isShow"
+                :bizId="tree.bkBizId"
+                :moduleId="tree.activeNode['bk_inst_id']"
+                @handleCrossImportSuccess="setSearchParams">
+            </v-cross-import>
+        </bk-dialog>
     </div>
 </template>
 <script>
     import vApplicationSelector from '@/components/common/selector/application'
     import vTree from '@/components/tree/tree.v2'
-    import vIndex from '@/pages/index/index'
+    import vHosts from '@/pages/hosts/hosts'
     import vAttribute from './children/attribute'
+    import vCrossImport from './children/crossImport'
     import { mapGetters } from 'vuex'
     export default {
         data () {
             return {
                 tree: {
                     bkBizId: -1,
+                    bkBizName: '',
                     treeData: {},
                     model: [],
                     activeNode: {},
@@ -69,6 +85,9 @@
                         type: 'update',
                         formValues: {},
                         isLoading: true
+                    },
+                    crossImport: {
+                        isShow: false
                     }
                 },
                 nodeToggleRecord: {},
@@ -77,6 +96,7 @@
         },
         computed: {
             ...mapGetters(['bkSupplierAccount']),
+            ...mapGetters('navigation', ['authority']),
             /* 获取当前属性表单对应的属性obj_id */
             attributeBkObjId () {
                 let bkObjId
@@ -154,6 +174,9 @@
             }
         },
         methods: {
+            handleBizSelected (data) {
+                this.tree.bkBizName = data.label
+            },
             /* 获取最大展开层级 */
             getLevel (node) {
                 let level = node.level
@@ -346,7 +369,8 @@
             /* 删除拓扑节点 */
             deleteNode () {
                 this.$bkInfo({
-                    title: `${this.$t('Common[\'确定删除\']')}${this.tree.activeNode['bk_inst_name']}?`,
+                    title: `${this.$t('Common[\'确定删除\']')} ${this.tree.activeNode['bk_inst_name']}?`,
+                    content: `${this.$t('Common[\'下属层级都会被删除，请先转移其下所有的主机\']')}`,
                     confirmFn: () => {
                         let url
                         let {
@@ -381,7 +405,7 @@
             },
             /* 点击节点，设置查询参数 */
             handleNodeClick (activeNode, activeParentNode) {
-                this.$refs.index.clearChooseId()
+                this.$refs.hosts.clearChooseId()
                 this.tree.activeNode = activeNode
                 this.tree.activeParentNode = activeParentNode
                 this.view.attribute.type = 'update'
@@ -446,15 +470,55 @@
                 })
                 this.searchParams = params
             },
+            handleCrossImport () {
+                this.view.crossImport.isShow = true
+            },
             tabChanged (active) {
-                this.view.tab.active = active
-                this.view.attribute.formValues = {}
+                if (active === this.view.tab.active) {
+                    return
+                }
                 if (active === 'host') {
-                    this.view.attribute.type = 'update'
+                    let isConfirmShow = this.$refs.topoAttribute.isCloseConfirmShow()
+                    if (isConfirmShow) {
+                        this.$bkInfo({
+                            title: this.$t('Common["退出会导致未保存信息丢失，是否确认？"]'),
+                            confirmFn: () => {
+                                this.view.tab.active = active
+                                this.view.attribute.formValues = {}
+                                if (active === 'host') {
+                                    this.view.attribute.type = 'update'
+                                }
+                            }
+                        })
+                    } else {
+                        this.view.tab.active = active
+                        this.view.attribute.formValues = {}
+                        if (active === 'host') {
+                            this.view.attribute.type = 'update'
+                        }
+                    }
+                } else {
+                    this.view.tab.active = active
+                    this.view.attribute.formValues = {}
+                    if (active === 'host') {
+                        this.view.attribute.type = 'update'
+                    }
                 }
             },
             cancelCreate () {
                 this.tabChanged('host')
+            }
+        },
+        beforeRouteLeave (to, from, next) {
+            if (this.$refs.topoAttribute.isCloseConfirmShow()) {
+                this.$bkInfo({
+                    title: this.$t('Common["退出会导致未保存信息丢失，是否确认？"]'),
+                    confirmFn: () => {
+                        next(true)
+                    }
+                })
+            } else {
+                next(true)
             }
         },
         created () {
@@ -463,7 +527,8 @@
         components: {
             vApplicationSelector,
             vTree,
-            vIndex,
+            vCrossImport,
+            vHosts,
             vAttribute
         }
     }
@@ -475,6 +540,7 @@
             width: 280px;
             height: 100%;
             border-right: 1px solid #e7e9ef;
+            background: #fafbfd;
         }
         .topo-view-ctn{
             height: 100%;

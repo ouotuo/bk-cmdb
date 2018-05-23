@@ -10,17 +10,18 @@
 
 <template lang="html">
     <v-table class="module-table"
-        :tableHeader="table.header"
-        :tableList="table.list"
-        :isLoading="table.isLoading"
-        :maxHeight="table.maxHeight"
+        :header="table.header"
+        :list="table.list"
+        :loading="table.isLoading"
+        :width="754"
+        :wrapperMinusHeight="150"
         :sortable="false">
-        <td slot="is_bind" slot-scope="{ item }">
+        <template slot="is_bind" slot-scope="{ item }">
             <button @click="changeBinding(item)" 
                 :class="item['is_bind'] ? 'main-btn' : 'vice-btn'">
                 {{item['is_bind'] ? $t("ProcessManagement['已绑定']") : $t("ProcessManagement['未绑定']")}}
             </button>
-        </td>
+        </template>
     </v-table>
 </template>
 
@@ -60,7 +61,9 @@
         },
         watch: {
             bkProcessId (bkProcessId) {
-                this.getModuleList()
+                if (bkProcessId) {
+                    this.getModuleList()
+                }
             }
         },
         methods: {
@@ -70,7 +73,7 @@
                     this.$axios.put(`proc/module/${this.bkSupplierAccount}/${this.bkBizId}/${this.bkProcessId}/${moduleName}`).then((res) => {
                         if (res.result) {
                             this.$alertMsg(this.$t("ProcessManagement['绑定进程到该模块成功']"), 'success')
-                            this.getModuleList()
+                            item['is_bind'] = 1
                         } else {
                             this.$alertMsg(this.$t("ProcessManagement['绑定进程到该模块失败']"))
                         }
@@ -79,7 +82,7 @@
                     this.$axios.delete(`proc/module/${this.bkSupplierAccount}/${this.bkBizId}/${this.bkProcessId}/${moduleName}`).then(res => {
                         if (res.result) {
                             this.$alertMsg(this.$t("ProcessManagement['解绑进程模块成功']"), 'success')
-                            this.getModuleList()
+                            item['is_bind'] = 0
                         } else {
                             this.$alertMsg(this.$t("ProcessManagement['解绑进程模块失败']"))
                         }
@@ -90,7 +93,7 @@
                 this.isLoading = true
                 this.$axios.get(`proc/module/${this.bkSupplierAccount}/${this.bkBizId}/${this.bkProcessId}`).then((res) => {
                     if (res.result) {
-                        this.table.list = res.data
+                        this.table.list = this.sortModule(res.data)
                     } else {
                         this.$alertMsg(res['bk_error_msg'])
                     }
@@ -99,6 +102,20 @@
                 }).catch(() => {
                     this.isLoading = false
                 })
+            },
+            sortModule (data) {
+                let bindedModule = []
+                let unbindModule = []
+                data.forEach(module => {
+                    module['is_bind'] ? bindedModule.push(module) : unbindModule.push(module)
+                })
+                bindedModule.sort((moduleA, moduleB) => {
+                    return moduleA['bk_module_name'].localeCompare(moduleB['bk_module_name'])
+                })
+                unbindModule.sort((moduleA, moduleB) => {
+                    return moduleA['bk_module_name'].localeCompare(moduleB['bk_module_name'])
+                })
+                return [...bindedModule, ...unbindModule]
             },
             calcMaxHeight () {
                 this.table.maxHeight = document.body.getBoundingClientRect().height - 160
@@ -111,7 +128,7 @@
 </script>
 <style lang="scss" scoped>
     .module-table{
-        padding: 20px 0 0 0;
+        margin: 20px 0 0 0;
         .btn{
             width: 52px;
             height: 25px;
