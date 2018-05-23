@@ -17,13 +17,13 @@ import (
 	"configcenter/src/common/blog"
 	"configcenter/src/common/core/cc/api"
 	"configcenter/src/common/core/cc/wactions"
-	"configcenter/src/common/http/httpclient"
-	"encoding/json"
 	"fmt"
 
 	"github.com/gin-gonic/contrib/sessions"
 
 	"github.com/gin-gonic/gin"
+	"gopkg.in/ldap.v2"
+	"strings"
 )
 
 func init() {
@@ -31,11 +31,50 @@ func init() {
 	wactions.RegisterNewAction(wactions.Action{common.HTTPUpdate, "/user/language/:language", nil, UpdateUserLanguage})
 
 }
+type userResult struct {
+	Message string      `json:"message"`
+	Data    interface{} `json:"data"`
+	Code    string      `json:"code"`
+	Result  bool        `json:"result"`
+}
+func GetUserByLDAP(ladpIp string,baseDN string,ldapPort string,bindDN string,bindPasswd string) []map[string]interface{}{
+	l, err := ldap.Dial("tcp", fmt.Sprintf("%s:%s", ladpIp, ldapPort))
+	if err != nil {
+		return []map[string]interface{}{}
+	}
+	res:=[]map[string]interface{}{}
+	err = l.Bind(bindDN, bindPasswd)
+	if err != nil {
+		return []map[string]interface{}{}
+	}
+	searchRequest := ldap.NewSearchRequest(
+		baseDN, // The base dn to search
+		ldap.ScopeSingleLevel, ldap.NeverDerefAliases, 0, 0, false,
+		"(&(objectClass=inetOrgPerson))",                                                        // The filter to apply
+		[]string{"dn", "cn", "sn", "mail", "mobile", "uniqueMember", "objectClass"}, // A list attributes to retrieve
+		nil,
+	)
+	sr, err := l.Search(searchRequest)
 
+	blog.Info("len Entries %s",len(sr.Entries))
+	for _, entry := range sr.Entries {
+		blog.Info(entry.DN)
+		cellData := make(map[string]interface{})
+		username := entry.GetAttributeValue("cn") + "." + entry.GetAttributeValue("sn")
+		nikiname := strings.Split(entry.GetAttributeValue("mail"), "@")[0]
+		cellData["chinese_name"] = username
+		cellData["english_name"] = nikiname
+		res=append(res,cellData)
+	}
+	defer l.Close()
+	return res
+
+}
 //GetUserList get user list
 func GetUserList(c *gin.Context) {
 	session := sessions.Default(c)
 	skiplogin := session.Get("skiplogin")
+	blog.Info("skiplogin %s", skiplogin)
 	skiplogins, ok := skiplogin.(string)
 	if ok && "1" == skiplogins {
 		admindata := make([]interface{}, 0)
@@ -54,70 +93,12 @@ func GetUserList(c *gin.Context) {
 
 	a := api.NewAPIResource()
 	config, _ := a.ParseConfig()
-	accountURL := config["site.bk_account_url"]
-
-	token := session.Get("bk_token")
-	getURL := fmt.Sprintf(accountURL, token)
-	blog.Info("get user list url：%s", getURL)
-	httpClient := httpclient.NewHttpClient()
-	type userResult struct {
-		Message string      `json:"message"`
-		Data    interface{} `json:"data"`
-		Code    string      `json:"code"`
-		Result  bool        `json:"result"`
-	}
-	reply, err := httpClient.GET(getURL, nil, nil)
-	if nil != err {
-		blog.Error("get user list error：%v", err)
-		c.JSON(200, gin.H{
-			"result":        false,
-			"bk_error_msg":  "get user list false",
-			"bk_error_code": "",
-			"data":          nil,
-		})
-		return
-	}
-	blog.Info("get user list return：%s", reply)
-	var result userResult
-	err = json.Unmarshal([]byte(reply), &result)
-	if nil != err || false == result.Result {
-		c.JSON(200, gin.H{
-			"result":        false,
-			"bk_error_msg":  "get user list false",
-			"bk_error_code": "",
-			"data":          nil,
-		})
-		return
-	}
-	data, ok := result.Data.([]interface{})
-	if false == ok {
-		c.JSON(200, gin.H{
-			"result":        false,
-			"bk_error_msg":  "get user list false",
-			"bk_error_code": "",
-			"data":          nil,
-		})
-		return
-	}
-	info := make([]interface{}, 0)
-	for _, i := range data {
-		j, ok := i.(map[string]interface{})
-		if false == ok {
-			continue
-		}
-		name, ok := j["username"]
-		if false == ok {
-			continue
-		}
-		chname, ok := j["chname"]
-		if false == ok {
-			continue
-		}
-		cellData := make(map[string]interface{})
-		cellData["chinese_name"] = chname
-		cellData["english_name"] = name
-		info = append(info, cellData)
-	}
+	ldapIp := config["ldap.ldap_ip"]
+	ldapPort := config["ldap.ldap_port"]
+	baseDN := config["ldap.ldap_baseDN"]
+	bindDN := config["ldap.ldap_bindDN"]
+	bindPasswd := config["ldap.ldap_bind_passwd"]
+	info :=GetUserByLDAP(ldapIp,baseDN,ldapPort,bindDN,bindPasswd)
 	c.JSON(200, gin.H{
 		"result":        true,
 		"bk_error_msg":  "get user list ok",
