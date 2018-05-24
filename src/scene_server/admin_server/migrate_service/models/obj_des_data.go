@@ -93,6 +93,7 @@ func getObjectDesData(ownerID string) []*metadata.ObjectDes {
 		&metadata.ObjectDes{ObjCls: "bk_organization", ObjectID: common.BKInnerObjIDApp, ObjectName: "业务", ObjIcon: "icon-cc-business"},
 		&metadata.ObjectDes{ObjCls: "bk_host_manage", ObjectID: common.BKInnerObjIDProc, ObjectName: "进程", ObjIcon: "icon-cc-process"},
 		&metadata.ObjectDes{ObjCls: "bk_host_manage", ObjectID: common.BKInnerObjIDPlat, ObjectName: "子网区域", ObjIcon: "icon-cc-subnet"},
+		&metadata.ObjectDes{ObjCls: "bk_host_manage", ObjectID: common.BKInnerObjIDSwitchHost, ObjectName: "交换机", ObjIcon: "icon-cc-server"},
 		&metadata.ObjectDes{ObjCls: "bk_idc", ObjectID: common.BKInnerObjIDIdc, ObjectName: "机房", ObjIcon: "icon-cc-idc"},
 		&metadata.ObjectDes{ObjCls: "bk_idc", ObjectID: common.BKInnerObjIDRack, ObjectName: "机架", ObjIcon: "icon-cc-engine-room"},
 		&metadata.ObjectDes{ObjCls: "bk_idc", ObjectID: common.BKInnerObjIDPos, ObjectName: "机位", ObjIcon: "icon-cc-equipment"},

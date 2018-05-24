@@ -106,6 +106,19 @@ func PlatRow() []*metadata.ObjectAttDes {
 	return dataRows
 }
 
+// SwitchRow switch structure
+func SwitchHostRow() []*metadata.ObjectAttDes {
+	objID := common.BKInnerObjIDSwitch
+	dataRows := []*metadata.ObjectAttDes{
+		&metadata.ObjectAttDes{ObjectID: objID, PropertyID: common.BKBindIpField, PropertyName: "绑定IP", IsRequired: true, IsOnly: true, IsPre: true, Editable: true, PropertyGroup: groupBaseInfo, PropertyType: common.FieldTypeSingleChar, Option: ""},
+		&metadata.ObjectAttDes{ObjectID: objID, PropertyID: common.BKHostManageIpField, PropertyName: "带外管理IP", IsAPI: true, IsRequired: true, IsOnly: false, PropertyGroup: groupBaseInfo, PropertyType: common.FieldTypeSingleChar, Option: "{}"},
+		&metadata.ObjectAttDes{ObjectID: objID, PropertyID: common.BKPortNameField, PropertyName: "端口名称", IsRequired: false, IsOnly: false, IsPre: true, Editable: true, PropertyGroup: groupBaseInfo, PropertyType: common.FieldTypeSingleChar, Option: ""},
+		&metadata.ObjectAttDes{ObjectID: objID, PropertyID: common.BKMacAddField, PropertyName: "物理地址", IsRequired: false, IsOnly: false, IsPre: true, Editable: true, PropertyGroup: groupBaseInfo, PropertyType: common.FieldTypeSingleChar, Option: ""},
+	}
+	return dataRows
+}
+
+
 // HostRow host structure
 func HostRow() []*metadata.ObjectAttDes {
 	objID := common.BKInnerObjIDHost

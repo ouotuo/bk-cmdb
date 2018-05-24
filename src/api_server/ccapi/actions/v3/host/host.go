@@ -127,6 +127,12 @@ func (cli *hostAction) addHostFromAgent(req *restful.Request, resp *restful.Resp
 	io.WriteString(resp, rsp)
 }
 
+func (cli *hostAction) addSwitchFromAgent(req *restful.Request, resp *restful.Response) {
+	url := cli.cc.HostAPI() + "/host/v1/host/add/switch"
+	rsp, _ := httpcli.ReqForward(req, url, common.HTTPSelectPost)
+	io.WriteString(resp, rsp)
+}
+
 func (cli *hostAction) addHostModuleMutiple(req *restful.Request, resp *restful.Response) {
 	url := cli.cc.HostAPI() + "/host/v1/hosts/modules/biz/mutiple"
 	rsp, _ := httpcli.ReqForward(req, url, common.HTTPCreate)
@@ -148,5 +154,6 @@ func init() {
 	actions.RegisterNewAction(actions.Action{Verb: common.HTTPSelectGet, Path: "/hosts/snapshot/{bk_host_id}", Params: nil, Handler: host.Snapshot, FilterHandler: nil, Version: v3.APIVersion})
 	actions.RegisterNewAction(actions.Action{Verb: common.HTTPCreate, Path: "/host/add/agent", Params: nil, Handler: host.addHostFromAgent, FilterHandler: nil, Version: v3.APIVersion})
 	actions.RegisterNewAction(actions.Action{Verb: common.HTTPCreate, Path: "/hosts/modules/biz/mutilple", Params: nil, Handler: host.addHostModuleMutiple, FilterHandler: nil, Version: v3.APIVersion})
+	actions.RegisterNewAction(actions.Action{Verb: common.HTTPCreate, Path: "/host/add/switch", Params: nil, Handler: host.addSwitchFromAgent, FilterHandler: nil, Version: v3.APIVersion})
 	host.cc = api.NewAPIResource()
 }

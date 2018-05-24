@@ -99,6 +99,11 @@ func ValidLogin(params ...string) gin.HandlerFunc {
 				})
 				return
 			} else {
+				if path1 == "static" {
+					blog.Info("ValidLogin *********************")
+					c.Next()
+					return
+				}
 				c.Redirect(301, loginPage)
 			}
 

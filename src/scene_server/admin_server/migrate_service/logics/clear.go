@@ -47,6 +47,7 @@ var (
 		"cc_RackBase",
 		"cc_PosBase",
 		"cc_IdcHostConfig",
+		"cc_SwitchBase",
 		"cc_System",
 	}
 )

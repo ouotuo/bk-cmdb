@@ -100,6 +100,8 @@ const (
 
 	// BKInnerObjIDSwitch the inner object
 	BKInnerObjIDSwitch = "bk_switch"
+
+	BKInnerObjIDSwitchHost = "bk_switch_host"
 	// BKInnerObjIDRouter the inner object
 	BKInnerObjIDRouter = "bk_router"
 	// BKInnerObjIDBlance the inner object
@@ -178,6 +180,19 @@ const (
 
 	// BKAppIDField the appid field
 	BKAppIDField = "bk_biz_id"
+
+
+	// BKHostManageIpField the deviceid field
+	BKHostManageIpField = "bk_host_manageip"
+
+	// BKMacAddField the macadd field
+	BKMacAddField = "bk_mac_add"
+
+	// BKBindIpField the appid field
+	BKBindIpField = "bk_bind_ip"
+
+	// BKPortNameField the portname field
+	BKPortNameField = "bk_port_name"
 
 	// BKHostInnerIPField the host innerip field
 	BKHostInnerIPField = "bk_host_innerip"
@@ -614,6 +629,7 @@ const (
 	BKTableNameBasePlat    = "cc_PlatBase"
 	BKTableNameBaseSet     = "cc_SetBase"
 	BKTableNameBaseProcess = "cc_Process"
+	BKTableNameBaseSwitch  = "cc_SwitchBase"
 )
 
 const (

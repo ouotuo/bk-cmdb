@@ -257,7 +257,7 @@ def generate_config_file(rd_server_v,db_name_v,redis_ip_v,redis_port_v,redis_use
     version=v3
     [session]
     name=cc3
-    skip=1
+    skip=0
     defaultlanguage=zh-cn
     host=$redis_host
     port=$redis_port
@@ -265,7 +265,7 @@ def generate_config_file(rd_server_v,db_name_v,redis_ip_v,redis_port_v,redis_use
     multiple_owner=0
     [site]
     domain_url=${cc_url}
-    bk_login_url=${paas_url}/login/?app_id=%s&c_url=%s
+    bk_login_url=/static/login.html?app_id=%s&c_url=%s
     app_code=cc
     check_url=${paas_url}/login/accounts/get_user/?bk_token=
     bk_account_url=${paas_url}/login/accounts/get_all_user/?bk_token=%s

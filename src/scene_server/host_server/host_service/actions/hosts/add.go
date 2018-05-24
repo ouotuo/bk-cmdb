@@ -31,6 +31,7 @@ func init() {
 
 	actions.RegisterNewAction(actions.Action{Verb: common.HTTPCreate, Path: "/hosts/addhost", Params: nil, Handler: hostModuleConfig.AddHost})
 	actions.RegisterNewAction(actions.Action{Verb: common.HTTPCreate, Path: "/host/add/agent", Params: nil, Handler: hostModuleConfig.AddHostFromAgent})
+	actions.RegisterNewAction(actions.Action{Verb: common.HTTPCreate, Path: "/host/add/switch", Params: nil, Handler: hostModuleConfig.AddSwitchFromAgent})
 
 }
 
@@ -154,6 +155,80 @@ func (m *hostModuleConfigAction) AddHostFromAgent(req *restful.Request, resp *re
 		defErr := m.CC.Error.CreateDefaultCCErrorIf(language)
 
 		err, _, updateErrRow, errRow := logics.AddHost(req, ownerID, appID, addHost, moduleID, m.CC)
+
+		if nil == err {
+			return http.StatusOK, nil, nil
+		} else {
+			var errString string
+			if 0 < len(updateErrRow) {
+				errString = updateErrRow[0]
+			} else if 0 < len(errRow) {
+				errString = errRow[0]
+			}
+			return http.StatusInternalServerError, resp, defErr.Errorf(common.CCErrAddHostToModuleFailStr, errString)
+
+		}
+	}, resp)
+}
+
+
+// AddSwitchFromAgent import switch
+func (m *hostModuleConfigAction) AddSwitchFromAgent(req *restful.Request, resp *restful.Response) {
+	type switchList struct {
+		SwitchInfo map[string]interface{}
+		//ImportFrom string
+	}
+	ownerID := common.BKDefaultOwnerID
+
+	var data switchList
+
+	language := util.GetActionLanguage(req)
+	defErr := m.CC.Error.CreateDefaultCCErrorIf(language)
+	defLang := m.CC.Lang.CreateDefaultCCLanguageIf(language)
+
+	m.CallResponseEx(func() (int, interface{}, error) {
+
+		value, err := ioutil.ReadAll(req.Request.Body)
+		if nil != err {
+			return http.StatusInternalServerError, nil, defErr.Error(common.CCErrCommHTTPBodyEmpty)
+		}
+		err = json.Unmarshal([]byte(value), &data)
+		if err != nil {
+			blog.Error("get unmarshall json value %v error:%v", string(value), err)
+			return http.StatusInternalServerError, nil, defErr.Error(common.CCErrCommJSONUnmarshalFailed)
+		}
+		if nil == data.SwitchInfo {
+			blog.Error("get unmarshall json value %v error:%v", string(value), err)
+			return http.StatusInternalServerError, nil, defErr.Errorf(common.CCErrCommParamsNeedSet, "HostInfo")
+			//m.ResponseFailed(common.CC_Err_Comm_http_Input_Params, "主机参数不能为空", resp)
+		}
+
+		//get default app
+		appID, err := logics.GetDefaultAppID(req, ownerID, common.BKAppIDField, m.CC.ObjCtrl(), defLang)
+
+		if 0 == appID || nil != err {
+			return http.StatusInternalServerError, nil, defErr.Errorf(common.CCErrAddHostToModule, err.Error())
+		}
+
+		//get internal set
+		conds := make(map[string]interface{})
+		conds[common.BKDefaultField] = common.DefaultResModuleFlag
+		conds[common.BKModuleNameField] = common.DefaultResModuleName
+		conds[common.BKAppIDField] = appID
+
+		moduleID, err := logics.GetSingleModuleID(req, conds, m.CC.ObjCtrl())
+		if nil != err {
+			return http.StatusInternalServerError, nil, defErr.Errorf(common.CCErrAddHostToModule, err.Error())
+		}
+
+		// get language
+		language := util.GetActionLanguage(req)
+		addSwitch := make(map[int]map[string]interface{})
+		addSwitch[1] = data.SwitchInfo
+
+		defErr := m.CC.Error.CreateDefaultCCErrorIf(language)
+
+		err, _, updateErrRow, errRow := logics.AddSwitch(req, ownerID, appID, addSwitch, moduleID, m.CC)
 
 		if nil == err {
 			return http.StatusOK, nil, nil
