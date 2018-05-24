@@ -414,6 +414,8 @@ func HostSearch(req *restful.Request, data hostParse.HostCommonSearch, isDetail 
 	return result, err
 }
 
+
+
 func GetHostInfoByConds(req *restful.Request, hostURL string, conds map[string]interface{}, defLang language.DefaultCCLanguageIf) ([]interface{}, error) {
 	hostURL = hostURL + "/host/v1/hosts/search"
 	getParams := make(map[string]interface{})
@@ -422,6 +424,34 @@ func GetHostInfoByConds(req *restful.Request, hostURL string, conds map[string]i
 	getParams["start"] = 0
 	getParams["limit"] = common.BKNoLimit
 	getParams["sort"] = common.BKHostIDField
+	blog.Info("get host info by conds url:%s", hostURL)
+	blog.Info("get host info by conds params:%v", getParams)
+	isSucess, message, iRetData := GetHttpResult(req, hostURL, common.HTTPSelectPost, getParams)
+	blog.Info("get host info by conds return:%v", iRetData)
+	if !isSucess {
+		msg := defLang.Languagef("host_search_fail_with_errmsg", message)
+		blog.Error(msg)
+		return nil, errors.New(msg)
+	}
+	if nil == iRetData {
+		return nil, nil
+	}
+	retData := iRetData.(map[string]interface{})
+	data, _ := retData["info"]
+	if nil == data {
+		return nil, nil
+	}
+	return data.([]interface{}), nil
+}
+
+func GetSwitchInfoByConds(req *restful.Request, hostURL string, conds map[string]interface{}, defLang language.DefaultCCLanguageIf) ([]interface{}, error) {
+	hostURL = hostURL + "/host/v1/switch/get"
+	getParams := make(map[string]interface{})
+	getParams["fields"] = nil
+	getParams["condition"] = conds
+	getParams["start"] = 0
+	getParams["limit"] = common.BKNoLimit
+	getParams["sort"] = common.BKBindIpField
 	blog.Info("get host info by conds url:%s", hostURL)
 	blog.Info("get host info by conds params:%v", getParams)
 	isSucess, message, iRetData := GetHttpResult(req, hostURL, common.HTTPSelectPost, getParams)

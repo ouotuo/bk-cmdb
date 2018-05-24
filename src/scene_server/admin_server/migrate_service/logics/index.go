@@ -143,5 +143,12 @@ func getIndex() map[string][]storage.Index {
 		storage.Index{Name: "", Columns: []string{"bk_rack_id"}, Type: storage.INDEX_TYPE_BACKGROUP},
 		storage.Index{Name: "", Columns: []string{"bk_pos_id"}, Type: storage.INDEX_TYPE_BACKGROUP},
 	}
+
+	index["cc_SwitchBase"] = []storage.Index{
+		storage.Index{Name: "", Columns: []string{"bk_bind_ip"}, Type: storage.INDEX_TYPE_BACKGROUP},
+		storage.Index{Name: "", Columns: []string{"bk_port_name"}, Type: storage.INDEX_TYPE_BACKGROUP},
+
+	}
+
 	return index
 }

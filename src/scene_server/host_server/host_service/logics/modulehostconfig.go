@@ -37,6 +37,8 @@ func getHostFields(forward *sourceAPI.ForwardParam, ownerID, ObjAddr string) (ma
 	return ret, nil
 }
 
+
+
 //convertHostInfo convert host info，InnerIP+SubArea key map[string]interface
 func convertHostInfo(hosts []interface{}) map[string]map[string]interface{} {
 	var hostMap map[string]map[string]interface{} = make(map[string]map[string]interface{})
@@ -48,6 +50,20 @@ func convertHostInfo(hosts []interface{}) map[string]map[string]interface{} {
 	}
 	return hostMap
 }
+
+//convertSwitchInfo convert host info，InnerIP+SubArea key map[string]interface
+func convertSwitchInfo(hosts []interface{}) map[string]interface{} {
+	var hostMap map[string]interface{} = make(map[string]interface{})
+	for _, host := range hosts {
+		h := host.(map[string]interface{})
+
+		key := fmt.Sprintf("%v-%v", h[common.BKHostManageIpField], h[common.BKBindIpField])
+		hostMap[key] = h
+	}
+	return hostMap
+}
+
+
 
 //MoveHostToResourcePool move host to resource pool
 func MoveHost2ResourcePool(CC *api.APIResource, req *restful.Request, appID int, hostID []int) (interface{}, error) {

@@ -35,6 +35,7 @@ var ObjTableMap = map[string]string{
 	common.BKInnerObjIDHost:    common.BKTableNameBaseHost,
 	common.BKInnerObjIDProc:    common.BKTableNameBaseProcess,
 	common.BKInnerObjIDPlat:    common.BKTableNameBasePlat,
+	common.BKInnerObjIDSwitchHost: common.BKTableNameBaseSwitch,
 	common.BKTableNameInstAsst: common.BKTableNameInstAsst,
 }
 

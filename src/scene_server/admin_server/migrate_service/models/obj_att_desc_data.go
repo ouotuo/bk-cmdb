@@ -56,12 +56,14 @@ func AddObjAttDescData(tableName, ownerID string, metaCli dbStorage.DI) error {
 
 func getObjAttDescData(ownerID string) []*metadata.ObjectAttDes {
 
+
 	predataRows := data.AppRow()
 	predataRows = append(predataRows, data.SetRow()...)
 	predataRows = append(predataRows, data.ModuleRow()...)
 	predataRows = append(predataRows, data.HostRow()...)
 	predataRows = append(predataRows, data.ProcRow()...)
 	predataRows = append(predataRows, data.PlatRow()...)
+	predataRows = append(predataRows, data.SwitchHostRow()...)
 	predataRows = append(predataRows, data.IdcRow()...)
 	predataRows = append(predataRows, data.RackRow()...)
 	predataRows = append(predataRows, data.PosRow()...)

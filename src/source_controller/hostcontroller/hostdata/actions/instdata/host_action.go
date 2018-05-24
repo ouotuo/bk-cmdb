@@ -34,9 +34,12 @@ import (
 	simplejson "github.com/bitly/go-simplejson"
 
 	"github.com/emicklei/go-restful"
+	"io"
+	"github.com/rs/xid"
 )
 
 var host *hostAction = &hostAction{}
+var SwitchTable = "cc_SwitchBase"
 
 type hostAction struct {
 	base.BaseAction
@@ -171,12 +174,137 @@ func (cli *hostAction) GetHostSnap(req *restful.Request, resp *restful.Response)
 	}, resp)
 }
 
+//Add add new SwitchAdd
+func (u *hostAction) SwitchAdd(req *restful.Request, resp *restful.Response) {
+
+	value, _ := ioutil.ReadAll(req.Request.Body)
+
+	language := util.GetActionLanguage(req)
+	defErr := u.CC.Error.CreateDefaultCCErrorIf(language)
+
+	params := make(map[string]interface{})
+	if err := json.Unmarshal([]byte(value), &params); nil != err {
+		blog.Error("fail to unmarshal json, error information is %s, msg:%s", err.Error(), string(value))
+		userAPI.ResponseFailedEx(http.StatusBadRequest, common.CCErrCommJSONUnmarshalFailed, defErr.Error(common.CCErrCommJSONUnmarshalFailed).Error(), resp)
+		return
+	}
+
+	//mogo generate id for product
+	xidDevice := xid.New()
+	params[common.CreateTimeField] = time.Now()
+	params[common.LastTimeField] = ""
+	_, err := u.CC.InstCli.Insert(SwitchTable, params)
+
+	if err != nil {
+		blog.Error("create switch api  error:data:%v error:%v", params, err)
+		userAPI.ResponseFailedEx(http.StatusBadGateway, common.CCErrCommDBInsertFailed, defErr.Error(common.CCErrCommDBInsertFailed).Error(), resp)
+		return
+	}
+
+	info := make(map[string]interface{})
+	info["id"] = xidDevice.String()
+
+	rsp, _ := u.CC.CreateAPIRspStr(common.CCSuccess, info)
+	io.WriteString(resp, rsp)
+}
+
+//Update update user api content
+func (u *hostAction) SwitchUpdate(req *restful.Request, resp *restful.Response) {
+	language := util.GetActionLanguage(req)
+	defErr := u.CC.Error.CreateDefaultCCErrorIf(language)
+
+	value, _ := ioutil.ReadAll(req.Request.Body)
+	data := make(map[string]interface{})
+	if err := json.Unmarshal([]byte(value), &data); nil != err {
+		blog.Error("fail to unmarshal json, error information is %s, msg:%s", err.Error(), string(value))
+		userAPI.ResponseFailedEx(http.StatusBadRequest, common.CCErrCommJSONUnmarshalFailed, defErr.Error(common.CCErrCommJSONUnmarshalFailed).Error(), resp)
+		return
+	}
+
+	sw, _ := data["data"]
+	swData:=sw.(map[string]interface{})
+
+	condition, _ := data["condition"]
+	swData[common.LastTimeField] = time.Now()
+	condition =condition.(map[string]interface{})
+	params := make(map[string]interface{})
+	params[common.BKBindIpField] = swData[common.BKBindIpField]
+
+	rowCount, err := u.CC.InstCli.GetCntByCondition(SwitchTable, params)
+	if nil != err {
+		blog.Error("query user api fail, error information is %s, params:%v", err.Error(), params)
+		userAPI.ResponseFailedEx(http.StatusBadGateway, common.CCErrCommDBSelectFailed, defErr.Error(common.CCErrCommDBSelectFailed).Error(), resp)
+		return
+	}
+	if 1 != rowCount {
+		blog.Info("host user api not permissions or not exists, params:%v", params)
+		userAPI.ResponseFailedEx(http.StatusBadRequest, common.CCErrCommNotFound, defErr.Error(common.CCErrCommNotFound).Error(), resp)
+		return
+	}
+	err = u.CC.InstCli.UpdateByCondition(SwitchTable, swData, condition)
+	if nil != err {
+		blog.Error("updata user api fail, error information is %s, params:%v", err.Error(), params)
+		userAPI.ResponseFailedEx(http.StatusBadGateway, common.CCErrCommDBUpdateFailed, defErr.Errorf(common.CCErrCommDBUpdateFailed).Error(), resp)
+		return
+	}
+	rsp, _ := u.CC.CreateAPIRspStr(common.CCSuccess, nil)
+	io.WriteString(resp, rsp)
+	return
+
+}
+
+//GetHosts batch search host
+func (cli *hostAction) GetSwitchs(req *restful.Request, resp *restful.Response) {
+	// get the language
+	language := util.GetActionLanguage(req)
+	// get the error factory by the language
+	defErr := cli.CC.Error.CreateDefaultCCErrorIf(language)
+	defLang := cli.CC.Lang.CreateDefaultCCLanguageIf(language)
+	cli.CallResponseEx(func() (int, interface{}, error) {
+		objType := common.BKInnerObjIDSwitchHost
+		instdata.DataH = cli.CC.InstCli
+
+		value, err := ioutil.ReadAll(req.Request.Body)
+		var dat commondata.ObjQueryInput
+		err = json.Unmarshal([]byte(value), &dat)
+		if err != nil {
+			blog.Error("cccget object type:%s,input:%v error:%v", objType, value, err)
+			return http.StatusBadRequest, nil, defErr.Error(common.CCErrCommJSONUnmarshalFailed)
+		}
+		blog.Info("test for get switch is ", dat)
+		fields := dat.Fields
+		condition := util.ConvParamsTime(dat.Condition)
+		start := dat.Start
+		limit := dat.Limit
+		sort := dat.Sort
+		fieldArr := strings.Split(fields, ",")
+		result := make([]map[string]interface{}, 0)
+		count, err := instdata.GetCntByCondition(objType, condition)
+		if err != nil {
+			blog.Error("aaget object type:%s,input:%s error:%v", objType, value, err)
+			return http.StatusInternalServerError, nil, defErr.Error(common.CCErrHostSelectInst)
+		}
+		err = instdata.GetObjectByCondition(defLang, objType, fieldArr, condition, &result, sort, start, limit)
+		if err != nil {
+			blog.Error("bbget object type:%s,input:%v error:%v", objType, value, err)
+			return http.StatusInternalServerError, nil, defErr.Error(common.CCErrHostSelectInst)
+		}
+		info := make(map[string]interface{})
+		info["count"] = count
+		info["info"] = result
+		return http.StatusOK, info, nil
+	}, resp)
+}
+
+
 func init() {
 	actions.RegisterNewAction(actions.Action{Verb: common.HTTPSelectGet, Path: "/host/{bk_host_id}", Params: nil, Handler: host.GetHostByID})
 	actions.RegisterNewAction(actions.Action{Verb: common.HTTPSelectPost, Path: "/hosts/search", Params: nil, Handler: host.GetHosts})
 	actions.RegisterNewAction(actions.Action{Verb: common.HTTPCreate, Path: "/insts", Params: nil, Handler: host.AddHost})
 	actions.RegisterNewAction(actions.Action{Verb: common.HTTPSelectGet, Path: "/host/snapshot/{bk_host_id}", Params: nil, Handler: host.GetHostSnap})
-
+	actions.RegisterNewAction(actions.Action{Verb: common.HTTPCreate, Path: "/switch/add", Params: nil, Handler: host.SwitchAdd})
+	actions.RegisterNewAction(actions.Action{Verb: common.HTTPCreate, Path: "/switch/update", Params: nil, Handler: host.SwitchUpdate})
+	actions.RegisterNewAction(actions.Action{Verb: common.HTTPSelectPost, Path: "/switch/get", Params: nil, Handler: host.GetSwitchs})
 	// create cc object
 	host.CreateAction()
 }
