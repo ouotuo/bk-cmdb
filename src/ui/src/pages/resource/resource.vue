@@ -10,18 +10,18 @@
 
 <template>
    <div class="host-resource-wrapper">
-        <v-hosts 
+        <v-hosts
             ref="hosts"
-            :isShowBiz="false" 
-            :isShowCollect="false" 
-            :isShowHistory="false" 
+            :isShowBiz="false"
+            :isShowCollect="false"
+            :isShowHistory="false"
             :outerParams="hosts.searchParams"
-            @choose="setSelectedHost" 
+            @choose="setSelectedHost"
             @attrLoaded="search">
             <div class="button-contain clearfix" slot="btnGroup">
                 <bk-select class="biz-selector fl mr10" :placeholder="$t('HostResourcePool[\'分配到业务空闲机池\']')"
                     :disabled="!hasSelectedHost"
-                    :selected.sync="hosts.bkBizId" 
+                    :selected.sync="hosts.bkBizId"
                     :filterable="true"
                     @on-selected="confirmTransfer">
                     <bk-select-option v-for="(bkBiz, index) in bkBizList"
@@ -51,12 +51,12 @@
                 </div>
             </div>
         </v-hosts>
-        <v-sideslider 
+        <v-sideslider
             :title="slider.title"
             :isShow.sync="slider.isShow">
             <bk-tab :active-name="slider.tab.active" @tab-changed="tabChanged" slot="content" style="border: none;padding: 0 20px;">
                 <bk-tabpanel name="import" :title="$t('HostResourcePool[\'批量导入\']')">
-                    <v-import 
+                    <v-import
                         :templateUrl="slider.import.templateUrl"
                         :importUrl="slider.import.importUrl"
                         @success="search()"
@@ -64,7 +64,15 @@
                         <span slot="download-desc" style="display: inline-block;vertical-align: top;">{{$t('HostResourcePool[\'说明：内网IP为必填列\']')}}</span>
                     </v-import>
                 </bk-tabpanel>
-                
+                <bk-tabpanel name="agent" :title="$t('HostResourcePool[\'自动导入\']')">
+                    <div class="automatic-import">
+                        <p>{{$t("HostResourcePool['agent安装说明']")}}</p>
+                        <div class="back-contain">
+                            <i class="icon-cc-skip"></i>
+                            <a href="javascript:void(0)" @click="openAgentApp">{{$t("HostResourcePool['点此进入Agent安装APP']")}}</a>
+                        </div>
+                    </div>
+                </bk-tabpanel>
             </bk-tab>
         </v-sideslider>
         <v-delete-history

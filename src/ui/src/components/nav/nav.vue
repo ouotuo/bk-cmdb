@@ -1,55 +1,3 @@
-<<<<<<< HEAD
-/*
- * Tencent is pleased to support the open source community by making 蓝鲸 available.
- * Copyright (C) 2017-2018 THL A29 Limited, a Tencent company. All rights reserved.
- * Licensed under the MIT License (the "License"); you may not use this file except in compliance with the License.
- * You may obtain a copy of the License at http://opensource.org/licenses/MIT
- * Unless required by applicable law or agreed to in writing, software distributed under the License is distributed on an "AS IS" BASIS,
- * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
- * See the License for the specific language governing permissions and limitations under the License.
- */
-
-<template lang="html">
-    <div class=" nav-wrapper bk-sidebar nav-contain" id="bk-sidebar" :class="{'slide-close':isClose,'slide-open':!isClose}">
-        <div class="slide-switch" @click="backToIndex">
-            <i class="nav-title-img" :class="$t('Common.logo')"></i><i class="icon-cc-triangle-slider" ></i>
-        </div>
-        <div class="nav-list">
-            <ul>
-                <template v-for="(navType, navIndex) in navigationOrder">
-                    <li v-if="navigation[navType] && navigation[navType]['authorized'] && navigation[navType]['children'].length"
-                        :class="{'open': navigation[navType]['isOpen']}"
-                        :key="navIndex">
-                        <a href="javascript:void(0)" @click="toggleNav(navigation[navType])">
-                            <span class="icon-box">
-                                <i :class="navigation[navType]['icon']"></i>
-                            </span>
-                            <span class="nav-name text-hd"
-                                :title="navigation[navType]['i18n'] ? $t(navigation[navType]['i18n']) : navigation[navType]['name']">
-                                   {{navigation[navType]['i18n'] ? $t(navigation[navType]['i18n']) : navigation[navType]['name']}} 
-                            </span>
-                            <span class="angle-box">
-                                <i class="bk-icon icon-angle-down angle"></i>
-                            </span>
-                        </a>
-                        <div class="flex-subnavs" :style="{
-                            'height': calcSubNavHeight(navigation[navType]),
-                            'display': isClose ? 'none' : 'block'
-                        }">
-                            <router-link exact
-                                v-for="(subNav, subNavIndex) in navigation[navType]['children']"
-                                v-if="subNav.authorized && !subNav.isPaused"
-                                :key="subNavIndex"
-                                :to="subNav.path"
-                                :title="subNav.i18n ? $t(subNav.i18n) : subNav.name">
-                                {{subNav.i18n ? $t(subNav.i18n) : subNav.name}} 
-                            </router-link>
-                        </div>
-                    </li>
-                </template>
-            </ul>
-          
-=======
 <template>
     <div :class="['nav-wrapper', {fold: fold}]">
         <div :class="['nav-logo', language]" @click="turnToIndex"></div>
@@ -88,7 +36,6 @@
         <div class="nav-copyright">
             <div class="copyright-line"></div>
             <p class="copyright-text">Copyright © 2012-{{year}} Tencent  BlueKing. All Rights Reserved.<br>腾讯蓝鲸&nbsp;版权所有</p>
->>>>>>> bk/master
         </div>
     </div>
 </template>
