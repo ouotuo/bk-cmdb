@@ -258,6 +258,7 @@ def generate_config_file(rd_server_v,db_name_v,redis_ip_v,redis_port_v,redis_use
     [session]
     name=cc3
     skip=0
+    admin_user=gaoshan
     defaultlanguage=zh-cn
     host=$redis_host
     port=$redis_port

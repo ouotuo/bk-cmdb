@@ -20,17 +20,20 @@ import (
 	"fmt"
 
 	"github.com/gin-gonic/contrib/sessions"
-
+	"github.com/gin-gonic/contrib/cache"
 	"github.com/gin-gonic/gin"
 	"gopkg.in/ldap.v2"
 	"strings"
+	"time"
 )
-
+var UserCache *cache.InMemoryStore
 func init() {
+	UserCache=cache.NewInMemoryStore(time.Hour)
 	wactions.RegisterNewAction(wactions.Action{common.HTTPSelectGet, "/user/list", nil, GetUserList})
 	wactions.RegisterNewAction(wactions.Action{common.HTTPUpdate, "/user/language/:language", nil, UpdateUserLanguage})
 
 }
+
 type userResult struct {
 	Message string      `json:"message"`
 	Data    interface{} `json:"data"`
@@ -98,12 +101,18 @@ func GetUserList(c *gin.Context) {
 	baseDN := config["ldap.ldap_baseDN"]
 	bindDN := config["ldap.ldap_bindDN"]
 	bindPasswd := config["ldap.ldap_bind_passwd"]
-	info :=GetUserByLDAP(ldapIp,baseDN,ldapPort,bindDN,bindPasswd)
+
+	res:=[]map[string]interface{}{}
+	err:=UserCache.Get("userList",&res)
+	if err!=nil{
+		res  =GetUserByLDAP(ldapIp,baseDN,ldapPort,bindDN,bindPasswd)
+		UserCache.Set("userList",res,3600*time.Second)
+	}
 	c.JSON(200, gin.H{
 		"result":        true,
 		"bk_error_msg":  "get user list ok",
 		"bk_error_code": "00",
-		"data":          info,
+		"data":          res,
 	})
 	return
 }
