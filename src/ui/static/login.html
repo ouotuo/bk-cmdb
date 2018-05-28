@@ -15,7 +15,9 @@
         <link rel="stylesheet" href="assets/css/reset.css">
         <link rel="stylesheet" href="assets/css/supersized.css">
         <link rel="stylesheet" href="assets/css/style.css">
-
+        <meta http-equiv="pragma" content="no-cache">
+        <meta http-equiv="Cache-Control" content="no-cache, must-revalidate">
+        <meta http-equiv="expires" content="Wed, 26 Feb 1997 08:21:57 GMT">
         <!-- HTML5 shim, for IE6-8 support of HTML5 elements -->
         <!--[if lt IE 9]>
             <script src="http://html5shim.googlecode.com/svn/trunk/html5.js"></script>
@@ -27,7 +29,7 @@
 
         <div class="page-container">
             <h1>CDMB</h1>
-            <form action="" method="post">
+            <form action="" method="post" onkeydown="submitByEnter();">
                 <input  id="username" type="text" name="username" class="username" placeholder="用户名:">
                 <input  id="password" type="password" name="password" class="password" placeholder="密码:">
                 <div id="text"></div>
@@ -42,6 +44,11 @@
         <script src="assets/js/supersized-init.js"></script>
         <script src="assets/js/scripts.js"></script>
         <script>
+          function submitByEnter()
+          {
+            if(event.keyCode == 13)
+              $("#login").click()
+          }
           $("#login").click(function(){
             $.get("/login?username="+$("#username").val()+"&password="+$("#password").val(), function(result){
               if(result.status==="success"){
@@ -52,6 +59,7 @@
               }
             });
           });
+
         </script>
     </body>
 

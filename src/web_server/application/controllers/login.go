@@ -43,7 +43,7 @@ func LogOutUser(c *gin.Context) {
 	loginPage := fmt.Sprintf(loginURL, appCode, site)
 	session := sessions.Default(c)
 	session.Clear()
-	c.Redirect(301, loginPage)
+	c.Redirect(302, loginPage)
 }
 func UserAuthentication(username string,password string,c *gin.Context) error {
 
@@ -108,31 +108,41 @@ func UserAuthentication(username string,password string,c *gin.Context) error {
 			c.Request.Header.Set("HTTP_BLUEKING_SUPPLIER_ID", "0")
 			url := fmt.Sprintf("%s/api/%s/topo/privilege/group/%s/search/", apiSite, webCommon.API_VERSION, "0")
 			conds := common.KvMap{"user_list":nikiname}
-			result, err := httpRequest(url, conds,  c.Request.Header)
-			if nil != err {
-				blog.Info("httpRequest error  %s  url:%s ", err.Error(), url)
-				session.Set("role", "0")
-			}
-			blog.Info("get %s fields group  url:%s", objID, url)
-			blog.Info("get %s fields group return:%s", objID, result)
-			js, err := simplejson.NewJson([]byte(result))
-			if nil != err {
-				blog.Info("get %s fields group  url:%s return:%s", objID, url, result)
-				session.Set("role", "0")
-			}
-			fields, _ := js.Get("data").Array()
-			role:=""
-			for _, field := range fields {
-				ss,_:=json.Marshal(field)
-				s, _ := simplejson.NewJson(ss)
-				groupId,err:=s.Get("group_id").String()
-				if err==nil{
-					role=role+groupId
+			if config["session.admin_user"]==nikiname {
+				session.Set("role", "1")
+			}else {
+				result, err := httpRequest(url, conds,  c.Request.Header)
+				if nil != err {
+					blog.Info("httpRequest error  %s  url:%s ", err.Error(), url)
+					session.Set("role", "0")
 				}
-			}
-			blog.Info("get %s fields group return:%s", fields)
+				blog.Info("get %s fields group  url:%s", objID, url)
+				blog.Info("get %s fields group return:%s", objID, result)
+				js, err := simplejson.NewJson([]byte(result))
+				if nil != err {
+					blog.Info("get %s fields group  url:%s return:%s", objID, url, result)
+					session.Set("role", "0")
+				}
+				fields, _ := js.Get("data").Array()
+				role:=""
+				for _, field := range fields {
+					ss,_:=json.Marshal(field)
+					s, _ := simplejson.NewJson(ss)
+					groupId,err:=s.Get("group_id").String()
+					if err==nil{
+						role=role+groupId+","
+					}
+					groupName,err:=s.Get("group_name").String()
+					if err==nil && groupName=="admin"{
+						role="1"
+						break
+					}
 
-			session.Set("role", role)
+				}
+				blog.Info("get %s fields group return:%s", fields)
+				session.Set("role", role)
+			}
+
 			session.Set("bk_token", bk_token)
 			session.Set("owner_uin", common.BKDefaultOwnerID)
 			session.Set("skiplogin", "0")
