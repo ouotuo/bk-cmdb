@@ -181,7 +181,6 @@ const (
 	// BKAppIDField the appid field
 	BKAppIDField = "bk_biz_id"
 
-
 	// BKHostManageIpField the deviceid field
 	BKHostManageIpField = "bk_host_manageip"
 
@@ -629,7 +628,10 @@ const (
 	BKTableNameBasePlat    = "cc_PlatBase"
 	BKTableNameBaseSet     = "cc_SetBase"
 	BKTableNameBaseProcess = "cc_Process"
-	BKTableNameBaseSwitch  = "cc_SwitchBase"
+
+	BKTableNameBaseSwitch = "cc_SwitchBase"
+
+	BKTableNameModuleHostConfig = "cc_ModuleHostConfig"
 )
 
 const (
