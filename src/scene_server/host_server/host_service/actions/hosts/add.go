@@ -19,11 +19,15 @@ import (
 	"configcenter/src/common/util"
 	"configcenter/src/scene_server/host_server/host_service/logics"
 	"net/http"
-
 	"encoding/json"
 	"io/ioutil"
-
 	"github.com/emicklei/go-restful"
+	"configcenter/src/source_controller/common/commondata"
+	"configcenter/src/storage"
+)
+
+var (
+	DB storage.DI = nil
 )
 
 func init() {
@@ -32,6 +36,7 @@ func init() {
 	actions.RegisterNewAction(actions.Action{Verb: common.HTTPCreate, Path: "/hosts/addhost", Params: nil, Handler: hostModuleConfig.AddHost})
 	actions.RegisterNewAction(actions.Action{Verb: common.HTTPCreate, Path: "/host/add/agent", Params: nil, Handler: hostModuleConfig.AddHostFromAgent})
 	actions.RegisterNewAction(actions.Action{Verb: common.HTTPCreate, Path: "/host/add/switch", Params: nil, Handler: hostModuleConfig.AddSwitchFromAgent})
+	actions.RegisterNewAction(actions.Action{Verb: common.HTTPSelectPost, Path: "/host/get/port", Params: nil, Handler: hostModuleConfig.GetHostSwitchPort})
 
 }
 
@@ -173,7 +178,6 @@ func (m *hostModuleConfigAction) AddHostFromAgent(req *restful.Request, resp *re
 	}, resp)
 }
 
-
 // AddSwitchFromAgent import switch
 func (m *hostModuleConfigAction) AddSwitchFromAgent(req *restful.Request, resp *restful.Response) {
 	type switchList struct {
@@ -246,3 +250,47 @@ func (m *hostModuleConfigAction) AddSwitchFromAgent(req *restful.Request, resp *
 		}
 	}, resp)
 }
+
+// AddHostFromAgent import host
+func (m *hostModuleConfigAction) GetHostSwitchPort(req *restful.Request, resp *restful.Response) {
+	// get language
+	language := util.GetActionLanguage(req)
+	langHandle := m.CC.Lang.CreateDefaultCCLanguageIf(language)
+	// get the error object by the language
+	defErr := m.CC.Error.CreateDefaultCCErrorIf(language)
+
+	m.CallResponseEx(func() (int, interface{}, error) {
+
+		value, err := ioutil.ReadAll(req.Request.Body)
+		if err != nil {
+			return http.StatusBadRequest, nil, defErr.Error(common.CCErrCommHTTPReadBodyFailed)
+		}
+		var dat commondata.ObjQueryInput
+		err = json.Unmarshal([]byte(value), &dat)
+		if err != nil {
+			blog.Error("get audit input:%v error:%v", value, err)
+			return http.StatusBadRequest, nil, defErr.Error(common.CCErrCommJSONUnmarshalFailed)
+		}
+		//user := sencecommon.GetUserFromHeader(req)
+		ownerID := common.BKDefaultOwnerID
+		iConds := dat.Condition
+		if nil == iConds {
+			dat.Condition = common.KvMap{common.BKOwnerIDField: ownerID}
+		} else {
+			conds := iConds.(map[string]interface{})
+			dat.Condition = conds
+		}
+		if 0 == dat.Limit {
+			dat.Limit = common.BKDefaultLimit
+		}
+		//获取已录入switch信息
+		allSwitchPort, err := logics.GetSwitchPort(req, m.CC.HostCtrl(),dat.Limit,dat.Start, dat.Condition.(map[string]interface{}), langHandle)
+		if nil != err {
+			blog.Info("portgeterr",err)
+		}
+		blog.Info("finalldatais",allSwitchPort)
+
+		return http.StatusOK, allSwitchPort, nil
+	}, resp)
+}
+
