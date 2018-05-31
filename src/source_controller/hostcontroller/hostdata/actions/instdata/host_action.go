@@ -296,6 +296,57 @@ func (cli *hostAction) GetSwitchs(req *restful.Request, resp *restful.Response) 
 	}, resp)
 }
 
+//GetHosts batch search host
+func (cli *hostAction) GetSwitchsPort(req *restful.Request, resp *restful.Response) {
+	language := util.GetActionLanguage(req)
+	defErr := cli.CC.Error.CreateDefaultCCErrorIf(language)
+	defLang := cli.CC.Lang.CreateDefaultCCLanguageIf(language)
+
+	cli.CallResponseEx(func() (int, interface{}, error) {
+		value, err := ioutil.ReadAll(req.Request.Body)
+		if err != nil {
+			blog.Errorf("read http request boody error:%s", err.Error())
+			cli.ResponseFailed(common.CCErrCommHTTPReadBodyFailed, defErr.Error(common.CCErrCommHTTPReadBodyFailed).Error(), resp)
+			return http.StatusInternalServerError, nil, defErr.Error(common.CCErrHostSelectInst)
+
+		}
+		var dat commondata.ObjQueryInput
+		err = json.Unmarshal([]byte(value), &dat)
+		if err != nil {
+			blog.Error("json unmarshal failed,input:%v error:%v", string(value), err)
+			cli.ResponseFailed(common.CCErrCommJSONUnmarshalFailed, defErr.Error(common.CCErrCommJSONUnmarshalFailed).Error(), resp)
+			return http.StatusInternalServerError, nil, defErr.Error(common.CCErrHostSelectInst)
+
+		}
+		fields := dat.Fields
+		condition := dat.Condition
+		start := dat.Start
+		limit := dat.Limit
+		sort := dat.Sort
+		fieldArr := strings.Split(fields, ",")
+		result := make([]map[string]interface{}, 0)
+		instdata.DataH = cli.CC.InstCli
+		err = instdata.GetObjectByCondition(defLang,common.BKInnerObjIDSwitchHost, fieldArr, condition, &result, sort, start, limit)
+		if nil != err {
+			blog.Error("get data from data  error:%s", err.Error())
+			cli.ResponseFailed(common.CCErrCommDBSelectFailed, defErr.Error(common.CCErrCommDBSelectFailed).Error(), resp)
+			return http.StatusInternalServerError, nil, defErr.Error(common.CCErrHostSelectInst)
+
+		}
+		count, err := instdata.GetCntByCondition(common.BKInnerObjIDSwitchHost, dat.Condition)
+		if nil != err {
+			blog.Error("get data from data  error:%s", err.Error())
+			cli.ResponseFailed(common.CCErrCommDBSelectFailed, defErr.Error(common.CCErrCommDBSelectFailed).Error(), resp)
+			return http.StatusInternalServerError, nil, defErr.Error(common.CCErrHostSelectInst)
+
+		}
+		info := make(map[string]interface{})
+		info["count"] = count
+		info["info"] = result
+		return http.StatusOK, info, nil
+	}, resp)
+}
+
 
 func init() {
 	actions.RegisterNewAction(actions.Action{Verb: common.HTTPSelectGet, Path: "/host/{bk_host_id}", Params: nil, Handler: host.GetHostByID})
@@ -305,6 +356,8 @@ func init() {
 	actions.RegisterNewAction(actions.Action{Verb: common.HTTPCreate, Path: "/switch/add", Params: nil, Handler: host.SwitchAdd})
 	actions.RegisterNewAction(actions.Action{Verb: common.HTTPCreate, Path: "/switch/update", Params: nil, Handler: host.SwitchUpdate})
 	actions.RegisterNewAction(actions.Action{Verb: common.HTTPSelectPost, Path: "/switch/get", Params: nil, Handler: host.GetSwitchs})
+	actions.RegisterNewAction(actions.Action{Verb: common.HTTPSelectPost, Path: "/switch/port", Params: nil, Handler: host.GetSwitchsPort})
+
 	// create cc object
 	host.CreateAction()
 }

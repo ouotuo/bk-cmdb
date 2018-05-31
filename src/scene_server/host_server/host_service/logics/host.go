@@ -471,3 +471,32 @@ func GetSwitchInfoByConds(req *restful.Request, hostURL string, conds map[string
 	}
 	return data.([]interface{}), nil
 }
+
+func GetSwitchPort(req *restful.Request, hostURL string,limit,start int , conds map[string]interface{}, defLang language.DefaultCCLanguageIf) (map[string]interface{}, error) {
+	hostURL = hostURL + "/host/v1/switch/port"
+	getParams := make(map[string]interface{})
+	getParams["fields"] = nil
+	getParams["condition"] = conds
+	getParams["start"] = start
+	getParams["limit"] = limit 
+	getParams["sort"] = common.BKBindIpField
+	blog.Info("get host info by conds url:%s", hostURL)
+	blog.Info("get host info by conds params:%v", getParams)
+	isSucess, message, iRetData := GetHttpResult(req, hostURL, common.HTTPSelectPost, getParams)
+	blog.Info("get host info by conds return:%v", iRetData)
+	if !isSucess {
+		msg := defLang.Languagef("host_search_fail_with_errmsg", message)
+		blog.Error(msg)
+		return nil, errors.New(msg)
+	}
+	if nil == iRetData {
+		return nil, nil
+	}
+	blog.Info("iRetDatais",iRetData)
+	retData := iRetData.(map[string]interface{})
+	data, _ := retData["info"]
+	if nil == data {
+		return nil, nil
+	}
+	return retData, nil
+}

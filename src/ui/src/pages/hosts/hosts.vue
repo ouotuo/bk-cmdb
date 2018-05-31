@@ -47,7 +47,7 @@
                 <slot name="btnGroup">
                     <div class="btn-group clearfix">
                         <button class="bk-button bk-default"
-                            :disabled="!table.chooseId.length" 
+                            :disabled="!table.chooseId.length"
                             @click="multipleUpdate">
                             <i class="icon-cc-edit"></i>
                             <span>{{$t("BusinessTopology['修改']")}}</span>
@@ -96,15 +96,17 @@
                     <template v-for="({id,name, property}, index) in table.tableHeader" :slot="id" slot-scope="{ item }">
                         <label v-if="id === 'bk_host_id'" style="width:100%;text-align:center;" class="bk-form-checkbox bk-checkbox-small" @click.stop>
                             <input type="checkbox"
-                                :value="item['host']['bk_host_id']" 
+                                :value="item['host']['bk_host_id']"
                                 v-model="table.chooseId">
                         </label>
                         <template v-else>{{getCellValue(property, item)}}</template>
                     </template>
                 </v-table>
         </div>
-        <v-sideslider 
-            :isShow.sync="sideslider.isShow" 
+
+
+        <v-sideslider
+            :isShow.sync="sideslider.isShow"
             :title="sideslider.title"
             :hasCloseConfirm="true"
             :isCloseConfirmShow="sideslider.isCloseConfirmShow"
@@ -113,8 +115,10 @@
             <div slot="content" class="sideslider-content" :class="`sideslider-content-${sideslider.type}`">
                 <bk-tab class="attribute-tab" style="border:none;"
                     v-show="sideslider.type === 'attribute'"
-                    :active-name="sideslider.attribute.active" 
+                    :active-name="sideslider.attribute.active"
                     @tab-changed="attributeTabChanged">
+
+
                     <bk-tabpanel name="attribute" :title="$t('HostResourcePool[\'主机属性\']')">
                         <v-attribute ref="hostAttribute"
                             :objId="'host'"
@@ -135,6 +139,8 @@
                             </div>
                         </v-attribute>
                     </bk-tabpanel>
+
+
                     <bk-tabpanel name="relevance" :title="$t('HostResourcePool[\'关联\']')" :show="!sideslider.attribute.form.isMultipleUpdate">
                         <v-relevance
                             :isShow="sideslider.attribute.active==='relevance'"
@@ -143,30 +149,52 @@
                             :instance="sideslider.attribute.form.formValues"
                         ></v-relevance>
                     </bk-tabpanel>
+
+
                     <bk-tabpanel name="status" :title="$t('HostResourcePool[\'实时状态\']')"
                         :show="!sideslider.attribute.form.isMultipleUpdate">
-                        <v-status :isShow="sideslider.attribute.active==='status'" 
+                        <v-status :isShow="sideslider.attribute.active==='status'"
                             :isSidesliderShow="sideslider.isShow"
                             :isWindowsOSType="sideslider.attribute.isWindowsOSType"
                             :isLoaded.sync="sideslider.attribute.status.isLoaded">
                         </v-status>
                     </bk-tabpanel>
-                    <bk-tabpanel name="host" title="Host" 
+
+
+                    <bk-tabpanel name="host" title="Host"
                         :show="!sideslider.attribute.form.isMultipleUpdate && !sideslider.attribute.isWindowsOSType && hostSnapshot !== ''">
                         <v-host></v-host>
                     </bk-tabpanel>
-                    <bk-tabpanel name="router" title="Router" 
+
+
+                    <bk-tabpanel name="router" title="Router"
                         :show="!sideslider.attribute.form.isMultipleUpdate && !sideslider.attribute.isWindowsOSType && hostSnapshot !== ''">
                         <v-router></v-router>
                     </bk-tabpanel>
+
+
+
                     <bk-tabpanel name="history" :title="$t('HostResourcePool[\'变更记录\']')"
                         :show="!sideslider.attribute.form.isMultipleUpdate && sideslider.attribute.form.type === 'update'">
-                        <v-history 
-                            :type="'host'" 
-                            :active="sideslider.attribute.active === 'history'" 
+                        <v-history
+                            :type="'host'"
+                            :active="sideslider.attribute.active === 'history'"
                             :innerIP="sideslider.attribute.form.formValues.bk_host_innerip">
                         </v-history>
                     </bk-tabpanel>
+
+                  <bk-tabpanel name="port" :title="$t('HostResourcePool[\'主机端口\']')"
+                               :show="sideslider.attribute.form.formValues.bk_host_type=='5'">
+                    <v-hostport
+                      :type="'host'"
+                      :active="sideslider.attribute.active === 'port'"
+                      :innerIP="sideslider.attribute.form.formValues.bk_host_innerip">
+                    </v-hostport>
+
+                  </bk-tabpanel>
+
+
+
                 </bk-tab>
                 <v-field v-show="sideslider.type === 'field' && sideslider.isShow"
                     :isShow="sideslider.type === 'field' && sideslider.isShow"
@@ -179,6 +207,11 @@
                 </v-field>
             </div>
         </v-sideslider>
+
+
+
+
+
         <v-host-transfer-pop
             :isShow.sync="transfer.isShow"
             :chooseId="table.chooseId"
@@ -196,6 +229,7 @@
     import vRelevance from '@/components/relevance/relevance'
     import vHostTransferPop from '@/components/hostTransferPop/hostTransferPop'
     import vHistory from '@/components/history/history'
+    import vHostport from '@/components/hostport/port'
     import vField from '@/components/field/field'
     import vStatus from './children/status.vue'
     import vHost from './children/host'
@@ -994,7 +1028,8 @@
             vRouter,
             vHostTransferPop,
             vHistory,
-            vField
+            vField,
+            vHostport
         }
     }
 </script>
