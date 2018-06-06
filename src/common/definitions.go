@@ -675,7 +675,7 @@ const (
 )
 
 const (
-	// BKHTTPHeaderUser current request  lhttp request header fields name for login user
+	// BKHTTPHeaderUser current request http request header fields name for login user
 	BKHTTPHeaderUser = "BK_User"
 	// BKHTTPLanguage the language key word
 	BKHTTPLanguage = "HTTP_BLUEKING_LANGUAGE"
