@@ -116,6 +116,8 @@ func (ccAPI *CCAPIServer) Start() error {
 	a.HostAPI = rdapi.GetRdAddrSrvHandle(types.CC_MODULE_HOST, a.AddrSrv)
 	//check object controller server
 	a.TopoAPI = rdapi.GetRdAddrSrvHandle(types.CC_MODULE_TOPO, a.AddrSrv)
+	a.IdcAPI = rdapi.GetRdAddrSrvHandle(types.CC_MODULE_IDC, a.AddrSrv)
+
 	//check object controller server
 	a.ProcAPI = rdapi.GetRdAddrSrvHandle(types.CC_MODULE_PROC, a.AddrSrv)
 
