@@ -25,6 +25,7 @@ const pageEventpush = () => import(/* webpackChunkName: "page-eventpush" */ '@/p
 const pageAuditing = () => import(/* webpackChunkName: "page-auditing" */ '@/pages/auditing/auditing')
 const pageOrganization = () => import(/* webpackChunkName: "page-organization" */ '@/pages/organization/object')
 const pageTopology = () => import(/* webpackChunkName: "page-topology" */ '@/pages/topology/topology')
+const pageIdc = () => import(/* webpackChunkName: "page-idc" */ '@/pages/idc/idc')
 const pageCustomQuery = () => import(/* webpackChunkName: "page-customQuery" */ '@/pages/customQuery/customQuery')
 
 var routerVue = new Vue({
@@ -104,6 +105,12 @@ var router = new Router({
     }, {
         path: '/customQuery',
         component: pageCustomQuery,
+        meta: {
+            setBkBizId: true
+        }
+    }, {
+        path: '/idc',
+        component: pageIdc,
         meta: {
             setBkBizId: true
         }

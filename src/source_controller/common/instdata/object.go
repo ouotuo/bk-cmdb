@@ -125,6 +125,8 @@ func GetIDNameByType(objType string) string {
 		return common.BKCloudIDField
 	case common.BKTableNameInstAsst:
 		return common.BKFieldID
+	case common.BKInnerObjIDIdc:
+		return common.BKIdcIDField
 	default:
 		return common.BKInstIDField
 	}

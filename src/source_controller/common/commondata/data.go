@@ -37,6 +37,7 @@ var ObjTableMap = map[string]string{
 	common.BKInnerObjIDPlat:    common.BKTableNameBasePlat,
 	common.BKInnerObjIDSwitchHost: common.BKTableNameBaseSwitch,
 	common.BKTableNameInstAsst: common.BKTableNameInstAsst,
+	common.BKInnerObjIDIdc:     common.BKTableNameBaseIdc,
 }
 
 // GetInstTableName returns inst data table name

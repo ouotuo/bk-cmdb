@@ -75,6 +75,7 @@ type APIResource struct {
 	AuditCtrl    func() string
 	HostAPI      func() string
 	TopoAPI      func() string
+	IdcAPI      func() string
 	ProcAPI      func() string
 	EventAPI     func() string
 	APIAddr      func() string

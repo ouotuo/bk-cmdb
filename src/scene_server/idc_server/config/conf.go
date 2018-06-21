@@ -10,15 +10,25 @@
  * limitations under the License.
  */
 
-package ccapi
+package config
 
 import (
-	_ "configcenter/src/api_server/ccapi/actions/v2"
-	_ "configcenter/src/api_server/ccapi/actions/v3/audit"   // import audit log(operationlog)
-	_ "configcenter/src/api_server/ccapi/actions/v3/event"   // import event
-	_ "configcenter/src/api_server/ccapi/actions/v3/host"    // import host
-	_ "configcenter/src/api_server/ccapi/actions/v3/process" // import topo
-	_ "configcenter/src/api_server/ccapi/actions/v3/topo"    // import process
-	_ "configcenter/src/api_server/ccapi/actions/v3/idc"    // import idc
-
+	confHandler "configcenter/src/common/confcenter"
+	"configcenter/src/common/errors"
+	"configcenter/src/common/language"
+	"configcenter/src/common/types"
 )
+
+// ConfCenter discover configure changed. get, update configures
+type ConfCenter interface {
+	Start() error
+	Stop() error
+	GetConfigureCxt() []byte
+	GetErrorCxt() map[string]errors.ErrorCode
+	GetLanguageResCxt() map[string]language.LanguageMap
+}
+
+// NewConfCenter create a ConfCenter object
+func NewConfCenter(serv string) ConfCenter {
+	return confHandler.NewConfCenter(serv, types.CC_MODULE_IDC)
+}

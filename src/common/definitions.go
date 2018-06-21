@@ -210,7 +210,7 @@ const (
 
 	// BKSetIDField the setid field
 	BKSetIDField = "bk_set_id"
-
+	BKIdcIDField = "bk_idc_id"
 	// BKSetNameField the set name field
 	BKSetNameField = "bk_set_name"
 
@@ -628,7 +628,7 @@ const (
 	BKTableNameBasePlat    = "cc_PlatBase"
 	BKTableNameBaseSet     = "cc_SetBase"
 	BKTableNameBaseProcess = "cc_Process"
-
+	BKTableNameBaseIdc ="cc_IdcBase"
 	BKTableNameBaseSwitch = "cc_SwitchBase"
 
 	BKTableNameModuleHostConfig = "cc_ModuleHostConfig"
