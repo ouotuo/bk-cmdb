@@ -18,12 +18,12 @@ import (
 	"configcenter/src/common/core/cc/actions"
 	"configcenter/src/common/util"
 	"configcenter/src/scene_server/host_server/host_service/logics"
-	"net/http"
-	"encoding/json"
-	"io/ioutil"
-	"github.com/emicklei/go-restful"
 	"configcenter/src/source_controller/common/commondata"
 	"configcenter/src/storage"
+	"encoding/json"
+	"github.com/emicklei/go-restful"
+	"io/ioutil"
+	"net/http"
 )
 
 var (
@@ -34,9 +34,12 @@ func init() {
 	hostModuleConfig.CreateAction()
 
 	actions.RegisterNewAction(actions.Action{Verb: common.HTTPCreate, Path: "/hosts/addhost", Params: nil, Handler: hostModuleConfig.AddHost})
+	actions.RegisterNewAction(actions.Action{Verb: common.HTTPCreate, Path: "/hosts/addhost", Params: nil, Handler: hostModuleConfig.AddHost})
+	actions.RegisterNewAction(actions.Action{Verb: common.HTTPCreate, Path: "/hosts/host", Params: nil, Handler: hostModuleConfig.AddHost})
 	actions.RegisterNewAction(actions.Action{Verb: common.HTTPCreate, Path: "/host/add/agent", Params: nil, Handler: hostModuleConfig.AddHostFromAgent})
 	actions.RegisterNewAction(actions.Action{Verb: common.HTTPCreate, Path: "/host/add/switch", Params: nil, Handler: hostModuleConfig.AddSwitchFromAgent})
 	actions.RegisterNewAction(actions.Action{Verb: common.HTTPSelectPost, Path: "/host/get/port", Params: nil, Handler: hostModuleConfig.GetHostSwitchPort})
+	actions.RegisterNewAction(actions.Action{Verb: common.HTTPCreate, Path: "/hosts/sync/new/host", Params: nil, Handler: hostModuleConfig.NewHostSyncAppTopo})
 
 }
 
@@ -87,7 +90,71 @@ func (m *hostModuleConfigAction) AddHost(req *restful.Request, resp *restful.Res
 			return http.StatusInternalServerError, nil, defErr.Errorf(common.CCErrCommParamsNeedSet, common.DefaultResModuleName)
 		}
 
-		err, succ, updateErrRow, errRow := logics.AddHost(req, ownerID, appID, data.HostInfo, data.InputType, moduleID, m.CC)
+		err, succ, updateErrRow, errRow := logics.AddHost(req, ownerID, appID, data.HostInfo, data.InputType, []int{moduleID}, m.CC)
+
+		retData := make(map[string]interface{})
+		retData["success"] = succ
+
+		if nil == err {
+			return http.StatusOK, retData, nil
+		} else {
+
+			retData["error"] = errRow
+			retData["update_error"] = updateErrRow
+
+			return http.StatusInternalServerError, retData, defErr.Error(common.CCErrHostCreateFail)
+		}
+	}, resp)
+}
+
+// AddHost add host
+func (m *hostModuleConfigAction) NewHostSyncAppTopo(req *restful.Request, resp *restful.Response) {
+	type hostList struct {
+		ApplicationID int                            `json:"bk_biz_id"`
+		ModuleID      []int                          `json:"bk_module_id"`
+		HostInfo      map[int]map[string]interface{} `json:"host_info"`
+		SupplierID    int                            `json:"bk_supplier_id"`
+		//InputType     string                         `json:"input_type"`
+	}
+	ownerID := common.BKDefaultOwnerID
+	defErr := m.CC.Error.CreateDefaultCCErrorIf(util.GetActionLanguage(req))
+	defLang := m.CC.Lang.CreateDefaultCCLanguageIf(util.GetActionLanguage(req))
+	m.CallResponseEx(func() (int, interface{}, error) {
+
+		value, err := ioutil.ReadAll(req.Request.Body)
+		var data hostList
+
+		err = json.Unmarshal([]byte(value), &data)
+		if err != nil {
+			blog.Error("get unmarshall json value %v error:%v", string(value), err)
+			return http.StatusInternalServerError, nil, defErr.Error(common.CCErrCommJSONUnmarshalFailed)
+		}
+		if nil == data.HostInfo {
+			blog.Error("get unmarshall json value %v error:%v", string(value), err)
+			return http.StatusInternalServerError, nil, defErr.Errorf(common.CCErrCommParamsNeedSet, "host_info")
+		}
+		if common.BatchHostAddMaxRow < len(data.HostInfo) {
+			return http.StatusBadRequest, nil, defErr.Errorf(common.CCErrCommXXExceedLimit, "host_info ", common.BatchHostAddMaxRow)
+		}
+		if nil == data.ModuleID || 0 == len(data.ModuleID) {
+			return http.StatusInternalServerError, nil, defErr.Errorf(common.CCErrCommParamsNeedSet, common.BKModuleIDField)
+		}
+
+		appConds := map[string]interface{}{
+			common.BKAppIDField: data.ApplicationID,
+		}
+		_, err = logics.GetAppInfo(req, "", appConds, m.CC.ObjCtrl(), defLang)
+		if nil != err {
+			blog.Errorf("host sync app %d error:%s", data.ApplicationID, err.Error())
+			return http.StatusInternalServerError, nil, defErr.Errorf(common.CCErrTopoGetAppFaild, err.Error())
+		}
+
+		data.ModuleID, err = logics.NewHostSyncValidModule(req, data.ApplicationID, data.ModuleID, m.CC.ObjCtrl())
+		if nil != err {
+			return http.StatusInternalServerError, nil, defErr.Errorf(common.CCErrTopoGetModuleFailed, err.Error())
+		}
+
+		err, succ, updateErrRow, errRow := logics.AddHost(req, ownerID, data.ApplicationID, data.HostInfo, common.InputTypeApiNewHostSync, data.ModuleID, m.CC)
 
 		retData := make(map[string]interface{})
 		retData["success"] = succ
@@ -161,7 +228,7 @@ func (m *hostModuleConfigAction) AddHostFromAgent(req *restful.Request, resp *re
 
 		defErr := m.CC.Error.CreateDefaultCCErrorIf(language)
 
-		err, _, updateErrRow, errRow := logics.AddHost(req, ownerID, appID, addHost, "", moduleID, m.CC)
+		err, _, updateErrRow, errRow := logics.AddHost(req, ownerID, appID, addHost, "", []int{moduleID}, m.CC)
 
 		if nil == err {
 			return http.StatusOK, nil, nil
@@ -284,13 +351,12 @@ func (m *hostModuleConfigAction) GetHostSwitchPort(req *restful.Request, resp *r
 			dat.Limit = common.BKDefaultLimit
 		}
 		//获取已录入switch信息
-		allSwitchPort, err := logics.GetSwitchPort(req, m.CC.HostCtrl(),dat.Limit,dat.Start, dat.Condition.(map[string]interface{}), langHandle)
+		allSwitchPort, err := logics.GetSwitchPort(req, m.CC.HostCtrl(), dat.Limit, dat.Start, dat.Condition.(map[string]interface{}), langHandle)
 		if nil != err {
-			blog.Info("portgeterr",err)
+			blog.Info("portgeterr", err)
 		}
-		blog.Info("finalldatais",allSwitchPort)
+		blog.Info("finalldatais", allSwitchPort)
 
 		return http.StatusOK, allSwitchPort, nil
 	}, resp)
 }
-
