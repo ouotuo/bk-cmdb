@@ -71,7 +71,24 @@ func (cli *Client) AuditSetLog(id interface{}, Content interface{}, OpDesc strin
 	url := fmt.Sprintf("%s/audit/v1/set/%s/%s/%s", cli.GetAddress(), ownerID, appID, user)
 	return cli.GetRequestInfo(common.HTTPCreate, data, url)
 }
-
+// AuditIdcLog  新加机房操作日志 OpDesc The multi-language version is used as the translation key. There is no corresponding value in the language pack. The current content is displayed.
+func (cli *Client) AuditIdcLog(id interface{}, Content interface{}, OpDesc string, ownerID, appID, user string, OpType auditoplog.AuditOpType) (interface{}, error) {
+	data := common.KvMap{common.BKContentField: Content, common.BKOpDescField: OpDesc, common.BKOpTypeField: OpType, bk_inst_id_fields: id}
+	url := fmt.Sprintf("%s/audit/v1/idc/%s/%s/%s", cli.GetAddress(), ownerID, appID, user)
+	return cli.GetRequestInfo(common.HTTPCreate, data, url)
+}
+// AuditIdcLog  新加机房操作日志 OpDesc The multi-language version is used as the translation key. There is no corresponding value in the language pack. The current content is displayed.
+func (cli *Client) AuditRackLog(id interface{}, Content interface{}, OpDesc string, ownerID, appID, user string, OpType auditoplog.AuditOpType) (interface{}, error) {
+	data := common.KvMap{common.BKContentField: Content, common.BKOpDescField: OpDesc, common.BKOpTypeField: OpType, bk_inst_id_fields: id}
+	url := fmt.Sprintf("%s/audit/v1/rack/%s/%s/%s", cli.GetAddress(), ownerID, appID, user)
+	return cli.GetRequestInfo(common.HTTPCreate, data, url)
+}
+// AuditIdcLog  新加机房操作日志 OpDesc The multi-language version is used as the translation key. There is no corresponding value in the language pack. The current content is displayed.
+func (cli *Client) AuditPosLog(id interface{}, Content interface{}, OpDesc string, ownerID, appID, user string, OpType auditoplog.AuditOpType) (interface{}, error) {
+	data := common.KvMap{common.BKContentField: Content, common.BKOpDescField: OpDesc, common.BKOpTypeField: OpType, bk_inst_id_fields: id}
+	url := fmt.Sprintf("%s/audit/v1/pos/%s/%s/%s", cli.GetAddress(), ownerID, appID, user)
+	return cli.GetRequestInfo(common.HTTPCreate, data, url)
+}
 // AuditSetsLog  批量新加集群操作日志 OpDesc The multi-language version is used as the translation key. There is no corresponding value in the language pack. The current content is displayed.
 func (cli *Client) AuditSetsLog(Content []auditoplog.AuditLogContext, OpDesc string, ownerID, appID, user string, OpType auditoplog.AuditOpType) (interface{}, error) {
 	data := common.KvMap{common.BKContentField: Content, common.BKOpDescField: OpDesc, common.BKOpTypeField: OpType}

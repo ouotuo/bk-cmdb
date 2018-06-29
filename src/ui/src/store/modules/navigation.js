@@ -70,11 +70,12 @@ const getters = {
         let authorizedClassifications = JSON.parse(JSON.stringify(getters.authorizedClassifications))
         // 构造模型导航数据
         let navigation = authorizedClassifications.map(classification => {
-            return {
+            let a = {
                 'icon': classification['bk_classification_icon'],
                 'id': classification['bk_classification_id'],
                 'name': classification['bk_classification_name'],
                 'children': classification['bk_objects'].map(model => {
+                    // 若为idc则添加拓扑结构
                     return {
                         'path': `/organization/${model['bk_obj_id']}`,
                         'id': model['bk_obj_id'],
@@ -83,6 +84,15 @@ const getters = {
                     }
                 })
             }
+            if (classification['bk_classification_id'] === 'bk_idc') {
+                a['children'].push({
+                    'path': `/idc`,
+                    'id': 'idcTopo',
+                    'name': '机房拓扑',
+                    'classificationId': 'bk_idc'
+                })
+            }
+            return a
         })
         let staticNavigation = JSON.parse(JSON.stringify(STATIC_NAVIGATION))
         // 检查主机管理、后台配置权限

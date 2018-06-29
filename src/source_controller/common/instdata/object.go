@@ -127,6 +127,10 @@ func GetIDNameByType(objType string) string {
 		return common.BKFieldID
 	case common.BKInnerObjIDIdc:
 		return common.BKIdcIDField
+	case common.BKInnerObjIDRack:
+		return common.BKRackIDField
+	case common.BKInnerObjIDPos:
+		return common.BKPosIDField
 	default:
 		return common.BKInstIDField
 	}
@@ -151,6 +155,12 @@ func GetObjectByID(objType string, fields []string, id int, result interface{}, 
 		condition[common.BKProcIDField] = id
 	case common.BKInnerObjIDPlat:
 		condition[common.BKCloudIDField] = id
+	case common.BKInnerObjIDIdc:
+		condition[common.BKIdcIDField] = id
+	case common.BKInnerObjIDRack:
+		condition[common.BKRackIDField] = id
+	case common.BKInnerObjIDPos:
+		condition[common.BKPosIDField] = id
 	default:
 		return errors.New("invalid object type")
 	}

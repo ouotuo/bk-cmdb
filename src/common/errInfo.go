@@ -269,6 +269,22 @@ const (
 	CCErrTopoMulueIDNotfoundFailed = 1101080
 	CCErrTopoBkAppNotAllowedDelete = 1101081
 
+	// idcserver 1111XXX
+	CCErrIdcIdcDeleteFailed                       = 1111031
+	CCErrIdcIdcUpdateFailed                       = 1111032
+	CCErrIdcIdcSearchFailed                       = 1111033
+	CCErrIdcIdcCreateFailed                       = 1111034
+
+	CCErrIdcRackCreateFailed = 1111008
+	CCErrIdcRackDeleteFailed = 1111009
+	CCErrIdcRackUpdateFailed = 1111010
+	CCErrIdcRackSelectFailed = 1111011
+
+	CCErrIdcPosCreateFailed = 1111004
+	CCErrIdcPosDeleteFailed = 1111005
+	CCErrIdcPosUpdateFailed = 1111006
+	CCErrIdcPosSelectFailed = 1111007
+
 	// objectcontroller 1102XXX
 
 	// CCErrObjectPropertyGroupInsertFailed failed to save the property group

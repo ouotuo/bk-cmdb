@@ -216,9 +216,16 @@ const (
 
 	// BKSetIDField the setid field
 	BKSetIDField = "bk_set_id"
-	BKIdcIDField = "bk_idc_id"
+
 	// BKSetNameField the set name field
 	BKSetNameField = "bk_set_name"
+
+	BKIdcNameField = "bk_idc_name"
+	BKIdcIDField = "bk_idc_id"
+	BKRackNameField = "bk_rack_name"
+	BKRackIDField = "bk_rack_id"
+	BKPosNameField = "bk_pos_name"
+	BKPosIDField = "bk_pos_id"
 
 	// BKModuleIDField the module id field
 	BKModuleIDField = "bk_module_id"
@@ -641,6 +648,8 @@ const (
 	BKTableNameBaseSet     = "cc_SetBase"
 	BKTableNameBaseProcess = "cc_Process"
 	BKTableNameBaseIdc ="cc_IdcBase"
+	BKTableNameBaseRack ="cc_RackBase"
+	BKTableNameBasePos ="cc_PosBase"
 	BKTableNameBaseSwitch = "cc_SwitchBase"
 
 	BKTableNameModuleHostConfig = "cc_ModuleHostConfig"

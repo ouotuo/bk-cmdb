@@ -7,61 +7,61 @@
                         <label class="attribute-item-label fl" :class="{'required': property['isrequired']}">
                             {{property['bk_property_name']}}
                         </label>
-                        <div class="attribute-item-field fl" :style="{zIndex: property['bk_asst_obj_id'] === 'host' ? 998 : attribute[bkObjId].length - index}">
-                            <input v-if="property['bk_property_type'] === 'int'" 
-                                type="text" maxlength="11" class="bk-form-input"
-                                :disabled="!property['editable']"
-                                v-model.number="localValues[property['bk_property_id']]">
+                        <div class="attribute-item-field fl" :style="{zIndex: property['bk_asst_obj_id'] === 'host' && isHostShow ? 998 : attribute[bkObjId].length - index}">
+                            <input v-if="property['bk_property_type'] === 'int'"
+                                   type="text" maxlength="11" class="bk-form-input"
+                                   :disabled="!property['editable']"
+                                   v-model.number="localValues[property['bk_property_id']]">
                             <v-member-selector v-else-if="property['bk_property_type'] === 'objuser'"
-                                :selected.sync="localValues[property['bk_property_id']]"
-                                :disabled="!property['editable']" 
-                                :multiple="true">
+                                               :selected.sync="localValues[property['bk_property_id']]"
+                                               :disabled="!property['editable']"
+                                               :multiple="true">
                             </v-member-selector>
                             <bk-datepicker style="width: 100%;" v-else-if="property['bk_property_type'] === 'date'"
-                                :timer="false"
-                                :disabled="!property['editable']"
-                                :init-date="localValues[property['bk_property_id']]"
-                                @date-selected="setDate(...arguments, property['bk_property_id'])">
+                                           :timer="false"
+                                           :disabled="!property['editable']"
+                                           :init-date="localValues[property['bk_property_id']]"
+                                           @date-selected="setDate(...arguments, property['bk_property_id'])">
                             </bk-datepicker>
                             <bk-datepicker style="width: 100%;" v-else-if="property['bk_property_type'] === 'time'"
-                                :timer="true"
-                                :disabled="!property['editable']"
-                                :init-date="localValues[property['bk_property_id']]"
-                                @date-selected="setDate(...arguments, property['bk_property_id'])">
+                                           :timer="true"
+                                           :disabled="!property['editable']"
+                                           :init-date="localValues[property['bk_property_id']]"
+                                           @date-selected="setDate(...arguments, property['bk_property_id'])">
                             </bk-datepicker>
                             <template v-else-if="property['bk_property_type'] === 'singleasst' || property['bk_property_type'] === 'multiasst'">
-                                <v-host v-if="property['bk_asst_obj_id'] === 'host'"
-                                    :multiple="property['bk_property_type'] === 'multiasst'"
-                                    :selected.sync="localValues[property['bk_property_id']]">
+                                <v-host :isSelectBoxShow.sync="isHostShow" v-if="property['bk_asst_obj_id'] === 'host'"
+                                        :multiple="property['bk_property_type'] === 'multiasst'"
+                                        :selected.sync="localValues[property['bk_property_id']]">
                                 </v-host>
                                 <v-association v-else
-                                    :multiple="property['bk_property_type'] === 'multiasst'"
-                                    :selected.sync="localValues[property['bk_property_id']]"
-                                    :disabled="!property['editable']"
-                                    :asstObjId="property['bk_asst_obj_id']">
+                                               :multiple="property['bk_property_type'] === 'multiasst'"
+                                               :selected.sync="localValues[property['bk_property_id']]"
+                                               :disabled="!property['editable']"
+                                               :asstObjId="property['bk_asst_obj_id']">
                                 </v-association>
                             </template>
                             <v-enumeration v-else-if="property['bk_property_type'] === 'enum'"
-                                :disabled="!property['editable']"
-                                :selected.sync="localValues[property['bk_property_id']]"
-                                :options="property['option']">
+                                           :disabled="!property['editable']"
+                                           :selected.sync="localValues[property['bk_property_id']]"
+                                           :options="property['option']">
                             </v-enumeration>
                             <v-timezone v-else-if="property['bk_property_type'] === 'timezone'"
-                                :selected.sync="localValues[property['bk_property_id']]"
-                                :disabled="!property['editable']">
+                                        :selected.sync="localValues[property['bk_property_id']]"
+                                        :disabled="!property['editable']">
                             </v-timezone>
                             <span class="bk-form-checkbox" v-else-if="property['bk_property_type'] === 'bool'">
                                 <input type="checkbox" v-model="localValues[property['bk_property_id']]" :disabled="!property['editable']">
                             </span>
                             <input v-else
-                                :disabled="!property['editable']"
-                                type="text" class="bk-form-input"
-                                v-model.trim="localValues[property['bk_property_id']]">
+                                   :disabled="!property['editable']"
+                                   type="text" class="bk-form-input"
+                                   v-model.trim="localValues[property['bk_property_id']]">
                             <!-- <v-validate class="attribute-validate-result" v-if="checkIsNeedValidate(property)" -->
                             <v-validate class="attribute-validate-result"
-                                v-validate="getValidateRules(property)"
-                                :name="property['bk_property_name']" 
-                                :value="localValues[property['bk_property_id']]">
+                                        v-validate="getValidateRules(property)"
+                                        :name="property['bk_property_name']"
+                                        :value="localValues[property['bk_property_id']]">
                             </v-validate>
                         </div>
                     </div>
@@ -111,7 +111,7 @@
     export default {
         props: {
             bkObjId: String,
-            bkBizId: Number,
+            bkIdcId: Number,
             activeNode: Object,
             activeParentNode: Object,
             editable: {
@@ -142,7 +142,8 @@
                 attribute: {},
                 localValues: {},
                 displayType: 'list',
-                attributeLoading: false
+                attributeLoading: false,
+                isHostShow: false
             }
         },
         computed: {
@@ -295,7 +296,6 @@
                 }
                 if (property.hasOwnProperty('option')) {
                     if (bkPropertyType === 'int') {
-                        // option = JSON.parse(option)
                         if (option.hasOwnProperty('min')) {
                             rules['min_value'] = option.min
                         }
@@ -306,8 +306,14 @@
                         rules['regex'] = option
                     }
                 }
-                if (bkPropertyType === 'singlechar' || bkPropertyType === 'longchar') {
-                    rules['char'] = true
+                if (bkPropertyType === 'singlechar') {
+                    rules['singlechar'] = true
+                }
+                if (bkPropertyType === 'longchar') {
+                    rules['longchar'] = true
+                }
+                if (bkPropertyType === 'int') {
+                    rules['regex'] = '^(0|[1-9][0-9]*|-[1-9][0-9]*)$'
                 }
                 return rules
             },
@@ -328,12 +334,12 @@
                         'timezone': null
                     }
                     if (bkIsapi) {
-                        if (bkPropertyId === 'bk_biz_id') {
-                            formData[bkPropertyId] = this.bkBizId
-                        } else if (bkPropertyId === 'bk_set_id') {
-                            if (this.bkObjId === 'set') {
+                        if (bkPropertyId === 'bk_idc_id') {
+                            formData[bkPropertyId] = this.bkIdcId
+                        } else if (bkPropertyId === 'bk_rack_id') {
+                            if (this.bkObjId === 'rack') {
                                 formData[bkPropertyId] = this.activeNode['bk_inst_id']
-                            } else if (this.bkObjId === 'module') {
+                            } else if (this.bkObjId === 'pos') {
                                 formData[bkPropertyId] = this.activeParentNode['bk_inst_id']
                             }
                         } else {
@@ -379,63 +385,63 @@
 <style lang="scss" scoped>
     .attribute-list{
         padding: 20px 0 30px;
-        .attribute-item{
-            margin: 20px 0 0 0;
-            font-size: 14px;
-            color: #737987;
-            .attribute-item-label{
-                width: 145px;
-                line-height: 36px;
-                display: inline-block;
-                text-align: right;
-                padding-right: 27px;
-                vertical-align: top;
-                position: relative;
-                &.required:after{
-                    content: "*";
-                    color: #ff5656;
-                    position: absolute;
-                    right: 18px;
-                    top: 3px;
-                }
-                &.list:after{
-                    content: ":";
-                    position: absolute;
-                    right: 18px;
-                    top: 0;
-                }
-            }
-            .attribute-item-field{
-                width: 460px;
-                line-height: 36px;
-                position: relative;
-                &.list{
-                    padding: 0 11px;
-                }
-                .attribute-validate-result{
-                    position: absolute;
-                    top: 100%;
-                    line-height: 16px;
-                }
-            }
-        }
+    .attribute-item{
+        margin: 20px 0 0 0;
+        font-size: 14px;
+        color: #737987;
+    .attribute-item-label{
+        width: 145px;
+        line-height: 36px;
+        display: inline-block;
+        text-align: right;
+        padding-right: 27px;
+        vertical-align: top;
+        position: relative;
+    &.required:after{
+         content: "*";
+         color: #ff5656;
+         position: absolute;
+         right: 18px;
+         top: 3px;
+     }
+    &.list:after{
+         content: ":";
+         position: absolute;
+         right: 18px;
+         top: 0;
+     }
+    }
+    .attribute-item-field{
+        width: 460px;
+        line-height: 36px;
+        position: relative;
+    &.list{
+         padding: 0 11px;
+     }
+    .attribute-validate-result{
+        position: absolute;
+        top: 100%;
+        line-height: 16px;
+    }
+    }
+    }
     }
     .attribute-btn{
         padding: 0 0 0 145px;
-        .bk-button,
-        .del-btn{
-            vertical-align: middle;
-            font-size: 14px;
-            height: 36px;
-            line-height: 34px;
-            margin: 0 15px 0 0;
-        }
-        .tooltip-wrapper{
-            display: inline-block;
-            .bk-button{
-                margin: 0;
-            }
-        }
+    .bk-button,
+    .del-btn{
+        vertical-align: middle;
+        font-size: 14px;
+        height: 36px;
+        line-height: 34px;
+        margin: 0 15px 0 0;
+    }
+    .tooltip-wrapper{
+        display: inline-block;
+    .bk-button{
+        margin: 0;
+    }
+    }
     }
     .bk-form-input{
         vertical-align: top;
@@ -445,10 +451,10 @@
 
 <style lang="scss">
     .topo-attribute{
-        .attribute-item-field{
-            .date-dropdown-panel{
-                width: 260px;
-            }
-        }
+    .attribute-item-field{
+    .date-dropdown-panel{
+        width: 260px;
+    }
+    }
     }
 </style>
