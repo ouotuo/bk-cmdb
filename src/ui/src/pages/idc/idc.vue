@@ -303,7 +303,6 @@
                 this.view.attribute.type = 'create'
                 this.view.tab.active = 'attribute'
                 this.view.attribute.IsIdc = true
-                console.log(this.view)
             },
             /* 新增拓扑节点/修改拓扑节点 */
             submitNode (formData, originalData) {
