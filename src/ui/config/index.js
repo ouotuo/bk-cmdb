@@ -38,14 +38,15 @@ module.exports = {
     assetsSubDirectory: 'static',
     assetsPublicPath: '/',
     proxyTable: {
-      '/api': {
+      '**': {
           logLevel: 'debug',
           filter: function(pathname, req) {
               // 代理ajax请求
-             // if (req.headers["x-requested-with"] == 'XMLHttpRequest') {
+              if (req.headers["bkcclanguage"] == 'cn') {
+              //if (pathname.split("/")[1]==="api") {
 	              console.warn(pathname, '1111 --> ', req.url)
                   return true;
-           //   }
+              }
           },
           target: 'http://192.168.148.138:8083',
           changeOrigin: true,

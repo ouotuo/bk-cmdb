@@ -44,6 +44,14 @@
             "classificationId": "bk_host_manage"
         }]
     },
+    "bk_idc": {
+      "i18n": "Idc['机房管理']",
+      "icon": "bk-icon icon-home-shape",
+      "id": "bk_index",
+      "name": "机房管理",
+      "path": "/idc",
+      "children": []
+    },
     "bk_back_config": {
         "i18n": "Common['后台配置']",
         "icon": "icon-cc-setting",

@@ -21,6 +21,10 @@ const state = {
         list: [],
         selected: parseInt(Cookies.get('bk_biz_id')) || -1
     },
+    idc: {     // 机房列表
+        list: [],
+        selected: parseInt(Cookies.get('bk_idc_id')) || -1
+    },
     memberList: [],
     isAdmin: window.isAdmin === '1',
     usercustom: {},          // 用户字段配置
@@ -33,6 +37,8 @@ const getters = {
     bkSupplierAccount: state => state.bkSupplierAccount,
     bkBizId: state => state.biz.selected,
     bkBizList: state => state.biz.list,
+    bkIdcId: state => state.idc.selected,
+    bkIdcList: state => state.idc.list,
     memberList: state => state.memberList,
     isAdmin: state => state.isAdmin,
     navigation: state => state.navigation,
@@ -71,6 +77,34 @@ const actions = {
             }
         })
     },
+    getBkIdcList ({commit, state}) {
+        $axios.post(`idc/search/${state.bkSupplierAccount}`, {fields: ['bk_idc_id', 'bk_idc_name']}).then((res) => {
+            if (res.result) {
+                if (res.data.info && res.data.info.length) {
+                    commit('setBkIdcList', res.data.info)
+                    console.log(state)
+                    if (state.idc.selected === -1) { // 如果未选择过，则选中第一个业务
+                        commit('setBkIdcId', state['idc']['list'][0]['bk_idc_id'])
+                    } else { // 如果已经选择过，则需判断缓存的已选择业务是否被删除
+                        let isExist = false
+                        state.idc.list.map((idc) => {
+                            if (state.idc.selected === idc['bk_idc_id']) {
+                                isExist = true
+                            }
+                        })
+                        if (!isExist) {
+                            commit('setBkIdcId', state.idc.list[0]['bk_idc_id'])
+                        }
+                    }
+                } else {
+                    commit('setBkIdcList', [])
+                    commit('setBkIdcId', -1)
+                }
+            } else {
+                alertMsg(res['bk_error_msg'])
+            }
+        })
+    },
     getMemberList ({commit, state}, type) {
         state.memberLoading = true
         let baseURL = $axios.defaults.baseURL
@@ -99,6 +133,13 @@ const mutations = {
     setBkBizId (state, selected) {
         Cookies.set('bk_biz_id', selected, { expires: 30, path: '' })
         state.biz.selected = selected
+    },
+    setBkIdcList (state, list) {
+        state.idc.list = list
+    },
+    setBkIdcId (state, selected) {
+        Cookies.set('bk_idc_id', selected, { expires: 30, path: '' })
+        state.idc.selected = selected
     },
     deleteApplication (state, appId) {
         let applicationList = state.application.list

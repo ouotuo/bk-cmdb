@@ -123,6 +123,8 @@ var router = new Router({
 router.beforeEach(async (to, from, next) => {
     routerVue.setGlobalLoading(true)
     let isAuthorized = await routerVue.isAuthorized(to)
+    console.log(isAuthorized)
+    console.log(to)
     if (isAuthorized) {
         if (!to.matched.some(({meta}) => meta.setBkBizId)) {
             delete routerVue.$axios.defaults.headers.bk_biz_id

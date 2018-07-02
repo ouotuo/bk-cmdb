@@ -2,7 +2,7 @@
     <div class="idc-wrapper clearfix">
         <div class="idc-tree-ctn fl">
             <div class="biz-selector-ctn">
-                <v-application-selector :selected.sync="tree.bkBizId" @on-selected="handleBizSelected" :filterable="true"></v-application-selector>
+                <v-idc-selector :selected.sync="tree.bkIdcId" @on-selected="handleIdcSelected" :filterable="true"></v-idc-selector>
             </div>
             <div class="idc-options-ctn" hidden>
                 <i class="idc-option-del icon-cc-del fr" v-if="isShowOptionDel && Object.keys(tree.treeData).length" @click="deleteNode"></i>
@@ -18,14 +18,18 @@
                 </v-tree>
             </div>
         </div>
+        <div style="position: absolute;top: 30px;right: 2.5%;z-index: 9999">
+            <bk-button type="primary" class="bk-button main-btn"  @click="handleAddIdc" >添加机房</bk-button>
+        </div>
         <div class="idc-view-ctn">
-            <bk-tab :active-name="view.tab.active" @tab-changed="tabChanged" class="idc-view-tab">
+             <bk-tab :active-name="view.tab.active" @tab-changed="tabChanged" class="idc-view-tab">
+
                 <bk-tabpanel name="host" :title="$t('BusinessIdclogy[\'主机调配\']')">
                     <v-hosts ref="hosts"
                         :outerParams="searchParams"
                         :isShowRefresh="true"
                         :outerLoading="tree.loading"
-                        :isShowCrossImport="authority['is_host_cross_biz'] && attributeBkObjId === 'module'"
+                        :isShowCrossImport="authority['is_host_cross_biz'] && attributeBkObjId === 'pos'"
                         :tableVisible="view.tab.active === 'host'"
                         @handleCrossImport="handleCrossImport">
                         <div slot="filter"></div>
@@ -34,14 +38,14 @@
                 <bk-tabpanel name="attribute" :title="$t('BusinessIdclogy[\'节点属性\']')" :show="isShowAttribute">
                     <v-attribute ref="idcAttribute"
                         :bkObjId="attributeBkObjId"
-                        :bkBizId="tree.bkBizId"
+                        :bkIdcId="tree.bkIdcId"
                         :activeNode="tree.activeNode"
                         :activeParentNode="tree.activeParentNode"
                         :formValues="view.attribute.formValues"
                         :type="view.attribute.type"
                         :active="view.tab.active === 'attribute'"
                         :isLoading="view.attribute.isLoading"
-                        :editable="tree.bkBizName !== '蓝鲸'"
+                        :editable="tree.bkIdcName !== '蓝鲸'"
                         @submit="submitNode"
                         @delete="deleteNode"
                         @cancel="cancelCreate"></v-attribute>
@@ -51,15 +55,15 @@
         <bk-dialog :is-show.sync="view.crossImport.isShow" :quick-close="false" :has-header="false" :has-footer="false" :width="700" :padding="0">
             <v-cross-import  slot="content"
                 :is-show.sync="view.crossImport.isShow"
-                :bizId="tree.bkBizId"
-                :moduleId="tree.activeNode['bk_inst_id']"
-                @handleCrossImportSuccess="setSearchParams">
+                :idcId="tree.bkIdcId"
+                :posId="tree.activeNode['bk_inst_id']"
+                @handleCrossImportSuccess="rackSearchParams">
             </v-cross-import>
         </bk-dialog>
     </div>
 </template>
 <script>
-    import vApplicationSelector from '@/components/common/selector/application'
+    import vIdcSelector from '@/components/common/selector/idc'
     import vTree from '@/components/tree/tree.v2'
     import vHosts from '@/pages/hosts/hosts'
     import vAttribute from './children/attribute'
@@ -69,8 +73,8 @@
         data () {
             return {
                 tree: {
-                    bkBizId: -1,
-                    bkBizName: '',
+                    bkIdcId: -1,
+                    bkIdcName: '',
                     treeData: {},
                     model: [],
                     activeNode: {},
@@ -103,9 +107,14 @@
             attributeBkObjId () {
                 let bkObjId
                 if (this.view.attribute.type === 'create') {
-                    bkObjId = this.tree.model.find(model => {
-                        return model['bk_obj_id'] === this.tree.activeNode['bk_obj_id']
-                    })['bk_next_obj']
+                    console.log(this.view.attribute.IsIdc)
+                    if (this.view.attribute.IsIdc) {
+                        bkObjId = 'idc'
+                    } else {
+                        bkObjId = this.tree.model.find(model => {
+                            return model['bk_obj_id'] === this.tree.activeNode['bk_obj_id']
+                        })['bk_next_obj']
+                    }
                 } else {
                     bkObjId = this.tree.activeNode['bk_obj_id']
                 }
@@ -113,13 +122,13 @@
             },
             /* 计算是否显示属性修改tab选项卡 */
             isShowAttribute () {
-                let isShow = this.tree.activeNode['bk_obj_id'] !== 'biz' && !this.tree.activeNode['default']
+                let isShow = !this.tree.activeNode['default']
                 return (isShow || this.view.attribute.type === 'create') && !!Object.keys(this.tree.treeData).length
             },
             /* 计算是否显示添加按钮 */
             isShowOptionAdd () {
                 let activeNode = this.tree.activeNode
-                return this.tree.model.length && Object.keys(activeNode).length && activeNode['bk_obj_id'] !== 'module' && !activeNode['default']
+                return this.tree.model.length && Object.keys(activeNode).length && activeNode['bk_obj_id'] !== 'pos' && !activeNode['default']
             },
             /* 查找当前节点对应的主线拓扑模型 */
             optionModel () {
@@ -129,7 +138,7 @@
             },
             /* 计算是否显示删除按钮 */
             isShowOptionDel () {
-                return this.tree.activeNode['bk_obj_id'] !== 'biz' && !this.tree.activeNode['default'] && this.view.tab.active === 'host'
+                return !this.tree.activeNode['default'] && this.view.tab.active === 'host'
             },
             /* 计算当前树展开的最大层次 */
             maxExpandedLevel () {
@@ -138,7 +147,7 @@
         },
         watch: {
             /* 业务切换，初始化拓扑树 */
-            'tree.bkBizId' (bkBizId) {
+            'tree.bkIdcId' (bkIdcId) {
                 this.getIdcTree().then(() => {
                     this.tree.initNode = {
                         level: 1,
@@ -176,8 +185,8 @@
             }
         },
         methods: {
-            handleBizSelected (data) {
-                this.tree.bkBizName = data.label
+            handleIdcSelected (data) {
+                this.tree.bkIdcName = data.label
             },
             /* 获取最大展开层级 */
             getLevel (node) {
@@ -189,7 +198,7 @@
             },
             /* 获取业务拓扑实例 */
             getIdcInst () {
-                return this.$axios.get(`idc/inst/${this.bkSupplierAccount}/${this.tree.bkBizId}`).then(res => {
+                return this.$axios.get(`idc/inst/${this.bkSupplierAccount}/${this.tree.bkIdcId}`).then(res => {
                     return res
                 }).catch(e => {
                     if (e.response && e.response.status === 403) {
@@ -199,7 +208,7 @@
             },
             /* 获取内置业务拓扑 */
             getIdcInternal () {
-                return this.$axios.get(`idc/internal/${this.bkSupplierAccount}/${this.tree.bkBizId}`).then(res => {
+                return this.$axios.get(`idc/internal/${this.bkSupplierAccount}/${this.tree.bkIdcId}`).then(res => {
                     return res
                 }).catch(e => {
                     if (e.response && e.response.status === 403) {
@@ -222,17 +231,17 @@
                 this.tree.loading = true
                 return this.$Axios.all([this.getIdcInst(), this.getIdcInternal()]).then(this.$Axios.spread((instRes, internalRes) => {
                     if (instRes.result && internalRes.result) {
-                        let internalModule = internalRes.data.module.map(module => {
+                        let internalPos = internalRes.data.pos.map(pos => {
                             return {
-                                'default': module['bk_module_name'] === '空闲机' || module['bk_module_name'] === 'idle machine' ? 1 : 2,
-                                'bk_obj_id': 'module',
+                                'default': pos['bk_pos_name'] === '空闲机' || pos['bk_pos_name'] === 'idle machine' ? 1 : 2,
+                                'bk_obj_id': 'pos',
                                 'bk_obj_name': this.$t('Hosts[\'模块\']'),
-                                'bk_inst_id': module['bk_module_id'],
-                                'bk_inst_name': module['bk_module_name'],
+                                'bk_inst_id': pos['bk_pos_id'],
+                                'bk_inst_name': pos['bk_pos_name'],
                                 'isFolder': false
                             }
                         })
-                        instRes.data[0]['child'] = internalModule.concat(instRes.data[0]['child'])
+                       // instRes.data[0]['child'] = internalPos.concat(instRes.data[0]['child'])
                         this.tree.treeData = instRes.data[0]
                     } else {
                         this.$alertMsg(internalRes.result ? instRes.message : internalRes.message)
@@ -256,12 +265,15 @@
                     fields: [],
                     condition: {}
                 }
-                if (bkObjId === 'set') {
-                    url = `set/search/${this.bkSupplierAccount}/${this.tree.bkBizId}`
-                    params['condition']['bk_set_id'] = bkInstId
-                } else if (bkObjId === 'module') {
-                    url = `module/search/${this.bkSupplierAccount}/${this.tree.bkBizId}/${this.tree.activeParentNode['bk_inst_id']}`
-                    params['condition']['bk_module_id'] = bkInstId
+                if (bkObjId === 'idc') {
+                    url = `idc/search/${this.bkSupplierAccount}`
+                    params['condition']['bk_idc_id'] = bkInstId
+                } else if (bkObjId === 'rack') {
+                    url = `rack/search/${this.bkSupplierAccount}/${this.tree.bkIdcId}`
+                    params['condition']['bk_rack_id'] = bkInstId
+                } else if (bkObjId === 'pos') {
+                    url = `pos/search/${this.bkSupplierAccount}/${this.tree.bkIdcId}/${this.tree.activeParentNode['bk_inst_id']}`
+                    params['condition']['bk_pos_id'] = bkInstId
                     params['condition']['bk_supplier_account'] = this.bkSupplierAccount
                 } else {
                     url = `inst/search/${this.bkSupplierAccount}/${bkObjId}/${bkInstId}`
@@ -285,6 +297,13 @@
                 this.view.attribute.type = 'create'
                 this.view.tab.active = 'attribute'
             },
+            handleAddIdc () {
+                this.view.attribute.formValues = {}
+                this.view.attribute.isLoading = false
+                this.view.attribute.type = 'create'
+                this.view.tab.active = 'attribute'
+                this.view.attribute.IsIdc = true
+            },
             /* 新增拓扑节点/修改拓扑节点 */
             submitNode (formData, originalData) {
                 let url
@@ -297,23 +316,30 @@
                 if (submitType === 'create') {
                     method = 'post'
                     formData['bk_parent_id'] = bkInstId
-                    if (this.attributeBkObjId === 'set') {
-                        url = `set/${this.tree.bkBizId}`
+                    if (this.attributeBkObjId === 'idc') {
+                        delete formData['bk_parent_id']
+                        url = `idc/${this.bkSupplierAccount}`
+                       // formData['bk_supplier_account'] = this.bkSupplierAccount
+                    } else if (this.attributeBkObjId === 'rack') {
+                        url = `rack/${this.tree.bkIdcId}`
                         formData['bk_supplier_account'] = this.bkSupplierAccount
-                    } else if (this.attributeBkObjId === 'module') {
-                        url = `module/${this.tree.bkBizId}/${bkInstId}`
+                    } else if (this.attributeBkObjId === 'pos') {
+                        url = `pos/${this.tree.bkIdcId}/${bkInstId}`
                         formData['bk_supplier_account'] = this.bkSupplierAccount
                     } else {
                         url = `inst/${this.bkSupplierAccount}/${this.attributeBkObjId}`
-                        formData['bk_biz_id'] = this.tree.bkBizId
+                        formData['bk_idc_id'] = this.tree.bkIdcId
                     }
                 } else if (submitType === 'update') {
                     method = 'put'
-                    if (bkObjId === 'set') {
-                        url = `set/${this.tree.bkBizId}/${bkInstId}`
+                    if (this.attributeBkObjId === 'idc') {
+                        url = `idc/${this.bkSupplierAccount}/${this.tree.bkIdcId}`
+                       // formData['bk_supplier_account'] = this.bkSupplierAccount
+                    } else if (bkObjId === 'rack') {
+                        url = `rack/${this.tree.bkIdcId}/${bkInstId}`
                         formData['bk_supplier_account'] = this.bkSupplierAccount
-                    } else if (bkObjId === 'module') {
-                        url = `module/${this.tree.bkBizId}/${this.tree.activeParentNode['bk_inst_id']}/${bkInstId}`
+                    } else if (bkObjId === 'pos') {
+                        url = `pos/${this.tree.bkIdcId}/${this.tree.activeParentNode['bk_inst_id']}/${bkInstId}`
                         formData['bk_supplier_account'] = this.bkSupplierAccount
                     } else {
                         url = `inst/${this.bkSupplierAccount}/${bkObjId}/${bkInstId}`
@@ -334,6 +360,9 @@
                         }
                         this.view.attribute.type = 'update'
                         this.$refs.idcAttribute.displayType = 'list'
+                        if (this.attributeBkObjId === 'idc') {
+                            window.location.reload()
+                        }
                     } else {
                         this.$alertMsg(res['bk_error_msg'])
                     }
@@ -357,22 +386,22 @@
                     node.child = node.child || []
                     node.child.push({
                         'default': 0,
-                        'bk_inst_id': bkNextObj === 'set' ? response['bk_set_id'] : bkNextObj === 'module' ? response['bk_module_id'] : response['bk_inst_id'],
-                        'bk_inst_name': bkNextObj === 'set' ? formData['bk_set_name'] : bkNextObj === 'module' ? formData['bk_module_name'] : formData['bk_inst_name'],
+                        'bk_inst_id': bkNextObj === 'rack' ? response['bk_rack_id'] : bkNextObj === 'pos' ? response['bk_pos_id'] : response['bk_inst_id'],
+                        'bk_inst_name': bkNextObj === 'rack' ? formData['bk_rack_name'] : bkNextObj === 'pos' ? formData['bk_pos_name'] : formData['bk_inst_name'],
                         'bk_obj_id': bkNextObj,
                         'bk_obj_name': bkNextName,
                         'child': [],
                         'isFolder': false
                     })
                 } else if (type === 'update') {
-                    node['bk_inst_name'] = bkObjId === 'set' ? formData['bk_set_name'] : bkObjId === 'module' ? formData['bk_module_name'] : formData['bk_inst_name']
+                    node['bk_inst_name'] = bkObjId === 'rack' ? formData['bk_rack_name'] : bkObjId === 'pos' ? formData['bk_pos_name'] : formData['bk_inst_name']
                 }
             },
             /* 删除拓扑节点 */
             deleteNode () {
                 this.$bkInfo({
                     title: `${this.$t('Common[\'确定删除\']')} ${this.tree.activeNode['bk_inst_name']}?`,
-                    content: this.tree.activeNode['bk_obj_id'] === 'module'
+                    content: this.tree.activeNode['bk_obj_id'] === 'pos'
                         ? this.$t('Common["请先转移其下所有的主机"]')
                         : this.$t('Common[\'下属层级都会被删除，请先转移其下所有的主机\']'),
                     confirmFn: () => {
@@ -381,10 +410,12 @@
                             bk_obj_id: bkObjId,
                             bk_inst_id: bkInstId
                         } = this.tree.activeNode
-                        if (bkObjId === 'set') {
-                            url = `set/${this.tree.bkBizId}/${bkInstId}`
-                        } else if (bkObjId === 'module') {
-                            url = `module/${this.tree.bkBizId}/${this.tree.activeParentNode['bk_inst_id']}/${bkInstId}`
+                        if (bkObjId === 'idc') {
+                            url = `idc/${this.tree.bkIdcId}`
+                        } else if (bkObjId === 'rack') {
+                            url = `rack/${this.tree.bkIdcId}/${bkInstId}`
+                        } else if (bkObjId === 'pos') {
+                            url = `pos/${this.tree.bkIdcId}/${this.tree.activeParentNode['bk_inst_id']}/${bkInstId}`
                         } else {
                             url = `inst/${this.bkSupplierAccount}/${bkObjId}/${bkInstId}`
                         }
@@ -413,13 +444,13 @@
                 this.tree.activeNodeOptions = nodeOptions
                 this.tree.activeParentNode = nodeOptions.parent
                 this.view.attribute.type = 'update'
-                this.setSearchParams()
+                this.rackSearchParams()
             },
             /* node节点展开时，判断是否加载下级节点 */
             handleNodeToggle (isOpen, node, nodeOptions) {
                 if (!node.child || !node.child.length) {
                     this.$set(node, 'isLoading', true)
-                    this.$axios.get(`idc/inst/child/${this.bkSupplierAccount}/${node['bk_obj_id']}/${this.tree.bkBizId}/${node['bk_inst_id']}`).then(res => {
+                    this.$axios.get(`idc/inst/child/${this.bkSupplierAccount}/${node['bk_obj_id']}/${this.tree.bkIdcId}/${node['bk_inst_id']}`).then(res => {
                         if (res.result) {
                             let child = res['data'][0]['child']
                             if (Array.isArray(child) && child.length) {
@@ -435,23 +466,23 @@
                 }
             },
             /* 设置主机查询参数 */
-            setSearchParams () {
+            rackSearchParams () {
                 let params = {
-                    'bk_biz_id': this.tree.bkBizId,
+                    'bk_idc_id': this.tree.bkIdcId,
                     condition: []
                 }
                 let activeNodeObjId = this.tree.activeNode['bk_obj_id']
-                if (activeNodeObjId === 'module' || activeNodeObjId === 'set') {
+                if (activeNodeObjId === 'pos' || activeNodeObjId === 'rack') {
                     params.condition.push({
                         'bk_obj_id': activeNodeObjId,
                         fields: [],
                         condition: [{
-                            field: activeNodeObjId === 'module' ? 'bk_module_id' : 'bk_set_id',
+                            field: activeNodeObjId === 'pos' ? 'bk_pos_id' : 'bk_rack_id',
                             operator: '$eq',
                             value: this.tree.activeNode['bk_inst_id']
                         }]
                     })
-                } else if (activeNodeObjId !== 'biz') {
+                } else if (activeNodeObjId !== 'idc') {
                     params.condition.push({
                         'bk_obj_id': 'object',
                         fields: [],
@@ -462,7 +493,7 @@
                         }]
                     })
                 }
-                let defaultObj = ['host', 'module', 'set', 'biz']
+                let defaultObj = ['host', 'pos', 'rack', 'idc']
                 defaultObj.forEach(id => {
                     if (!params.condition.some(({bk_obj_id: bkObjId}) => bkObjId === id)) {
                         params.condition.push({
@@ -492,7 +523,7 @@
             this.getIdcModel()
         },
         components: {
-            vApplicationSelector,
+            vIdcSelector,
             vTree,
             vCrossImport,
             vHosts,

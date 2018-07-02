@@ -34,19 +34,26 @@ type idcAction struct {
 
 func init() {
 
+	actions.RegisterNewAction(actions.Action{Verb: common.HTTPSelectGet, Path: "/idc1/test/api", Params: nil, Handler: idc.TestApi, Version: v3.APIVersion})
 
-	// register actions
-	actions.RegisterNewAction(actions.Action{Verb: common.HTTPSelectGet, Path: "/idc/inst/{owner_id}/{app_id}", Params: nil, Handler: idc.SelectIdcoInst, Version: v3.APIVersion})
-
+	actions.RegisterNewAction(actions.Action{Verb: common.HTTPSelectGet, Path: "/idc1/model/{owner_id}", Params: nil, Handler: idc.SelectTopoModel, Version: v3.APIVersion})
 	// set cc api interface
 	idc.CreateAction()
 }
+func (cli *idcAction) TestApi(req *restful.Request, resp *restful.Response) {
+	blog.Info("TestApi TestApi TestApiTestApi ")
+	senceCLI := api.NewClient(idc.CC.IdcAPI())
+	cli.CallResponse(
+		senceCLI.ReForwardSelectMetaIdc(func(url, method string) (string, error) {
+			return httpclient.ReqForward(req, url, method)
+		}, "0"),
+		resp)
+}
 
-
-// SelectTopoInst search the inst topo tree
+// SelectTopoInst search the inst idc tree
 func (cli *idcAction) SelectIdcoInst(req *restful.Request, resp *restful.Response) {
 
-	blog.Info("select topo inst ")
+	blog.Info("select idc inst ")
 	ownerID := req.PathParameter("owner_id")
 	appID := req.PathParameter("app_id")
 	senceCLI := api.NewClient(idc.CC.IdcAPI())
@@ -56,4 +63,35 @@ func (cli *idcAction) SelectIdcoInst(req *restful.Request, resp *restful.Respons
 			return httpclient.ReqForward(req, fmt.Sprintf("%s?level=%s", url, req.QueryParameter("level")), method)
 		}, ownerID, appID),
 		resp)
+}
+// SelectTopoModel search the main line object idc tree
+func (cli *idcAction) SelectTopoModel(req *restful.Request, resp *restful.Response) {
+
+	blog.Info("select idc model")
+
+	ownerID := req.PathParameter("owner_id")
+
+	senceCLI := api.NewClient(idc.CC.IdcAPI())
+	cli.CallResponse(
+		senceCLI.ReForwardSelectMetaIdc(func(url, method string) (string, error) {
+			return httpclient.ReqForward(req, url, method)
+		}, ownerID),
+		resp)
+
+}
+// SelectSet search some sets
+func (cli *idcAction) SelectIdc(req *restful.Request, resp *restful.Response) {
+
+	blog.Info("select idc")
+
+	ownerID := req.PathParameter("owner_id")
+	appID := req.PathParameter("app_id")
+
+	senceCLI := api.NewClient(idc.CC.IdcAPI())
+	cli.CallResponse(
+		senceCLI.ReForwardSelectMetaIdc1(func(url, method string) (string, error) {
+			return httpclient.ReqForward(req, url, method)
+		}, ownerID, appID),
+		resp)
+
 }

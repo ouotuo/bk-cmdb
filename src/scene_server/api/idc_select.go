@@ -20,27 +20,52 @@ import (
 func (cli *Client) ReForwardSelectMetaIdcModel(callfunc func(url, method string) (string, error), ownerid, clsid, objid string) func() (string, error) {
 
 	return func() (string, error) {
-		return callfunc(fmt.Sprintf("%s/Idc/v1/model/%s/%s/%s", cli.address, ownerid, clsid, objid), common.HTTPSelectGet)
+		return callfunc(fmt.Sprintf("%s/idc/v1/model/%s/%s/%s", cli.address, ownerid, clsid, objid), common.HTTPSelectGet)
 	}
 }
 
 func (cli *Client) ReForwardSelectMetaIdcInstChild(callfunc func(url, method string) (string, error), ownerid, objid, appid, instid string) func() (string, error) {
 
 	return func() (string, error) {
-		return callfunc(fmt.Sprintf("%s/Idc/v1/inst/child/%s/%s/%s/%s", cli.address, ownerid, objid, appid, instid), common.HTTPSelectGet)
+		return callfunc(fmt.Sprintf("%s/idc/v1/inst/child/%s/%s/%s/%s", cli.address, ownerid, objid, appid, instid), common.HTTPSelectGet)
 	}
 }
 
 func (cli *Client) ReForwardSelectMetaIdcInst(callfunc func(url, method string) (string, error), ownerid, appid string) func() (string, error) {
 
 	return func() (string, error) {
-		return callfunc(fmt.Sprintf("%s/Idc/v1/inst/%s/%s", cli.address, ownerid, appid), common.HTTPSelectGet)
+		return callfunc(fmt.Sprintf("%s/idc/v1/inst/%s/%s", cli.address, ownerid, appid), common.HTTPSelectGet)
 	}
 }
 
 func (cli *Client) ReForwardSelectMetaIdc(callfunc func(url, method string) (string, error), ownerid string) func() (string, error) {
 
 	return func() (string, error) {
-		return callfunc(fmt.Sprintf("%s/Idc/v1/model/%s", cli.address, ownerid), common.HTTPSelectGet)
+		return callfunc(fmt.Sprintf("%s/idc/v1/model/%s", cli.address, ownerid), common.HTTPSelectGet)
+	}
+}
+func (cli *Client) ReForwardSelectMetaIdc1(callfunc func(url, method string) (string, error), ownerid, appid string) func() (string, error) {
+
+	return func() (string, error) {
+		return callfunc(fmt.Sprintf("%s/idc/v1/idc/search/%s/%s", cli.address, ownerid, appid), common.HTTPSelectPost)
+	}
+}
+func (cli *Client) ReForwardSelectMetaIdcTopoInst(callfunc func(url, method string) (string, error), ownerid, appid string) func() (string, error) {
+
+	return func() (string, error) {
+		return callfunc(fmt.Sprintf("%s/idc/v1/inst/%s/%s", cli.address, ownerid, appid), common.HTTPSelectGet)
+	}
+}
+
+func (cli *Client) ReForwardSelectMetaIdcTopoByClsID(callfunc func(url, method string) (string, error), ownerid, clsid, objid string) func() (string, error) {
+
+	return func() (string, error) {
+		return callfunc(fmt.Sprintf("%s/idc/v1/model/%s/%s/%s", cli.address, ownerid, clsid, objid), common.HTTPSelectGet)
+	}
+}
+func (cli *Client) ReForwardSelectMetaIdcTopoInstChild(callfunc func(url, method string) (string, error), ownerid, objid, appid, instid string) func() (string, error) {
+
+	return func() (string, error) {
+		return callfunc(fmt.Sprintf("%s/idc/v1/inst/child/%s/%s/%s/%s", cli.address, ownerid, objid, appid, instid), common.HTTPSelectGet)
 	}
 }
