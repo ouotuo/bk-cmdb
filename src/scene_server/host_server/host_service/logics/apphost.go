@@ -52,6 +52,32 @@ func GetHostIDByCond(req *restful.Request, hostURL string, cond interface{}) ([]
 	return hostIDArr, err
 }
 
+func GetHostIDByCond1(req *restful.Request, hostURL string, cond interface{}) ([]int, error) {
+	hostIDArr := make([]int, 0)
+	bodyContent, _ := json.Marshal(cond)
+	url := hostURL + "/host/v1/meta/hosts/pos/config/search"
+	blog.Info("Get posHostConfig url :%s", url)
+	blog.Info("Get posHostConfig content :%s", string(bodyContent))
+	reply, err := httpcli.ReqHttp(req, url, common.HTTPSelectPost, []byte(bodyContent))
+	blog.Info("Get posHostConfig return :%s", string(reply))
+	if err != nil {
+		return hostIDArr, err
+	}
+	js, _ := simplejson.NewJson([]byte(reply))
+	output, _ := js.Map()
+	configData := output["data"]
+	configInfo, ok := configData.([]interface{})
+	if !ok {
+		return hostIDArr, nil
+	}
+	for _, i := range configInfo {
+		host := i.(map[string]interface{})
+		hostID, _ := host[common.BKHostIDField].(json.Number).Int64()
+		hostIDArr = append(hostIDArr, int(hostID))
+	}
+	return hostIDArr, err
+}
+
 //GetConfigByCond get config by condition
 func GetConfigByCond(req *restful.Request, hostURL string, cond map[string]interface{}) ([]map[string]int, error) {
 	configArr := make([]map[string]int, 0)

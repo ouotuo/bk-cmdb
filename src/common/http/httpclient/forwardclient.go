@@ -65,8 +65,6 @@ func ReqHttp(req *restful.Request, url, method string, body []byte) (string, err
 	for key := range req.Request.Header {
 		httpcli.SetHeader(key, req.Request.Header.Get(key))
 	}
-	blog.Info(url)
-	blog.Info(string(body))
 	reply, err := httpcli.Request(url, method, req.Request.Header, body)
 	blog.Info(string(reply))
 	if err != nil {

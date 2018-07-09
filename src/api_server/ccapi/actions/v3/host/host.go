@@ -189,6 +189,17 @@ func (cli *hostAction) newHostSyncAppTopo(req *restful.Request, resp *restful.Re
 	io.WriteString(resp, rsp)
 }
 
+
+
+// HostAddModulesRelation move host to another module
+func (cli *hostAction) HostAddIdcsRelation(req *restful.Request, resp *restful.Response) {
+	url := cli.cc.HostAPI() + "/host/v1/hosts/poss"
+	rsp, _ := httpcli.ReqForward(req, url, common.HTTPSelectPost)
+	io.WriteString(resp, rsp)
+}
+
+
+
 func init() {
 	actions.RegisterNewAction(actions.Action{Verb: common.HTTPSelectPost, Path: "/hosts/search", Params: nil, Handler: host.GetHosts, FilterHandler: nil, Version: v3.APIVersion})
 	actions.RegisterNewAction(actions.Action{Verb: common.HTTPSelectPost, Path: "/hosts/search/asstdetail", Params: nil, Handler: host.GetHostsAsstDetail, FilterHandler: nil, Version: v3.APIVersion})
@@ -209,6 +220,6 @@ func init() {
 	actions.RegisterNewAction(actions.Action{Verb: common.HTTPCreate, Path: "/hosts/modules/idle/set", Params: nil, Handler: host.setHostMoveToIdleModules, FilterHandler: nil, Version: v3.APIVersion})
 	actions.RegisterNewAction(actions.Action{Verb: common.HTTPUpdate, Path: "/hosts/propery/clone", Params: nil, Handler: host.cloneHostProperty, FilterHandler: nil, Version: v3.APIVersion})
 	actions.RegisterNewAction(actions.Action{Verb: common.HTTPCreate, Path: "/hosts/sync/new/host", Params: nil, Handler: host.newHostSyncAppTopo, FilterHandler: nil, Version: v3.APIVersion})
-
+	actions.RegisterNewAction(actions.Action{Verb: common.HTTPSelectPost, Path: "/hosts/pos", Params: nil, Handler: host.HostAddIdcsRelation, FilterHandler: nil, Version: v3.APIVersion})
 	host.cc = api.NewAPIResource()
 }

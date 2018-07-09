@@ -41,21 +41,35 @@ type moduleHostConfigParams struct {
 	ModuleID      []int `json:"bk_module_id"`
 	IsIncrement   bool  `json:"is_increment"`
 }
-
+type idcHostConfigParams struct {
+	IdcID int   `json:"bk_idc_id"`
+	HostID        []int `json:"bk_host_id"`
+	PosID      []int `json:"bk_pos_id"`
+	IsIncrement   bool  `json:"is_increment"`
+}
 type DefaultModuleHostConfigParams struct {
 	ApplicationID int   `json:"bk_biz_id"`
 	HostID        []int `json:"bk_host_id"`
 }
-
+type DefaultIdcHostConfigParams struct {
+	IdcID int   `json:"bk_idc_id"`
+	HostID        []int `json:"bk_host_id"`
+}
 type SetHostConfigParams struct {
 	ApplicationID int `json:"bk_biz_id"`
 	SetID         int `json:"bk_set_id"`
 	ModuleID      int `json:"bk_module_id"`
 }
+type RackHostConfigParams struct {
+	IdcID int `json:"bk_idc_id"`
+	RackID         int `json:"bk_rack_id"`
+	PosID      int `json:"bk_pos_id"`
+}
+
 
 func init() {
 	hostModuleConfig.CreateAction()
-
+	actions.RegisterNewAction(actions.Action{Verb: common.HTTPCreate, Path: "/hosts/poss", Params: nil, Handler: hostModuleConfig.HostIdcRelation})
 	actions.RegisterNewAction(actions.Action{Verb: common.HTTPCreate, Path: "/hosts/modules", Params: nil, Handler: hostModuleConfig.HostModuleRelation})
 	actions.RegisterNewAction(actions.Action{Verb: common.HTTPCreate, Path: "/hosts/emptymodule", Params: nil, Handler: hostModuleConfig.MoveHost2EmptyModule})
 	actions.RegisterNewAction(actions.Action{Verb: common.HTTPCreate, Path: "/hosts/faultmodule", Params: nil, Handler: hostModuleConfig.MoveHost2FaultModule})
@@ -136,6 +150,77 @@ func (m *hostModuleConfigAction) HostModuleRelation(req *restful.Request, resp *
 		}
 		user := util.GetActionUser(req)
 		logClient.SaveLog(fmt.Sprintf("%d", data.ApplicationID), user)
+
+		return http.StatusOK, nil, nil
+	}, resp)
+
+}
+
+// HostModuleRelation add host module relation
+func (m *hostModuleConfigAction) HostIdcRelation(req *restful.Request, resp *restful.Response) {
+	value, err := ioutil.ReadAll(req.Request.Body)
+	var data idcHostConfigParams
+	defErr := m.CC.Error.CreateDefaultCCErrorIf(util.GetActionLanguage(req))
+	//defLang := m.CC.Lang.CreateDefaultCCLanguageIf(util.GetActionLanguage(req))
+	m.CallResponseEx(func() (int, interface{}, error) {
+		err = json.Unmarshal([]byte(value), &data)
+		if err != nil {
+			blog.Error("get unmarshall json value %v error:%v", string(value), err)
+			return http.StatusInternalServerError, nil, defErr.Error(common.CCErrCommJSONUnmarshalFailed)
+		}
+		for _, moduleID := range data.PosID {
+			//校验目标模块是否存在
+			pos, err := logics.GetPosByPosID(req, data.IdcID, moduleID, m.CC.ObjCtrl())
+			if nil != err {
+				blog.Error("get dstpso info error, params:%v, error:%v", data.PosID, err.Error())
+				return http.StatusInternalServerError, nil, defErr.Error(common.CCErrIdcPosSelectFailed)
+			}
+			if 0 == len(pos) {
+				return http.StatusInternalServerError, nil, defErr.Error(common.CCErrIdcPosIdNotfoundFailed)
+			}
+		}
+
+		logClient, err := logics.NewHostModuleConfigLog(req, data.HostID, m.CC.HostCtrl(), m.CC.ObjCtrl(), m.CC.AuditCtrl())
+		if nil != err {
+			return http.StatusInternalServerError, nil, defErr.Error(common.CCErrCommResourceInitFailed)
+		}
+
+		for _, hostID := range data.HostID {
+			//bl, err := logics.IsExistHostIDInApp(m.CC, req, data.IdcID, hostID, defLang)
+			//if nil != err {
+			//	blog.Error("check host is exist in app error, params:{idcid:%d, hostid:%s}, error:%s", data.IdcID, hostID, err.Error())
+			//	return http.StatusInternalServerError, nil, defErr.Errorf(common.CCErrHostNotINIdcFail, hostID)
+			//
+			//}
+			//if false == bl {
+			//	blog.Error("Host does not belong to the current idc; error, params:{idcid:%d, hostid:%s}", data.IdcID, hostID)
+			//	return http.StatusInternalServerError, nil, defErr.Errorf(common.CCErrHostNotINIdc, fmt.Sprintf("%d", hostID))
+			//}
+
+			params := make(map[string]interface{})
+			delPossURL := ""
+			params[common.BKIdcIDField] = data.IdcID
+			params[common.BKHostIDField] = hostID
+
+			delPossURL = m.CC.HostCtrl() + "/host/v1/meta/hosts/poss"
+			isSuccess, errMsg, _ := logics.GetHttpResult(req, delPossURL, common.HTTPDelete, params)
+			if !isSuccess {
+				blog.Error("remove hosthostconfig error, params:%v, error:%s", params, errMsg)
+				return http.StatusInternalServerError, nil, defErr.Errorf(common.CCErrHostDELResourcePool, hostID)
+			}
+
+			addPossURL := m.CC.HostCtrl() + "/host/v1/meta/hosts/poss"
+
+			params[common.BKPosIDField] = data.PosID
+			isSuccess, errMsg, _ = logics.GetHttpResult(req, addPossURL, common.HTTPCreate, params)
+			if !isSuccess {
+				blog.Error("add hosthostconfig error, params:%v, error:%s", params, errMsg)
+				return http.StatusInternalServerError, nil, defErr.Errorf(common.CCErrHostAddRelationFail, hostID)
+
+			}
+		}
+		user := util.GetActionUser(req)
+		logClient.SaveLog(fmt.Sprintf("%d", data.IdcID), user)
 
 		return http.StatusOK, nil, nil
 	}, resp)

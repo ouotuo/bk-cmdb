@@ -296,6 +296,7 @@
                 this.view.attribute.isLoading = false
                 this.view.attribute.type = 'create'
                 this.view.tab.active = 'attribute'
+                this.view.attribute.IsIdc = false
             },
             handleAddIdc () {
                 this.view.attribute.formValues = {}

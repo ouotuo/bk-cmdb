@@ -34,11 +34,14 @@ const TopoModuleName = "TopModuleName"
 
 // HostSearch search host by mutiple condition
 func HostSearch(req *restful.Request, data hostParse.HostCommonSearch, isDetail bool, hostCtrl, objCtrl string) (interface{}, error) {
-	var hostCond, appCond, setCond, moduleCond, mainlineCond hostParse.SearchCondition
+	var hostCond, appCond, setCond, moduleCond,posCond,idcCond,rackCond, mainlineCond hostParse.SearchCondition
 	objectCondMap := make(map[string][]interface{}, 0)
 	appIDArr := make([]int, 0)
 	setIDArr := make([]int, 0)
 	moduleIDArr := make([]int, 0)
+	idcIDArr := make([]int, 0)
+	rackIDArr := make([]int, 0)
+	posIDArr := make([]int, 0)
 	hostIDArr := make([]int, 0)
 	instAsstHostIDArr := make([]int, 0)
 	objSetIDArr := make([]int, 0)
@@ -59,7 +62,7 @@ func HostSearch(req *restful.Request, data hostParse.HostCommonSearch, isDetail 
 	result := make(map[string]interface{})
 	totalInfo := make([]interface{}, 0)
 	moduleHostConfig := make(map[string][]int, 0)
-
+	idcHostConfig := make(map[string][]int, 0)
 	url := hostCtrl + "/host/v1/hosts/search"
 	start := data.Page.Start
 	limit := data.Page.Limit
@@ -75,6 +78,12 @@ func HostSearch(req *restful.Request, data hostParse.HostCommonSearch, isDetail 
 			setCond = object
 		} else if object.ObjectID == common.BKInnerObjIDModule {
 			moduleCond = object
+		} else if object.ObjectID == common.BKInnerObjIDPos {
+			posCond = object
+		} else if object.ObjectID == common.BKInnerObjIDIdc {
+			idcCond = object
+		} else if object.ObjectID == common.BKInnerObjIDRack {
+			rackCond = object
 		} else if object.ObjectID == common.BKInnerObjIDApp {
 			appCond = object
 		} else if object.ObjectID == common.BKINnerObjIDObject {
@@ -152,6 +161,39 @@ func HostSearch(req *restful.Request, data hostParse.HostCommonSearch, isDetail 
 		//search module by cond
 		moduleIDArr, _ = GetModuleIDByCond(req, objCtrl, moduleCond.Condition)
 	}
+	if len(idcCond.Condition) > 0 {
+		//search module by cond
+		idcIDArr, _ = GetIdcIDByCond(req, objCtrl, idcCond.Condition)
+	}
+	if len(rackCond.Condition) > 0 {
+		if len(idcCond.Condition) > 0 {
+			cond := make(map[string]interface{})
+			cond["field"] = common.BKIdcIDField
+			cond["operator"] = common.BKDBIN
+			cond["value"] = idcIDArr
+			rackCond.Condition = append(rackCond.Condition, cond)
+		}
+		//search module by cond
+		rackIDArr, _ = GetRackIDByCond(req, objCtrl, rackCond.Condition)
+	}
+	if len(posCond.Condition) > 0 {
+		if len(rackCond.Condition) > 0 {
+			cond := make(map[string]interface{})
+			cond["field"] = common.BKRackIDField
+			cond["operator"] = common.BKDBIN
+			cond["value"] = rackIDArr
+			posCond.Condition = append(posCond.Condition, cond)
+		}
+		if len(idcCond.Condition) > 0 {
+			cond := make(map[string]interface{})
+			cond["field"] = common.BKIdcIDField
+			cond["operator"] = common.BKDBIN
+			cond["value"] = idcIDArr
+			posCond.Condition = append(posCond.Condition, cond)
+		}
+		//search module by cond
+		posIDArr, _ = GetPosIDByCond(req, objCtrl, posCond.Condition)
+	}
 
 	if len(appCond.Condition) > 0 {
 		moduleHostConfig[common.BKAppIDField] = appIDArr
@@ -165,9 +207,29 @@ func HostSearch(req *restful.Request, data hostParse.HostCommonSearch, isDetail 
 	if len(objectCondMap) > 0 {
 		moduleHostConfig[common.BKHostIDField] = instAsstHostIDArr
 	}
-	hostIDArr, _ = GetHostIDByCond(req, hostCtrl, moduleHostConfig)
+	if len(idcCond.Condition) > 0 {
+		idcHostConfig[common.BKIdcIDField] = idcIDArr
+	}
+	if len(rackCond.Condition) > 0 {
+		idcHostConfig[common.BKRackIDField] = rackIDArr
+	}
+	if len(posCond.Condition) > 0 {
+		idcHostConfig[common.BKPosIDField] = posIDArr
+	}
+	if len(objectCondMap) > 0 {
+		idcHostConfig[common.BKHostIDField] = instAsstHostIDArr
+	}
+	blog.Info("Get idcHostConfig :%s", idcHostConfig)
+	//TODO 这里两个id可以取交集
+	if len(moduleHostConfig) > 0 {
+		hostIDArr, _ = GetHostIDByCond(req, hostCtrl, moduleHostConfig)
+	}
+	if len(idcHostConfig) > 0 {
+		hostIDArr, _ = GetHostIDByCond1(req, hostCtrl, idcHostConfig)
+	}
 
-	if len(appCond.Condition) > 0 || len(setCond.Condition) > 0 || len(moduleCond.Condition) > 0 || -1 != data.AppID {
+
+	if len(appCond.Condition) > 0 || len(setCond.Condition) > 0 || len(moduleCond.Condition) > 0 || len(idcCond.Condition) > 0 || len(rackCond.Condition) > 0 || len(posCond.Condition) > 0 ||-1 != data.AppID {
 		cond := make(map[string]interface{})
 		cond["field"] = common.BKHostIDField
 		cond["operator"] = common.BKDBIN

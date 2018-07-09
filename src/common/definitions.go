@@ -495,6 +495,9 @@ const DefaultResSetFlag int = 1
 // DefaultAppFlag the default app flag
 const DefaultAppFlag int = 1
 
+
+// DefaultAppFlag the default app flag
+const DefaultIdcFlag int = 1
 // DefaultAppName the default app name
 const DefaultAppName string = "资源池"
 
@@ -509,6 +512,8 @@ const (
 
 	// DefaultFaultModuleFlag the default fault module flag
 	DefaultFaultModuleFlag int = 2
+	DefaultFaultPosFlag int = 2
+	DefaultResPosFlag int = 1
 )
 const (
 	// FieldTypeSingleChar the single char filed type

@@ -284,7 +284,7 @@ const (
 	CCErrIdcPosDeleteFailed = 1111005
 	CCErrIdcPosUpdateFailed = 1111006
 	CCErrIdcPosSelectFailed = 1111007
-
+	CCErrIdcPosIdNotfoundFailed = 1111008
 	// objectcontroller 1102XXX
 
 	// CCErrObjectPropertyGroupInsertFailed failed to save the property group
@@ -334,6 +334,7 @@ const (
 	CCErrHostCreateInst                  = 1106002
 	CCErrHostGetSnapshot                 = 1106003
 	CCErrHostTransferModule              = 1106004
+
 	CCErrDelDefaultModuleHostConfig      = 1106005
 	CCErrGetModule                       = 1106006
 	CCErrDelOriginHostModuelRelationship = 1106007
@@ -350,7 +351,9 @@ const (
 	CCErrHostFavouriteDupFail            = 1106018
 	CCErrHostGetSnapshotChannelEmpty     = 1106019
 	CCErrHostGetSnapshotChannelClose     = 1106020
-
+	CCErrHostTransferIdc              = 1106021
+	CCErrGetPos                       = 1106022
+	CCErrDelDefaultPosHostConfig = 1106023
 	// proccontroller 1107XXX
 	CCErrProcDeleteProc2Module = 1107001
 	CCErrProcCreateProc2Module = 1107002
@@ -401,6 +404,13 @@ const (
 	CCErrHostEditRelationPoolFail = 1110028
 	CCErrAddHostToModule          = 1110029
 	CCErrAddHostToModuleFailStr   = 1110030
+
+
+	CCErrHostNotINIdc             = 1110031
+	CCErrHostNotINIdcFail         = 1110032
+	CCErrAddHostToPos          = 1110033
+	CCErrAddHostToPosFailStr   = 1110034
+
 
 	//web  1111XXX
 	CCErrWebFileNoFound      = 1111001

@@ -68,3 +68,16 @@ type ModuleHostConfig struct {
 func (ModuleHostConfig) TableName() string {
 	return "cc_ModuleHostConfig"
 }
+type IdcHostConfig struct {
+	ID            int       `bson:"id"        json:"id"`
+	HostID        int       `bson:"bk_host_id"   json:"bk_host_id"`
+	PosID      int       `bson:"bk_pos_id" json:"bk_pos_id"`
+	RackID         int       `bson:"bk_rack_id"    json:"bk_rack_id"`
+	IdcID    int       `bson:"bk_idc_id"    json:"bk_idc_id"`
+	Page          *BasePage `gorm:"-"            json:"page,omitempty"`
+}
+
+// TableName return the table name
+func (IdcHostConfig) TableName() string {
+	return "cc_IdcHostConfig"
+}

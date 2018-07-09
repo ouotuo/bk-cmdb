@@ -59,6 +59,12 @@
                             <i class="icon-cc-shift"></i>
                             <span>{{$t("BusinessTopology['转移']")}}</span>
                         </button>
+                        <button class="bk-button"
+                                :disabled="!table.chooseId.length"
+                                @click="transferIdcHost">
+                            <i class="icon-cc-shift"></i>
+                            <span>修改机房</span>
+                        </button>
                         <form ref="exportForm" :action="exportUrl" method="POST" style="display: inline-block;">
                             <input type="hidden" name="bk_host_id" :value="table.chooseId">
                             <input type="hidden" name="bk_biz_id" value="-1">
@@ -219,6 +225,12 @@
             :chooseId="table.chooseId"
             @success="transferSuccess">
         </v-host-transfer-pop>
+
+        <v-host-transfer-idc-pop
+                :isShow.sync="transferIdc.isShow"
+                :chooseId="table.chooseId"
+                @success="transferSuccess">
+        </v-host-transfer-idc-pop>
     </div>
 </template>
 
@@ -230,6 +242,7 @@
     import vAttribute from '@/components/object/attribute'
     import vRelevance from '@/components/relevance/relevance'
     import vHostTransferPop from '@/components/hostTransferPop/hostTransferPop'
+    import vHostTransferIdcPop from '@/components/idcTransferPop/hostTransferPop'
     import vHistory from '@/components/history/history'
     import vHostport from '@/components/hostport/port'
     import vField from '@/components/field/field'
@@ -346,6 +359,9 @@
                     hostRelation: []
                 },
                 transfer: {
+                    isShow: false
+                },
+                transferIdc: {
                     isShow: false
                 },
                 filterParams: {
@@ -634,6 +650,9 @@
             },
             transferHost () {
                 this.transfer.isShow = true
+            },
+            transferIdcHost () {
+                this.transferIdc.isShow = true
             },
             transferSuccess () {
                 this.table.chooseId = []
@@ -1031,8 +1050,8 @@
             vHistory,
             vField,
             vHostport,
-            vBreadcrumb
- 
+            vBreadcrumb,
+            vHostTransferIdcPop
         }
     }
 </script>
