@@ -30,15 +30,23 @@ const state = {
     usercustom: {},          // 用户字段配置
     globalLoading: false,
     memberLoading: false,
-    language: Cookies.get('blueking_language') || 'zh_CN'
+    language: Cookies.get('blueking_language') || 'zh_CN',
+    axiosQueue: []
 }
 
 const getters = {
     bkSupplierAccount: state => state.bkSupplierAccount,
     bkBizId: state => state.biz.selected,
     bkBizList: state => state.biz.list,
+ 
     bkIdcId: state => state.idc.selected,
     bkIdcList: state => state.idc.list,
+ 
+    bkPrivBizList: state => {
+        const priviBiz = (Cookies.get('bk_privi_biz_id') || '-1').split('-')
+        return state.biz.list.filter(({ bk_biz_id: bkBizId }) => priviBiz.includes(bkBizId.toString()))
+    },
+ 
     memberList: state => state.memberList,
     isAdmin: state => state.isAdmin,
     navigation: state => state.navigation,
@@ -46,7 +54,8 @@ const getters = {
     usercustom: state => state.usercustom,
     globalLoading: state => state.globalLoading,
     memberLoading: state => state.memberLoading,
-    language: state => state.language
+    language: state => state.language,
+    axiosQueue: state => state.axiosQueue
 }
 
 const actions = {
@@ -171,6 +180,9 @@ const mutations = {
     },
     setGlobalLoading (state, isLoading) {
         state.globalLoading = isLoading
+    },
+    updateAxiosQueue (state, axiosQueue) {
+        state.axiosQueue = axiosQueue
     }
 }
 
