@@ -121,7 +121,7 @@ var tables = map[string][]storage.Index{
 	},
 	"cc_Subscription": []storage.Index{
 		storage.Index{Name: "", Columns: []string{"subscription_id"}, Type: storage.INDEX_TYPE_BACKGROUP},
-	} 
+	},
 	"cc_TopoGraphics": []storage.Index{
 		storage.Index{Name: "", Columns: []string{"scope_type", "scope_id", "node_type", "bk_obj_id", "bk_inst_id"}, Type: storage.INDEX_TYPE_BACKGROUP_UNIQUE},
 	},
