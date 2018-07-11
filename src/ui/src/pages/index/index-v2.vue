@@ -45,9 +45,6 @@
                 </li>
             </ul>
         </div>
-        <p class="copyright">
-            Copyright © 2012-{{year}} Tencent BlueKing. All Rights Reserved. 腾讯蓝鲸 版权所有
-        </p>
     </div>
 </template>
  <script>
