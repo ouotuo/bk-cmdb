@@ -158,7 +158,7 @@ func UserAuthentication(username string,password string,c *gin.Context) error {
 			}
 		}
 	}
-	return  errors.New(err.Error()+fmt.Sprintf("(%s=%s)(%s)",username, password))
+	return errors.New("用户不存在，或密码错误 ")
 }
 
 
