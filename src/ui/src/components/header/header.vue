@@ -10,8 +10,8 @@
 
 <template lang="html">
     <div class="header-wrapper clearfix">
-        <img v-if="$i18n.locale === 'zh_CN'" class="logo" src="@/common/images/nav-title-ch.png" alt="cmdb配置平台" @click="gotoIndex">
-        <img v-else class="logo" src="@/common/images/nav-title-ch.png" alt="Configuration System" @click="gotoIndex">
+        <img v-if="$i18n.locale === 'zh_CN'" class="logo" src="@/common/svg/cmdb.png" alt="cmdb配置平台" @click="gotoIndex">
+        <img v-else class="logo" src="@/common/svg/cmdb.png" alt="Configuration System" @click="gotoIndex">
         <div class="header-right-contain fr">
             <div class="user-detail-contain fr pr">
                 <div class="dropdown-content-user fl">
