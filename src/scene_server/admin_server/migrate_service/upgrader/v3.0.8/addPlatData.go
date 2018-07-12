@@ -25,11 +25,13 @@ func addPlatData(db storage.DI, conf *upgrader.Config) error {
 	blog.Errorf("add data for  %s table ", tablename)
 	rows := []map[string]interface{}{
 		map[string]interface{}{
+
 			common.BKCloudNameField: "默认区域",
-			common.BKOwnerIDField:   "0",
-			common.BKCloudIDField:   common.BKDefaultDirSubArea,
-			common.CreateTimeField:  time.Now(),
-			common.LastTimeField:    time.Now(),
+			common.BKOwnerIDField:   common.BKDefaultOwnerID,
+
+			common.BKCloudIDField:  common.BKDefaultDirSubArea,
+			common.CreateTimeField: time.Now(),
+			common.LastTimeField:   time.Now(),
 		},
 		map[string]interface{}{
 			common.BKCloudNameField: "办公区",

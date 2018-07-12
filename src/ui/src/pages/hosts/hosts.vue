@@ -314,7 +314,7 @@
                         count: 0
                     },
                     chooseId: [],
-                    isLoading: true
+                    isLoading: false
                 },
                 filter: {
                     queryColumns: [],
